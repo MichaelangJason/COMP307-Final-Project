@@ -22,7 +22,7 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "@api/*": ["api/*"]
+      "@shared/*": ["../../shared/*"]
     }
   },
   "include": [

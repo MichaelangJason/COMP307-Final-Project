@@ -1,6 +1,6 @@
-import { test1 } from "@api/myAPI";
+import { here } from "@shared/api/here";
 
-const t: test1 = {
+const t: here = {
   name: "test",
 };
 
