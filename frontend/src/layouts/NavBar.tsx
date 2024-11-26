@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 
 import logo from "../images/logo.png";
+import '../styles/NavBar.css';
 
 const NavBar = () => {
   return (
