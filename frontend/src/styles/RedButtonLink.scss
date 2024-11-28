@@ -1,0 +1,12 @@
+@use "../themes/colors";
+@use "../themes/fonts";
+
+.redButton {
+  padding: 12px 25px;
+  background-color: colors.$brightRed;
+  border-radius: 5px;
+  font-size: 20px;
+  font-family: fonts.$body;
+  color: colors.$white;
+  text-decoration: none;
+}

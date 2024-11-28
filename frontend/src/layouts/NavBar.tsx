@@ -1,14 +1,19 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import logo from "../images/logo.png";
-import '../styles/NavBar.css';
+import RedButtonLink from "../components/RedButtonLink";
+import "../styles/NavBar.scss";
 
 const NavBar = () => {
   return (
     <>
-      <img className="logo" src={logo} alt="Logo" />
+      <div id="navbar">
+        <img id="logo" src={logo} alt="Logo" />
+        <RedButtonLink pageTo="/login" text="Log In" />
+      </div>
 
-      <h1>NavBar</h1>
+      <div id="separator"></div>
+
       <main>
         <Outlet />
       </main>
