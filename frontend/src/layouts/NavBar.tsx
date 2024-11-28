@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import logo from "../images/logo.png";
 import RedButtonLink from "../components/RedButtonLink";
