@@ -9,4 +9,7 @@
   font-family: fonts.$body;
   color: colors.$white;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
