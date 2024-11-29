@@ -1,27 +1,29 @@
 @use "../themes/colors";
 @use "../themes/fonts";
 
+//Default Resolution : Laptop
+// Laptop L : 1440 x 900 <---
+// Tablet : 1080 x 810
+// Mobile : 400 x 750
 .page-body {
-  //ok
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 700px;
   min-width: 400px;
-  height: 100%;
   background-color: colors.$silverGray;
 }
 
 .page-body .back-button {
-  //ok
   position: fixed;
-  top: 30px;
-  left: 30px;
+  top: 50px;
+  left: 50px;
 }
 
 .login-wrapper {
-  //ok
-  width: 380px;
+  width: 500px;
   padding: 60px;
   border-radius: 5px;
   background-color: colors.$white;
@@ -29,113 +31,138 @@
 }
 
 .login-wrapper header {
-  //ok
-  font-size: xx-large;
-  font-weight: 400;
+  font-size: 40px;
+  font-weight: 500;
   font-family: fonts.$title;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .login-wrapper header img {
-  //ok
   float: right;
-  width: 35px;
-  height: 35px;
+  width: 60px;
+  height: 60px;
 }
 
 .login-wrapper .errormsg {
-  //ok : comment IN/OUT to display/hide errormsg
-  padding: 5px 5px 5px 5px;
+  padding: 20px 20px 20px 20px;
   text-align: center;
-  display: inline-flex;
-  border: 2px solid colors.$brightRed;
+  display: block;
+  font-size: 16px;
+  border: 3px solid colors.$brightRed;
   color: colors.$darkRed;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+
+  // Uncomment to hide the error msg
   // display: none;
 }
 
 form label {
-  //ok
-  font-size: 18px;
-  margin-left: 5px;
+  font-size: 20px;
   font-family: fonts.$title;
 }
 
 form input {
-  //ok
   border-radius: 5px;
-  height: 40px;
+  height: 50px;
   border: 1px solid colors.$silverGray;
-  font-size: 15px;
-  padding: 0 12px 0 12px;
+  font-size: 20px;
+  padding: 0 16px 0 16px;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 input:hover:not(.login-button) {
-  //ok
-  padding: 0 12px 0 12px;
+  padding: 0 14px 0 14px;
   border: 2px solid colors.$brightRed;
 }
 
 form .login-button input {
-  // ok
   border-radius: 5px;
   margin-top: 10px;
   background-color: colors.$brightRed;
   border-color: none;
-}
-
-form .login-button input:hover {
-  //ok
-  background-color: colors.$brightRed;
+  color: colors.$white;
+  font-size: 22px;
 }
 
 .separator {
-  //ok
-  height: 1px;
-  margin-top: 2px;
+  height: 2px;
+  margin-top: 7px;
   background-color: black;
 }
 
 .login-wrapper a:link {
-  //ok
   color: colors.$brightRed;
 }
 .login-wrapper a:visited {
-  //ok
   color: colors.$darkRed;
 }
 
-@media (max-height: 650px) {
-  .back-button {
-    border-radius: 0px;
-    width: 100%;
-    margin-left: -30px;
-    margin-top: -30px;
-  }
+p {
+  font-size: 16px;
 }
-@media (max-width: 400px) {
-  .page-body {
-    background-color: colors.$white;
-    min-width: 400px;
-    min-height: 700px;
-  }
+
+// Tablet : 1080 x 810
+@media (width<1080px) {
   .login-wrapper {
-    position: absolute;
-    top: 100px;
     width: 400px;
-    height: 100%;
-    z-index: 1;
-    box-shadow: none;
-    overflow-inline: scroll;
+  }
+  .login-wrapper header img {
+    width: 50px;
+    height: 50px;
   }
 
-  .back-button {
-    z-index: 2;
-    width: 110%;
-    margin-left: -40px;
-    margin-top: -30px;
-    border-radius: 0%;
+  .login-wrapper header {
+    font-size: 38px;
+  }
+  form label {
+    font-size: 17px;
+  }
+  form input {
+    height: 40px;
+    font-size: 16px;
+    padding: 0 12px 0 12px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  form .login-button input {
+    font-size: 20px;
+  }
+  .separator {
+    height: 1px;
+    margin-top: 5px;
+  }
+}
+
+@media (width < 800px) {
+  .page-body .back-button {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+}
+// Mobile : 400 x 750
+@media (width < 500px) {
+  .page-body {
+    background-color: colors.$white;
+  }
+
+  .login-wrapper {
+    width: 100%;
+    position: absolute;
+    height: 100%;
+    box-shadow: none;
+    top: 50px; //important
+    overflow-inline: scroll;
+  }
+}
+
+@media (width < 400px) {
+  .page-body .back-button {
+    width: 400px;
+  }
+  .login-wrapper {
+    width: 400px;
   }
 }
