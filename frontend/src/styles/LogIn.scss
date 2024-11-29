@@ -1,0 +1,151 @@
+@use "../themes/colors";
+@use "../themes/fonts";
+
+.page-body {
+  //ok
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 700px;
+  min-width: 400px;
+  height: 100%;
+  background-color: colors.$silverGray;
+}
+
+.page-body .back-button {
+  //ok
+  position: fixed;
+  top: 30px;
+  left: 30px;
+}
+
+.login-wrapper {
+  //ok
+  width: 380px;
+  padding: 60px;
+  border-radius: 5px;
+  background-color: colors.$white;
+  box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.3);
+}
+
+.login-wrapper header {
+  //ok
+  float: left;
+  font-size: xx-large;
+  font-weight: 400;
+  font-family: fonts.$title;
+  margin-bottom: 20px;
+}
+
+.login-wrapper header img {
+  //ok
+  width: 140px;
+  height: 35px;
+  margin-left: 35px;
+}
+
+.login-wrapper .errormsg {
+  //ok : comment IN/OUT to display/hide errormsg
+  padding: 5px 5px 5px 5px;
+  text-align: center;
+  display: inline-flex;
+  border: 2px solid colors.$brightRed;
+  color: colors.$darkRed;
+  margin-bottom: 20px;
+  // display: none;
+}
+
+form {
+  //ok
+  font-family: fonts.$body;
+}
+
+form label {
+  //ok
+  font-size: 18px;
+  margin-left: 5px;
+  font-family: fonts.$title;
+}
+
+form input {
+  //ok
+  border-radius: 5px;
+  height: 40px;
+  border: 1px solid colors.$silverGray;
+  font-size: 15px;
+  padding: 0 12px 0 12px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+input:hover:not(.login-button) {
+  //ok
+  padding: 0 12px 0 12px;
+  border: 2px solid colors.$brightRed;
+}
+
+form .login-button input {
+  // ok
+  border-radius: 5px;
+  margin-top: 10px;
+  background-color: colors.$brightRed;
+  border-color: none;
+}
+
+form .login-button input:hover {
+  //ok
+  background-color: colors.$brightRed;
+}
+
+.separator {
+  //ok
+  height: 1px;
+  margin-top: 2px;
+  background-color: black;
+}
+
+.login-wrapper a:link {
+  //ok
+  color: colors.$brightRed;
+}
+.login-wrapper a:visited {
+  //ok
+  color: colors.$darkRed;
+}
+
+@media (max-height: 680px) {
+  .back-button {
+    border-radius: 0px;
+    width: 100%;
+    margin-left: -30px;
+    margin-top: -30px;
+  }
+  .login-wrapper {
+    overflow-inline: scroll;
+  }
+}
+@media (max-width: 400px) {
+  .page-body {
+    background-color: colors.$white;
+    min-width: 400px;
+    min-height: 750px;
+    overflow: hidden;
+  }
+  .login-wrapper {
+    position: absolute;
+    top: 100px;
+    width: 400px;
+    height: 750px;
+    z-index: 1;
+    box-shadow: none;
+    overflow-inline: scroll;
+  }
+
+  .back-button {
+    z-index: 2;
+    width: 110%;
+    margin-left: -40px;
+    margin-top: -30px;
+    border-radius: 0%;
+  }
+}
