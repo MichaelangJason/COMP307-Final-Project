@@ -1,8 +1,8 @@
-import logo from "../images/logo.png";
+import logo from "../images/mini_logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/LogIn.scss";
 
-import SignUp from "./SignUp";
+import { Link, useNavigate } from "react-router-dom";
 
 const LogIn = () => {
   // return <>Log In</>;
@@ -37,7 +37,7 @@ const LogIn = () => {
           <div className="separator"></div>
 
           <p>
-            Don't have an account? <a href="#">SIGN UP</a>
+            Don't have an account? <Link to="/signup">SIGN UP</Link>
           </p>
         </div>
       </div>
