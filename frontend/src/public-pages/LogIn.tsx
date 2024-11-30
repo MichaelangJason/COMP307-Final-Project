@@ -2,15 +2,14 @@ import logo from "../images/mini_logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/LogIn.scss";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const LogIn = () => {
-  // return <>Log In</>;
   return (
     <>
       <div className="page-body">
         <div className="back-button">
-          <RedButtonLink pageTo="/" text="Back" goBack={true} />
+          <RedButtonLink text="Back" goBack={true} />
         </div>
 
         <div className="login-wrapper">
