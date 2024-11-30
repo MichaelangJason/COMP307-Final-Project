@@ -25,9 +25,9 @@ const LogIn = () => {
 
           <form name="loginForm" action="#" method="GET">
             <label>Email</label>
-            <input type="text" name="email" required />
+            <input type="email" name="email" required />
             <label>Password</label>
-            <input type="text" name="password" required />
+            <input type="password" name="password" required />
 
             <div className="login-button">
               <input type="submit" name="login" value="Log In" />
