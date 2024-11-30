@@ -18,6 +18,7 @@ const BookMeeting = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [startTimeIndex, setStartTimeIndex] = useState<number>(0);
   const [endTimeIndex, setEndTimeIndex] = useState<number>(1);
+  const [isRequestAlt, setIsRequestAlt] = useState<boolean>(false);
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date.toISOString().split("T")[0]);
@@ -44,18 +45,26 @@ const BookMeeting = () => {
             <div
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
-              <div style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                className={isRequestAlt ? "readOnly" : ""}
+                style={{ display: "flex", flexDirection: "column" }}
+              >
                 <label>Select a time slot:</label>
-                <select>
+                <select disabled={isRequestAlt}>
                   {["14:30-14:45"].map((timeSlot, index) => (
                     <option value={index}>{timeSlot}</option>
                   ))}
                 </select>
               </div>
-              <div className="startEndTime">
+              <div
+                className={
+                  isRequestAlt ? "startEndTime" : "startEndTime readOnly"
+                }
+              >
                 <div className="timeSelectContainer">
                   <label>Start Time</label>
                   <select
+                    disabled={!isRequestAlt}
                     value={startTimeIndex}
                     onChange={handleStartTimeChange}
                   >
@@ -66,7 +75,11 @@ const BookMeeting = () => {
                 </div>
                 <div className="timeSelectContainer">
                   <label>End Time</label>
-                  <select value={endTimeIndex} onChange={handleEndTimeChange}>
+                  <select
+                    disabled={!isRequestAlt}
+                    value={endTimeIndex}
+                    onChange={handleEndTimeChange}
+                  >
                     {predefinedTimeSlots.map((timeSlot, index) => {
                       if (index > startTimeIndex) {
                         return <option value={index}>{timeSlot}</option>;
@@ -90,16 +103,18 @@ const BookMeeting = () => {
             <div className="requestAlt">
               <label>Request an alternative time:</label>
               <input
-                style={{ margin: "0", width: "70px", height: "30px" }}
+                style={{ margin: "0", width: "25px", height: "25px" }}
                 type="checkbox"
                 name="isRequest"
+                onClick={() => setIsRequestAlt(!isRequestAlt)}
               />
             </div>
-            <label style={{ opacity: "20%" }}>Reason of meeting:</label>
-            <input
-              style={{ opacity: "20%", flexGrow: "1" }}
-              readOnly
-              type="text"
+            <label className={isRequestAlt ? "" : "readOnly"}>
+              Reason of meeting:
+            </label>
+            <textarea
+              className={isRequestAlt ? "" : "readOnly"}
+              readOnly={!isRequestAlt}
               name="reason"
             />
             <SubmitButton
