@@ -1,0 +1,11 @@
+@use "../themes/colors";
+
+#privateSeparator {
+  height: 10px;
+  background-color: colors.$darkGray;
+}
+
+main {
+  width: 100%;
+  height: calc(90% - 10px);
+}
