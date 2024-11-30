@@ -1,6 +1,6 @@
 import logo from "../images/mini_logo.png";
 import RedButtonLink from "../components/RedButtonLink";
-import "../styles/LogIn.scss";
+import "../styles/LogIn_n_SignUp.scss";
 
 import { Link } from "react-router-dom";
 
@@ -12,7 +12,7 @@ const LogIn = () => {
           <RedButtonLink text="Back" goBack={true} />
         </div>
 
-        <div className="login-wrapper">
+        <div className="wrapper">
           <header>
             Login
             <img src={logo} alt="Logo" />
@@ -28,7 +28,7 @@ const LogIn = () => {
             <label>Password</label>
             <input type="password" name="password" required />
 
-            <div className="login-button">
+            <div className="submit-button">
               <input type="submit" name="login" value="Log In" />
             </div>
           </form>
