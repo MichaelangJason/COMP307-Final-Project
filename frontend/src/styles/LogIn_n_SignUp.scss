@@ -22,7 +22,7 @@
   left: 50px;
 }
 
-.login-wrapper {
+.wrapper {
   width: 500px;
   padding: 60px;
   border-radius: 5px;
@@ -30,20 +30,20 @@
   box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.3);
 }
 
-.login-wrapper header {
+.wrapper header {
   font-size: 40px;
   font-weight: 500;
   font-family: fonts.$title;
   margin-bottom: 40px;
 }
 
-.login-wrapper header img {
+.wrapper header img {
   float: right;
   width: 60px;
   height: 60px;
 }
 
-.login-wrapper .errormsg {
+.wrapper .errormsg {
   padding: 20px 20px 20px 20px;
   text-align: center;
   display: block;
@@ -71,12 +71,12 @@ form input {
   margin-bottom: 16px;
 }
 
-input:hover:not(.login-button) {
+input:hover:not(.submit-button) {
   padding: 0 14px 0 14px;
   border: 2px solid colors.$brightRed;
 }
 
-form .login-button input {
+form .submit-button input {
   border-radius: 5px;
   margin-top: 10px;
   background-color: colors.$brightRed;
@@ -91,10 +91,10 @@ form .login-button input {
   background-color: black;
 }
 
-.login-wrapper a:link {
+.wrapper a:link {
   color: colors.$brightRed;
 }
-.login-wrapper a:visited {
+.wrapper a:visited {
   color: colors.$darkRed;
 }
 
@@ -104,15 +104,15 @@ p {
 
 // Tablet : 1080 x 810
 @media (width<1080px) {
-  .login-wrapper {
+  .wrapper {
     width: 400px;
   }
-  .login-wrapper header img {
+  .wrapper header img {
     width: 50px;
     height: 50px;
   }
 
-  .login-wrapper header {
+  .wrapper header {
     font-size: 38px;
   }
   form label {
@@ -125,7 +125,7 @@ p {
     width: 100%;
     margin-bottom: 10px;
   }
-  form .login-button input {
+  form .submit-button input {
     font-size: 20px;
   }
   .separator {
@@ -148,7 +148,7 @@ p {
     background-color: colors.$white;
   }
 
-  .login-wrapper {
+  .wrapper {
     width: 100%;
     position: absolute;
     height: 100%;
@@ -162,7 +162,7 @@ p {
   .page-body .back-button {
     width: 400px;
   }
-  .login-wrapper {
+  .wrapper {
     width: 400px;
   }
 }

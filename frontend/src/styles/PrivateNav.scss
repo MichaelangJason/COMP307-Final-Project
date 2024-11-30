@@ -1,11 +1,41 @@
 @use "../themes/colors";
 
 #privateSeparator {
-  height: 10px;
+  width: 100%;
+  height: 60px;
   background-color: colors.$darkGray;
 }
 
 main {
   width: 100%;
-  height: calc(90% - 10px);
+  height: max-content;
+}
+
+#privateSeparator a {
+  text-decoration: none;
+}
+
+#privateSeparator a:link {
+  color: colors.$white;
+}
+
+#privateSeparator a:visited {
+  color: colors.$white;
+}
+
+#privateSeparator table {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  left: 30px;
+}
+
+#privateSeparator table td {
+  // border: 1px solid;
+  font-size: large;
+  text-align: center;
+  vertical-align: middle;
+  float: left;
+  margin: 0 20px;
 }
