@@ -5,26 +5,33 @@ main {
   height: max-content;
 }
 
-header {
+#privateSeparator {
   background-color: colors.$darkGray;
   color: colors.$white;
   display: flex;
   justify-content: space-between;
-  height: 60px;
+  height: 48px;
   padding: 0 2rem;
 }
 
+nav {
+  margin-top: -11px;
+}
 nav a {
-  margin: 0 1rem;
   color: colors.$white;
   text-decoration: none;
+
+  //added as tile
+  padding: 15px 20px;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 nav a:hover {
-  color: colors.$brightRed;
+  background-color: colors.$brightRed;
+  color: colors.$white;
 }
 
-header .nav-button {
+#privateSeparator .nav-button {
   padding: 5px;
   margin-top: 5px;
   cursor: pointer;
@@ -39,16 +46,16 @@ header .nav-button {
   opacity: 0;
 }
 
-header .nav-button:hover {
+#privateSeparator .nav-button:hover {
   color: colors.$brightRed;
 }
 
 @media (width < 1080px) {
-  header .nav-button {
+  #privateSeparator .nav-button {
     visibility: visible;
     opacity: 1;
   }
-  header nav {
+  #privateSeparator nav {
     position: fixed;
     top: -150%; //hidden at the start
     left: 0;
@@ -58,7 +65,7 @@ header .nav-button:hover {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
+    gap: 0rem;
     background-color: colors.$darkGray;
     transition: transform 0.5s ease-in-out; //animation
   }
@@ -76,6 +83,9 @@ header .nav-button:hover {
 
   nav a {
     font-size: 1.5rem;
+
+    //added
+    width: 100%;
   }
 }
 @media (width < 1080px) and (height < 600px) {

@@ -14,11 +14,8 @@ const PrivateNav = () => {
   return (
     <>
       <NavBarContent pageTo="/" text="Log Out" />
-      <header>
-        <nav
-          id="privateSeparator"
-          className={isNavVisible ? "responsive_nav" : ""}
-        >
+      <div id="privateSeparator">
+        <nav className={isNavVisible ? "responsive_nav" : ""}>
           <Link to="/user/:id" onClick={toggleNavBar}>
             MEETING
           </Link>
@@ -46,7 +43,7 @@ const PrivateNav = () => {
         <button className="nav-button" onClick={toggleNavBar}>
           <FaBars />
         </button>
-      </header>
+      </div>
       <main>
         <Outlet />
       </main>
