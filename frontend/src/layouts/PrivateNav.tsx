@@ -1,36 +1,52 @@
 import { Link, Outlet } from "react-router-dom";
-
 import NavBarContent from "./NavBarContent";
 import "../styles/PrivateNav.scss";
+import { FaBars, FaTimes } from "react-icons/fa";
+import React, { useState } from "react";
 
 const PrivateNav = () => {
-  const hamburgerFunction = () => {
-    console.log("Hamburger");
+  const [isNavVisible, setIsNavVisible] = useState(false);
+
+  const toggleNavBar = () => {
+    setIsNavVisible((prev) => !prev);
   };
 
   return (
     <>
       <NavBarContent pageTo="/" text="Log Out" />
-      <div id="privateSeparator">
-        <table>
-          <td>
-            <Link to="/user/:id">MEETING</Link>
-          </td>
-          <td>
-            <Link to="/user/:id/create">CREATE</Link>
-          </td>
-          <td>
-            <Link to="/user/:id/manage">MANAGE</Link>
-          </td>
-          <td>
-            <Link to="/user/:id/request">REQUEST</Link>
-          </td>
-          <td>
-            <Link to="/user/:id/profile">PROFILE</Link>
-          </td>
-        </table>
-      </div>
+      <header>
+        <nav
+          id="privateSeparator"
+          className={isNavVisible ? "responsive_nav" : ""}
+        >
+          <Link to="/user/:id" onClick={toggleNavBar}>
+            MEETING
+          </Link>
+          <Link to="/user/:id/create" onClick={toggleNavBar}>
+            CREATE
+          </Link>
+          <Link to="/user/:id/manage" onClick={toggleNavBar}>
+            MANAGE
+          </Link>
+          <Link to="/user/:id/request" onClick={toggleNavBar}>
+            REQUEST
+          </Link>
+          <Link to="/user/:id/profile" onClick={toggleNavBar}>
+            PROFILE
+          </Link>
+          <button
+            className="nav-button nav-close-button"
+            onClick={toggleNavBar}
+          >
+            {/* npm install react-icons */}
+            <FaTimes />
+          </button>
+        </nav>
 
+        <button className="nav-button" onClick={toggleNavBar}>
+          <FaBars />
+        </button>
+      </header>
       <main>
         <Outlet />
       </main>
