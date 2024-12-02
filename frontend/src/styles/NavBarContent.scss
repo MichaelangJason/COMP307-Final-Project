@@ -1,0 +1,27 @@
+@use "../themes/colors";
+
+#navbar {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px;
+
+  #logo {
+    height: 50px;
+
+    @media (max-width: 500px) {
+      width: 150px;
+      height: auto;
+    }
+    @media (max-height: 500px) {
+      height: 30px;
+      width: auto;
+    }
+  }
+
+  @media (max-width: 500px) {
+    padding: 10px;
+  }
+}

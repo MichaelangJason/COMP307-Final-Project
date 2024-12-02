@@ -16,7 +16,7 @@ You will also see any lint errors in the console.
 
 Install dependencies.
 
-### Before Committing
+## Before Committing
 
 Format your code using prettier (alt + shift + F).\
 (Download it from VSCode extension)

@@ -1,0 +1,20 @@
+@use "../themes/colors";
+@use "../themes/fonts";
+
+.redButton {
+  padding: 12px 25px;
+  background-color: colors.$brightRed;
+  border-radius: 5px;
+  font-size: 20px;
+  font-family: fonts.$body;
+  color: colors.$white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  @media (max-height: 500px) {
+    padding: 8px 15px;
+    font-size: 15px;
+  }
+}

@@ -1,0 +1,96 @@
+@use "../themes/colors";
+
+main {
+  width: 100%;
+  height: max-content;
+}
+
+#privateSeparator {
+  background-color: colors.$darkGray;
+  color: colors.$white;
+  display: flex;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 2rem;
+}
+
+nav {
+  margin-top: -11px;
+}
+nav a {
+  color: colors.$white;
+  text-decoration: none;
+
+  //added as tile
+  padding: 15px 20px;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+nav a:hover {
+  background-color: colors.$brightRed;
+  color: colors.$white;
+}
+
+#privateSeparator .nav-button {
+  padding: 5px;
+  margin-top: 5px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: colors.$white;
+  font-size: 1.8rem;
+
+  // hide both nav buttons
+  visibility: hidden;
+  opacity: 0;
+}
+
+#privateSeparator .nav-button:hover {
+  color: colors.$brightRed;
+}
+
+@media (width < 1080px) {
+  #privateSeparator .nav-button {
+    visibility: visible;
+    opacity: 1;
+  }
+  #privateSeparator nav {
+    position: fixed;
+    top: -150%; //hidden at the start
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0rem;
+    background-color: colors.$darkGray;
+    transition: transform 0.5s ease-in-out; //animation
+  }
+
+  nav.responsive_nav {
+    //slide down
+    transform: translateY(160%);
+  }
+
+  nav .nav-close-button {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+  }
+
+  nav a {
+    font-size: 1.5rem;
+
+    //added
+    width: 100%;
+  }
+}
+@media (width < 1080px) and (height < 600px) {
+  nav.responsive_nav {
+    //slide down
+    transform: translateY(150%);
+  }
+}
