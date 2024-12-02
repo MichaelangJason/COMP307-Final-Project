@@ -1,4 +1,4 @@
-console.log("Hello Jest");
+// console.log("Hello Jest");
 
 function sum(a: number, b: number) {
   return a + b;
