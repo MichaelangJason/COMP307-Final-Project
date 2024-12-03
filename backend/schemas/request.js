@@ -12,7 +12,7 @@ db.createCollection("request", {
         proposedSlot: {
           bsonType: "object",
           description: "Proposed time slot, only one for now",
-          required: ["date", "slots"],
+          required: ["date", "time"],
           properties: {
             date: {
               bsonType: "string",
