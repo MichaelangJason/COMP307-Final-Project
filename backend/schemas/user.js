@@ -52,6 +52,7 @@ db.createCollection("user", {
         },
         upcomingMeetings: {
           bsonType: "array",
+          minItems: 0,
           items: {
             bsonType: "objectId",
             description: "Meeting IDs as ObjectId references"
@@ -59,6 +60,7 @@ db.createCollection("user", {
         },
         hostedMeetings: {
           bsonType: "array",
+          minItems: 0,
           items: {
             bsonType: "objectId",
             description: "Meeting IDs as ObjectId references"
@@ -66,6 +68,7 @@ db.createCollection("user", {
         },
         requests: {
           bsonType: "array",
+          minItems: 0,
           items: {
             bsonType: "objectId",
             description: "Request IDs as ObjectId references"
