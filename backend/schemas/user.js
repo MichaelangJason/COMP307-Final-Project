@@ -16,6 +16,7 @@ db.createCollection("user", {
           bsonType: "string",
           minLength: 8,
           maxLength: 16,
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,16}$',
           description: "User's password, max 16 characters"
         },
         firstName: {
