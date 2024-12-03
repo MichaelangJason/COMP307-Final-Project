@@ -1,4 +1,3 @@
-
 use("Bookedin");
 
 db.user.drop();
@@ -6,7 +5,7 @@ db.createCollection("user", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["email", "password", "name", "role", "notifications", "createdAt", "updatedAt"],
+      required: ["email", "password", "firstName", "lastName", "role", "notifications", "upcomingMeetings", "hostedMeetings", "requests", "createdAt", "updatedAt"],
       properties: {
         email: {
           bsonType: "string",
@@ -31,8 +30,7 @@ db.createCollection("user", {
         },
         role: {
           bsonType: "int",
-          minimum: 0,
-          maximum: 1,
+          enum: [0, 1],
           description: "0=admin, 1=member"
         },
         notifications: {
@@ -47,8 +45,7 @@ db.createCollection("user", {
             },
             alarm: {
               bsonType: "int",
-              minimum: 0,
-              maximum: 5,
+              enum: [0, 1, 2, 3, 4],
               description: "0=1 min, 1=5 min"
             }
           }

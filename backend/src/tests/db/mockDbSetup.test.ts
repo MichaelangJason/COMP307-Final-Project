@@ -1,5 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
+import { describe, test, expect, afterEach, beforeAll, afterAll } from "@jest/globals";
 
 describe('MongoDB Memory Server Setup', () => {
     let mongoServer: MongoMemoryServer;
@@ -23,6 +24,8 @@ describe('MongoDB Memory Server Setup', () => {
 
     afterAll(async () => {
         // Clean up
+        expect(connection).toBeDefined();
+        expect(mongoServer).toBeDefined();
         await connection.close();
         await mongoServer.stop();
     });
