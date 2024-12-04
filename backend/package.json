@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch '**/*.ts' --exec 'ts-node' server.ts",
-    "start": "tsc && node dist/server.js",
+    "start": "tsc && node dist/index.js",
     "test": "tsc && jest --verbose",
     "build": "tsc",
     "setupDb": "./schemas/set-schemas.sh"

@@ -22,9 +22,10 @@ describe("Inserting data into different collections", () => {
     const uri = mongoServer.getUri();
 
     // Create connection
-    connection = await MongoClient.connect(uri, {});
+    connection = await MongoClient.connect(uri);
     db = connection.db("BookedIn");
     await db.createCollection("user", mockData.userSchema);
+    await db.createCollection("request", mockData.requestSchema);
   });
 
   afterAll(async () => {
@@ -50,18 +51,18 @@ describe("Inserting data into different collections", () => {
       valid: mockData.validUsers,
       invalid: mockData.invalidUsers,
     },
-    // "meetings": {
+    // "meeting": {
     //     "valid": validMeetings,
     //     "invalid": invalidMeetings
     // },
-    // "polls": {
+    // "poll": {
     //     "valid": validPolls,
     //     "invalid": invalidPolls
     // },
-    // "requests": {
-    //     "valid": validRequests,
-    //     "invalid": invalidRequests
-    // }
+    request: {
+      valid: mockData.validRequests,
+      invalid: mockData.invalidRequests,
+    }
   };
 
   Object.entries(testSets).forEach(([collectionName, data]) => {
