@@ -23,11 +23,11 @@ then
 fi
 
 # Check if Bookedin database exists
-if mongosh --eval "db = db.getSiblingDB('Bookedin'); db.adminCommand('listCollections')" &> /dev/null
-then
-    echo "Bookedin database already exists"
-    exit 1
-fi
+# if mongosh --eval "db = db.getSiblingDB('Bookedin'); db.adminCommand('listCollections')" &> /dev/null
+# then
+#     echo "Bookedin database already exists"
+#     exit 1
+# fi
 
 # If all checks pass, proceed with schema creation
 mongosh "./user.js" # create user schema / collection

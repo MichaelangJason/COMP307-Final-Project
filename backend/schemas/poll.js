@@ -31,7 +31,8 @@ db.createCollection("poll", {
                     minimum: 0,
                     description: "Number of votes for the slot"
                   }
-                }
+                },
+                additionalProperties: false // no other keys allowed
               }
             }
           }
