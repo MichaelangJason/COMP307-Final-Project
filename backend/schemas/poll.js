@@ -28,7 +28,7 @@ db.createCollection("poll", {
                 patternProperties: {
                   "^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$": {
                     bsonType: "int",
-                    minimum: 1,
+                    minimum: 0,
                     description: "Number of votes for the slot"
                   }
                 }

@@ -26,6 +26,7 @@ describe("Inserting data into different collections", () => {
     db = connection.db("BookedIn");
     await db.createCollection("user", mockData.userSchema);
     await db.createCollection("request", mockData.requestSchema);
+    await db.createCollection("poll", mockData.pollSchema);
   });
 
   afterAll(async () => {
@@ -55,10 +56,10 @@ describe("Inserting data into different collections", () => {
     //     "valid": validMeetings,
     //     "invalid": invalidMeetings
     // },
-    // "poll": {
-    //     "valid": validPolls,
-    //     "invalid": invalidPolls
-    // },
+    poll: {
+      valid: mockData.validPolls,
+      invalid: mockData.invalidPolls
+    },
     request: {
       valid: mockData.validRequests,
       invalid: mockData.invalidRequests,
