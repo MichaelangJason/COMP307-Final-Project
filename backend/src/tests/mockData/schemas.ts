@@ -122,7 +122,7 @@ export const meetingSchema = {
         description: {
           bsonType: "string",
           minLength: 0,
-          maxLength: 500,
+          maxLength: 100,
         },
         hostId: {
           bsonType: "objectId",

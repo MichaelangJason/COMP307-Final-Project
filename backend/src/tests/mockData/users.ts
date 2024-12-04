@@ -1,6 +1,6 @@
 import { User } from "@shared/types/db";
 import { ObjectId } from "mongodb";
-import { AlarmInterval, UserRole } from "../../statusEnum";
+import { AlarmInterval, UserRole } from "status";
 
 export const validUsers: User[] = [
   {

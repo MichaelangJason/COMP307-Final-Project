@@ -52,10 +52,10 @@ describe("Inserting data into different collections", () => {
       valid: mockData.validUsers,
       invalid: mockData.invalidUsers,
     },
-    // "meeting": {
-    //     "valid": validMeetings,
-    //     "invalid": invalidMeetings
-    // },
+    meeting: {
+      valid: mockData.validMeetings,
+      invalid: mockData.invalidMeetings,
+    },
     poll: {
       valid: mockData.validPolls,
       invalid: mockData.invalidPolls
