@@ -4,9 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch '**/*.ts' --exec 'ts-node' server.ts",
-    "start": "tsc && node dist/index.js",
+    "start": "build:prod && node dist/index.js",
     "test": "tsc && jest --verbose",
-    "build": "tsc",
+    "build:dev": "tsc --project tsconfig.json",
+    "build:prod": "tsc --project tsconfig.prod.json",
     "setupDb": "./schemas/set-schemas.sh"
   },
   "keywords": [],
