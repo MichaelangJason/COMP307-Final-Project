@@ -54,10 +54,10 @@ describe("Inserting data into different collections", () => {
       valid: mockData.validUsers,
       invalid: mockData.invalidUsers,
     },
-    // meeting: {
-    //   valid: mockData.validMeetings,
-    //   invalid: mockData.invalidMeetings,
-    // },
+    meeting: {
+      valid: mockData.validMeetings,
+      invalid: mockData.invalidMeetings,
+    },
     poll: {
       valid: mockData.validPolls,
       invalid: mockData.invalidPolls
@@ -71,13 +71,13 @@ describe("Inserting data into different collections", () => {
   Object.entries(testSets).forEach(([collectionName, data]) => {
     describe(`insert ${collectionName}`, () => {
         
-      test("should successfully insert valid documents", async () => {
+      test(`should successfully insert ${data.valid.length} valid documents`, async () => {
         const collection = db.collection(collectionName);
         const result = await collection.insertMany(data.valid);
         expect(result.insertedCount).toBe(data.valid.length);
       });
 
-      test("should raise document validation errors", async () => {
+      test(`should raise ${data.invalid.length} document validation errors`, async () => {
         const collection = db.collection(collectionName);
         data.invalid.forEach(async (doc) => {
           await expect(collection.insertOne(doc)).rejects.toThrow();

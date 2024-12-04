@@ -131,6 +131,7 @@ const meetingSchema = {
         availabilities: {
           bsonType: "array",
           description: "Array of availabilities for the meeting",
+          minItems: 1,
           items: {
             bsonType: "object",
             required: ["date", "slots", "max"],
@@ -141,10 +142,13 @@ const meetingSchema = {
               },
               slots: {
                 bsonType: "object",
+                minProperties: 1,
                 patternProperties: {
                   "^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$":
                     {
                       bsonType: "array",
+                      description: "Array of participants for the slot",
+                      minItems: 0,
                       items: {
                         bsonType: "object",
                         required: ["email", "firstName", "lastName"],
@@ -157,10 +161,12 @@ const meetingSchema = {
                           },
                           firstName: {
                             bsonType: "string",
+                            maxLength: 16,
                             description: "Participant first name",
                           },
                           lastName: {
                             bsonType: "string",
+                            maxLength: 16,
                             description: "Participant last name",
                           },
                         },
@@ -172,6 +178,7 @@ const meetingSchema = {
               max: {
                 bsonType: "int",
                 minimum: 1,
+                description: "Maximum number of participants per slot",
               },
             },
           },

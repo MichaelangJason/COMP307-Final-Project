@@ -21,7 +21,10 @@ interface Meeting {
   availabilities: MeetingAvailability[];
   location: string;
   status: MeetingStatus;
-  repeat: MeetingRepeat;
+  repeat: {
+    type: MeetingRepeat;
+    endDate: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
