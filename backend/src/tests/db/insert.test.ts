@@ -1,9 +1,85 @@
 // console.log("Hello Jest");
-import { describe, test, expect, afterEach, beforeAll, afterAll } from "@jest/globals";
-function sum(a: number, b: number) {
-  return a + b;
-}
+import {
+  describe,
+  test,
+  expect,
+  afterEach,
+  beforeAll,
+  afterAll,
+} from "@jest/globals";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { Db, MongoClient } from "mongodb";
+import mockData from "../mockData";
 
-test("sum", () => {
-  expect(sum(1, 2)).toBe(3);
+describe("Inserting data into different collections", () => {
+  let mongoServer: MongoMemoryServer;
+  let connection: MongoClient;
+  let db: Db;
+
+  beforeAll(async () => {
+    // Create MongoDB Memory Server
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+
+    // Create connection
+    connection = await MongoClient.connect(uri, {});
+    db = connection.db("BookedIn");
+    await db.createCollection("user", mockData.userSchema);
+  });
+
+  afterAll(async () => {
+    // Clean up
+    expect(connection).toBeDefined();
+    expect(mongoServer).toBeDefined();
+    await connection.close();
+    await mongoServer.stop();
+  });
+
+  //Clear all data between tests
+  afterEach(async () => {
+    if (db) {
+      const collections = await db.collections();
+      for (const collection of collections) {
+        await collection.deleteMany({});
+      }
+    }
+  });
+
+  const testSets = {
+    user: {
+      valid: mockData.validUsers,
+      invalid: mockData.invalidUsers,
+    },
+    // "meetings": {
+    //     "valid": validMeetings,
+    //     "invalid": invalidMeetings
+    // },
+    // "polls": {
+    //     "valid": validPolls,
+    //     "invalid": invalidPolls
+    // },
+    // "requests": {
+    //     "valid": validRequests,
+    //     "invalid": invalidRequests
+    // }
+  };
+
+  Object.entries(testSets).forEach(([collectionName, data]) => {
+    describe(`insert ${collectionName}`, () => {
+        
+      test("should successfully insert valid documents", async () => {
+        const collection = db.collection(collectionName);
+        const result = await collection.insertMany(data.valid);
+        expect(result.insertedCount).toBe(data.valid.length);
+      });
+
+      test("should raise document validation errors", async () => {
+        const collection = db.collection(collectionName);
+        data.invalid.forEach(async (doc) => {
+          await expect(collection.insertOne(doc)).rejects.toThrow();
+        });
+      });
+
+    });
+  });
 });
