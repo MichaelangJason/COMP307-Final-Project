@@ -1,4 +1,4 @@
-export const userSchema = {
+const userSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
@@ -99,14 +99,14 @@ export const userSchema = {
   },
 };
 
-export const meetingSchema = {
+const meetingSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
       required: [
         "title",
         "description",
-        "hostI",
+        "hostId",
         "availabilities",
         "location",
         "status",
@@ -213,7 +213,7 @@ export const meetingSchema = {
   },
 };
 
-export const requestSchema = {
+const requestSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
@@ -253,7 +253,7 @@ export const requestSchema = {
   },
 };
 
-export const pollSchema = {
+const pollSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
@@ -307,4 +307,11 @@ export const pollSchema = {
       }
     }
   }
-}
+};
+
+module.exports = {
+  userSchema,
+  meetingSchema,
+  requestSchema,
+  pollSchema
+};

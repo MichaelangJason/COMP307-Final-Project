@@ -5,7 +5,7 @@
 
 /** @type {import('jest').Config} */
 const config = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/js-with-ts',
   testEnvironment: 'node',
   
   // Update test match to look for TypeScript test files

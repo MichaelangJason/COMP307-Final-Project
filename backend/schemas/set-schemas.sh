@@ -29,8 +29,5 @@ fi
 #     exit 1
 # fi
 
-# If all checks pass, proceed with schema creation
-mongosh "./user.js" # create user schema / collection
-mongosh "./meeting.js" # create meeting schema / collection
-mongosh "./poll.js" # create poll schema / collection
-mongosh "./request.js" # create request schema / collection
+# If all checks pass, proceed with schema 
+mongosh "./dbSetup.js" # create collections

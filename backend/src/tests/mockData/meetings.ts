@@ -57,7 +57,19 @@ export const validMeetings: Meeting[] = [
     repeat: MeetingRepeat.ONCE,
     createdAt: new Date(),
     updatedAt: new Date()
-  }
+  },
+  {
+    _id: new ObjectId(),
+    title: "Valid Meeting",
+    description: "Valid Meeting Description",
+    hostId: new ObjectId(),
+    availabilities: [],
+    location: "Valid Location",
+    status: MeetingStatus.UPCOMING,
+    repeat: MeetingRepeat.ONCE,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
 ]
 
 export const invalidMeetings: any[] = [
