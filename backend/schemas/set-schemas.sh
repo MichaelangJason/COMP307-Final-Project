@@ -22,12 +22,5 @@ then
     exit 1
 fi
 
-# Check if Bookedin database exists
-# if mongosh --eval "db = db.getSiblingDB('Bookedin'); db.adminCommand('listCollections')" &> /dev/null
-# then
-#     echo "Bookedin database already exists"
-#     exit 1
-# fi
-
-# If all checks pass, proceed with schema 
+# If all checks pass, proceed with schemas
 mongosh "./dbSetup.js" # create collections

@@ -65,14 +65,32 @@ const userSchema = {
         upcomingMeetings: {
           bsonType: "array",
           minItems: 0,
+          uniqueItems: true,
           items: {
-            bsonType: "objectId",
-            description: "Meeting IDs as ObjectId references",
+            bsonType: "object",
+            required: ["meetingId", "time", "date"],
+            properties: {
+              meetingId: {
+                bsonType: "objectId",
+                description: "Meeting ID as ObjectId reference"
+              },
+              time: {
+                bsonType: "string",
+                pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$",
+                description: "Time of the meeting"
+              },
+              date: {
+                bsonType: "string",
+                pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+                description: "Date of the meeting"
+              }
+            }
           },
         },
         hostedMeetings: {
           bsonType: "array",
           minItems: 0,
+          uniqueItems: true,
           items: {
             bsonType: "objectId",
             description: "Meeting IDs as ObjectId references",
@@ -85,6 +103,7 @@ const userSchema = {
             bsonType: "objectId",
             description: "Request IDs as ObjectId references",
           },
+          uniqueItems: true,
         },
         createdAt: {
           bsonType: "date",

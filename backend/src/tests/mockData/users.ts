@@ -16,8 +16,8 @@ export const validUsers: User[] = [
       alarm: AlarmInterval.MINUTE_1
     },
     upcomingMeetings: [],
-    hostedMeetings: [],
-    requests: [],
+    hostedMeetings: [new ObjectId()],
+    requests: [new ObjectId()],
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -33,9 +33,15 @@ export const validUsers: User[] = [
       sms: true,
       alarm: AlarmInterval.MINUTE_5
     },
-    upcomingMeetings: [],
-    hostedMeetings: [],
-    requests: [],
+    upcomingMeetings: [
+      {
+        meetingId: new ObjectId(),
+        time: "10:00-11:00",
+        date: "2024-01-01"
+      }
+    ],
+    hostedMeetings: [new ObjectId()],
+    requests: [new ObjectId()],
     createdAt: new Date(),
     updatedAt: new Date()
   },
