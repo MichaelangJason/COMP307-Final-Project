@@ -247,7 +247,7 @@ const requestSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["proposedSlot", "status", "createdAt", "updatedAt"],
+      required: ["proposedSlot", "status", "reason", "createdAt", "updatedAt"],
       properties: {
         proposedSlot: {
           bsonType: "object",
@@ -269,6 +269,11 @@ const requestSchema = {
           bsonType: "int",
           enum: [0, 1, 2, 3],
           description: "0=pending, 1=accepted, 2=declined, 3=expired",
+        },
+        reason: {
+          bsonType: "string",
+          minLength: 0,
+          maxLength: 100,
         },
         createdAt: {
           bsonType: "date",

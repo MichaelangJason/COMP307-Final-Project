@@ -10,6 +10,7 @@ export const validRequests: Request[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.PENDING,
+    reason: "",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -20,6 +21,7 @@ export const validRequests: Request[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.ACCEPTED,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -30,6 +32,7 @@ export const validRequests: Request[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.DECLINED,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -40,6 +43,7 @@ export const validRequests: Request[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.EXPIRED,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   }
@@ -53,6 +57,7 @@ export const invalidRequests: any[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -63,6 +68,7 @@ export const invalidRequests: any[] = [
       time: "25:00-26:00" // Invalid time format
     },
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -73,6 +79,7 @@ export const invalidRequests: any[] = [
       // Missing required time field
     },
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -80,6 +87,7 @@ export const invalidRequests: any[] = [
     _id: new ObjectId(),
     // Missing required proposedSlot field
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -90,6 +98,7 @@ export const invalidRequests: any[] = [
       time: "00:00-01:00"
     },
     status: 5, // Invalid status enum value
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -100,6 +109,7 @@ export const invalidRequests: any[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     // Missing required createdAt field
     updatedAt: new Date()
   },
@@ -110,6 +120,7 @@ export const invalidRequests: any[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     createdAt: "2024-01-01", // Invalid date type - should be Date object
     updatedAt: new Date()
   },
@@ -120,6 +131,7 @@ export const invalidRequests: any[] = [
       time: "00:00-01:00"
     },
     status: RequestStatus.PENDING,
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -130,6 +142,7 @@ export const invalidRequests: any[] = [
       time: 1200 // Invalid time type - should be string
     },
     status: RequestStatus.PENDING, 
+    reason: "asdfasd",
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -140,6 +153,18 @@ export const invalidRequests: any[] = [
       time: "00:00-01:00"
     },
     status: "PENDING", // Invalid status type - should be number
+    reason: "asdfasd",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    _id: new ObjectId(),
+    proposedSlot: {
+      date: "2024-01-01",
+      time: "00:00-01:00"
+    },
+    status: RequestStatus.PENDING, // Invalid status type - should be number
+    reason: null,
     createdAt: new Date(),
     updatedAt: new Date()
   }

@@ -178,6 +178,7 @@ describe("Updating data in different collections", () => {
           date: "2024-01-02", 
           time: "10:00-11:00"
         },
+        reason: "NewReason",
         status: RequestStatus.EXPIRED,
         updatedAt: new Date("2024-01-02"),
         createdAt: new Date("2024-01-01")
@@ -188,6 +189,7 @@ describe("Updating data in different collections", () => {
           time: "2024-01-02"
         },
         status: 10,
+        reason: null,
         updatedAt: null,
         createdAt: null
       }

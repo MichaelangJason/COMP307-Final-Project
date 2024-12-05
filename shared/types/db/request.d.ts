@@ -8,6 +8,7 @@ interface Request {
     time: string;
   };
   status: RequestStatus;
+  reason: string;
   createdAt: Date;
   updatedAt: Date;
 }
