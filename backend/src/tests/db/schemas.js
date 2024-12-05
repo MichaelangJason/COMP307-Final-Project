@@ -32,11 +32,13 @@ const userSchema = {
         },
         firstName: {
           bsonType: "string",
+          minLength: 1,
           maxLength: 16,
           description: "User's first name, max 16 characters",
         },
         lastName: {
           bsonType: "string",
+          minLength: 1,
           maxLength: 16,
           description: "User's last name, max 16 characters",
         },
@@ -136,6 +138,7 @@ const meetingSchema = {
       properties: {
         title: {
           bsonType: "string",
+          minLength: 1,
           maxLength: 50,
         },
         description: {
@@ -204,6 +207,7 @@ const meetingSchema = {
         },
         location: {
           bsonType: "string",
+          minLength: 1,
           maxLength: 50,
         },
         status: {
