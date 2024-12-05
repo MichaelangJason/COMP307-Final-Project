@@ -192,8 +192,12 @@ const Meetings = () => {
                 Are you sure you want to delete "{selectedCard.title}"?{" "}
               </strong>
               <p>
-                Warning : Delete self-hosting upcoming meetings will cancel the
-                meeting for all the registered participants.
+                {selectedCard.status === "Upcoming" && (
+                  <p>
+                    Warning: Deleting self-hosting upcoming meetings will cancel
+                    the meeting for all the registered participants.
+                  </p>
+                )}
               </p>
             </div>
             <div className="popup-buttons">
