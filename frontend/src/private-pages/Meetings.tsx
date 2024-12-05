@@ -12,7 +12,11 @@ interface Card {
 
 const Meetings = () => {
   const [cards, setCards] = useState<Card[]>([]);
+  // Filter
   const [filter, setFilter] = useState("All");
+  // Pop up
+  const [showPopup, setShowPopup] = useState(false); // Control popup visibility
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,10 +81,35 @@ const Meetings = () => {
     fetchData();
   }, []);
 
+  // Filter
   const filteredCards = cards.filter((card) => {
     if (filter === "All") return true;
     return card.status === filter;
   });
+
+  // Pop up
+  const handleDelete = async () => {
+    if (selectedCard) {
+      // TODO backend : fetch
+      const response = await fetch(`URL_link_here`, {
+        method: "DELETE",
+        // TODO backend ....
+      });
+      console.error("Failed to delete meeting");
+
+      // TODO backend : handle response error from DB
+    }
+  };
+
+  const handleShowPopup = (card: Card) => {
+    setSelectedCard(card);
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedCard(null);
+  };
 
   return (
     <>
@@ -95,7 +124,8 @@ const Meetings = () => {
               dateTime={card.dateTime}
               location={card.location}
               person={card.person}
-              canModify={false} //Added
+              canEdit={false} //Added
+              onDelete={() => handleShowPopup(card)}
             />
           ))}
         </div>
@@ -152,6 +182,27 @@ const Meetings = () => {
           </label>
         </div>
       </div>
+
+      {showPopup && selectedCard && (
+        <div className="popup">
+          <div className="popup-content">
+            <div className="popup-message">
+              <strong>
+                {" "}
+                Are you sure you want to delete "{selectedCard.title}"?{" "}
+              </strong>
+              <p>
+                Warning : Delete self-hosting upcoming meetings will cancel the
+                meeting for all the registered participants.
+              </p>
+            </div>
+            <div className="popup-buttons">
+              <button onClick={handleClosePopup}> Cancel </button>
+              <button onClick={handleDelete}> Delete </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

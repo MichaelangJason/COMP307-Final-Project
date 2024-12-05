@@ -12,7 +12,8 @@ interface Props {
   dateTime: string; //Expected format: 2024-11-18, 15:30 - 18:00
   location: string;
   person: string;
-  canModify?: boolean;
+  canEdit?: boolean;
+  onDelete?: () => void; //Callback fct
 }
 
 const MeetingCard = ({
@@ -21,16 +22,19 @@ const MeetingCard = ({
   dateTime,
   location,
   person,
-  canModify = false,
+  canEdit = false,
+  onDelete,
 }: Props) => {
   return (
     <div className="meetingCard">
       <div className="card-title">
         <h2>{title}</h2>
-        <button>
+        <button onClick={onDelete}>
+          {" "}
+          {/* This triggers the delete action */}
           <img
-            src={canModify ? edit_icon : bin_icon} // Change the icon based on canModify
-            alt={canModify ? "Edit Icon" : "Bin Icon"}
+            src={canEdit ? edit_icon : bin_icon} // Change the icon based on canEdit
+            alt={canEdit ? "Edit Icon" : "Bin Icon"}
           ></img>
         </button>
       </div>
