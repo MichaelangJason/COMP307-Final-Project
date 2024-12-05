@@ -1,10 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import requestController from '../controller/requestController';
 
-const router = Router();
+const requestRouter = Router();
 
-router.get('/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({ id });
-});
+// get request info by id
+requestRouter.get('/:id', requestController.getInfo);
 
-export default router;
+export default requestRouter;

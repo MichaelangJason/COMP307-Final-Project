@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { getCollection } from "../db";
-import { User } from "../../../shared/types/db/user"; 
+import { User } from "@shared/types/db/user"; 
 import { ObjectId } from "mongodb";
+import { getCollection } from "utils";
 
 const USERS_COLLECTION = "user";
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Register API - Check for existing user records in the database and save the new user record
-export const register = async (req: Request, res: Response): Promise<void> => {
+const register = async (req: Request, res: Response): Promise<void> => {
   const usersCollection = await getCollection<User>(USERS_COLLECTION);
   const { email, password, firstName, lastName } = req.body;
 
@@ -61,7 +61,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Login API -  Validate user credentials against the database and return session token
-export const login = async (req: Request, res: Response): Promise<void> => {
+const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const usersCollection = await getCollection<User>(USERS_COLLECTION);
 
@@ -85,7 +85,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Logout API - Clear the session token
-export const logout = (req: Request, res: Response): void => {
+const logout = (req: Request, res: Response): void => {
   res.clearCookie("token"); 
   res.status(200).json({ message: "Logout successful" });
 };
+
+export default { register, login, logout };

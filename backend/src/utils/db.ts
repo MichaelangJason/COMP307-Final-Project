@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { MongoClient, Db, Collection, Document } from "mongodb";
 import dotenv from "dotenv";
 
@@ -12,10 +13,10 @@ let db: Db | null = null;
 // Initialize MongoDB connection
 export const connectToDatabase = async (): Promise<Db> => {
   if (!db) {
-    client = new MongoClient(MONGO_URI);
+    client = new MongoClient(process.env.MONGO_URI!);
     await client.connect();
-    db = client.db(DATABASE_NAME);
-    console.log(`Connected to database: ${DATABASE_NAME}`);
+    db = client.db();
+    console.log(`Connected to BookedIn database`);
   }
   return db;
 };
@@ -24,6 +25,12 @@ export const connectToDatabase = async (): Promise<Db> => {
 export const getCollection = async <T extends Document>(collectionName: string): Promise<Collection<T>> => {
   const database = await connectToDatabase();
   return database.collection<T>(collectionName);
+};
+
+export const getDocument = async <T extends Document>(collectionName: string, id: string): Promise<T | null> => {
+  const collection = await getCollection<T>(collectionName);
+  const document = await collection.findOne({ _id: new ObjectId(id) } as any);
+  return document as T | null;
 };
 
 // Close the database connection (e.g., on app shutdown)
