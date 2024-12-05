@@ -11,7 +11,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import schemas from "./schemas";
 import mockData from "../mockData";
 import { Meeting, Poll, User, Request } from "@shared/types/db";
-import { AlarmInterval, UserRole } from "status";
+import { AlarmInterval, RequestStatus, UserRole } from "status";
 
 describe("Updating data in different collections", () => {
   let mongoServer: MongoMemoryServer;
@@ -69,19 +69,52 @@ describe("Updating data in different collections", () => {
         ],
         hostedMeetings: [mockData.validMeetings[0]._id],
         requests: [mockData.validRequests[1]._id],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date("2024-01-01"),
+        updatedAt: new Date("2024-01-02")
       }
     },
     // meeting: {
     //   source: mockData.validMeetings[0]
     // }
-    // request: {
-    //   source: mockData.validRequests[0]
-    // }
-    // poll: {
-    //   source: mockData.validPolls[0]
-    // }
+    request: {
+      source: mockData.validRequests[0],
+      update: {
+        proposedSlot: {
+          date: "2024-01-02", 
+          time: "10:00-11:00"
+        },
+        status: RequestStatus.EXPIRED,
+        updatedAt: new Date("2024-01-02"),
+        createdAt: new Date("2024-01-01")
+      }
+    },
+    poll: {
+      source: mockData.validPolls[0],
+      update: {
+        options: [
+          {
+            date: "2024-01-01",
+            slots: {
+              "10:00-11:00": 1,
+              "11:00-12:00": 2,
+              "12:00-13:00": 3
+            }
+          },
+          {
+            date: "2024-01-02",
+            slots: {
+              "10:00-11:00": 4,
+              "11:00-12:00": 5,
+              "12:00-13:00": 6
+            }
+          }
+        ],
+        timeout: new Date(),
+        results: 10,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    }
   }
 
   Object.entries(validSet).forEach(([collection, data]) => {
