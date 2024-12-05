@@ -247,8 +247,28 @@ const requestSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["proposedSlot", "status", "reason", "createdAt", "updatedAt"],
+      required: ["proposerInfo", "proposedSlot", "status", "reason", "createdAt", "updatedAt"],
       properties: {
+        proposerInfo: {
+          bsonType: "object",
+          required: ["firstName", "lastName", "email"],
+          properties: {
+            firstName: {
+              bsonType: "string",
+              minLength: 1,
+              maxLength: 16,
+            },
+            lastName: {
+              bsonType: "string",
+              minLength: 1,
+              maxLength: 16,
+            },
+            email: {
+              bsonType: "string",
+              pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", // also allows non-mcgill emails
+            }
+          }
+        },
         proposedSlot: {
           bsonType: "object",
           description: "Proposed time slot, only one for now",

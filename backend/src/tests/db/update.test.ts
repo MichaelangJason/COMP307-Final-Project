@@ -174,6 +174,11 @@ describe("Updating data in different collections", () => {
     request: {
       source: mockData.validRequests[0],
       validUpdate: {
+        proposerInfo: {
+          firstName: "NewFirstName",
+          lastName: "NewLastName",
+          email: "newemail@test.com"
+        },
         proposedSlot: {
           date: "2024-01-02", 
           time: "10:00-11:00"
@@ -184,6 +189,11 @@ describe("Updating data in different collections", () => {
         createdAt: new Date("2024-01-01")
       },
       invalidUpdate: {
+        proposerInfo: {
+          firstName: "",
+          lastName: "",
+          email: "invalidemail@com"
+        },
         proposedSlot: {
           date: "10:00-11:00",
           time: "2024-01-02"
