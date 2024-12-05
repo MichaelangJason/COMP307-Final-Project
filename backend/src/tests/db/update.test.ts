@@ -11,7 +11,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import schemas from "./schemas";
 import mockData from "../mockData";
 import { Meeting, Poll, User, Request } from "@shared/types/db";
-import { AlarmInterval, MeetingRepeat, MeetingStatus, RequestStatus, UserRole } from "status";
+import { AlarmInterval, MeetingRepeat, MeetingStatus, RequestStatus, UserRole } from "utils";
 
 describe("Updating data in different collections", () => {
   let mongoServer: MongoMemoryServer;

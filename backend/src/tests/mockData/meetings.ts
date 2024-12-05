@@ -1,6 +1,6 @@
 import { Meeting } from "@shared/types/db";
 import { ObjectId } from "mongodb";
-import { MeetingRepeat, MeetingStatus } from "status";
+import { MeetingRepeat, MeetingStatus } from "utils";
 
 export const validMeetings: Meeting[] = [
   {

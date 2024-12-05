@@ -16,7 +16,7 @@ const config = {
   // Add module name mapper for path aliases
   moduleNameMapper: {
     "^@shared/(.*)$": "<rootDir>/../shared/$1",
-    "^status$": "<rootDir>/src/statusEnum"
+    "^utils$": "<rootDir>/src/utils/index.ts"
   },
 
   // Add TypeScript transform
