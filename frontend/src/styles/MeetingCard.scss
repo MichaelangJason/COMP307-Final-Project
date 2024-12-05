@@ -70,7 +70,8 @@
       background-color: colors.$mediumGray;
     }
 
-    &.canceled {
+    &.canceled,
+    &.voting {
       background-color: colors.$yellow;
     }
   }

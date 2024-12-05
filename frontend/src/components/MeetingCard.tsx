@@ -3,6 +3,7 @@ import bin_icon from "../images/bin.png";
 import clock_icon from "../images/clock.png";
 import location_icon from "../images/location.png";
 import person_icon from "../images/person.png";
+import edit_icon from "../images/edit.png";
 import "../styles/MeetingCard.scss";
 
 interface Props {
@@ -11,15 +12,26 @@ interface Props {
   dateTime: string; //Expected format: 2024-11-18, 15:30 - 18:00
   location: string;
   person: string;
+  canModify?: boolean;
 }
 
-const MeetingCard = ({ title, status, dateTime, location, person }: Props) => {
+const MeetingCard = ({
+  title,
+  status,
+  dateTime,
+  location,
+  person,
+  canModify = false,
+}: Props) => {
   return (
     <div className="meetingCard">
       <div className="card-title">
         <h2>{title}</h2>
         <button>
-          <img src={bin_icon} alt="Bin Icon"></img>
+          <img
+            src={canModify ? edit_icon : bin_icon} // Change the icon based on canModify
+            alt={canModify ? "Edit Icon" : "Bin Icon"}
+          ></img>
         </button>
       </div>
 

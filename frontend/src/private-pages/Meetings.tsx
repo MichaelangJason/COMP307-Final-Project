@@ -95,6 +95,7 @@ const Meetings = () => {
               dateTime={card.dateTime}
               location={card.location}
               person={card.person}
+              canModify={false} //Added
             />
           ))}
         </div>
