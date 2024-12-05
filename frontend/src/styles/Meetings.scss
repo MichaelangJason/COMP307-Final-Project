@@ -1,0 +1,79 @@
+@use "../themes/colors";
+@use "../themes/fonts.scss";
+
+h1 {
+  margin-left: 4rem;
+  margin-top: 2rem;
+  margin-bottom: -0.15rem;
+  font-family: fonts.$title;
+  color: colors.$darkRed;
+
+  @media (width < 800px) {
+    margin-left: 2rem;
+    margin-top: 1rem;
+    margin-bottom: -0.25rem;
+  }
+}
+
+.meetings-page {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+
+  // Space between the cards and the filter
+  gap: 10px;
+
+  .card-list {
+    margin-left: 40px;
+    display: flex;
+    flex-wrap: wrap; // Allows cards to wrap to the next row
+    gap: 25px; // Space between cards
+    justify-content: flex-start; // Align cards to the left
+    align-items: flex-start; // Align items at the start of the row
+
+    // Adjust gap between cards for smaller screens
+    @media (width < 1124px) {
+      gap: 15px;
+    }
+    @media (width < 800px) {
+      gap: 10px;
+      margin-left: 20px;
+    }
+
+    @media (width < 650px) {
+      margin-left: 10px;
+      gap: 5px;
+    }
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; // Space between filter options
+    padding: 20px;
+    margin-right: 100px;
+    max-width: 300px;
+
+    /* Border for testing purposes */
+    // border: 1px solid #ddd;
+    // border-radius: 8px;
+    // background-color: #f9f9f9;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      input[type="radio"] {
+        margin: 0;
+      }
+    }
+
+    // Narrower filter for smaller screens
+    @media (max-width: 650px) {
+      max-width: 150px;
+      padding: 20px;
+      margin-right: 20px;
+    }
+  }
+}

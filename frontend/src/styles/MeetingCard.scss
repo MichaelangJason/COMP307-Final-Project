@@ -1,85 +1,96 @@
 @use "../themes/colors";
 
 .meetingCard {
-  background-color: #fff;
+  background-color: colors.$white;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 12px;
 
-  // Default size
-  width: 100%; //Relative to the width of the container
-  max-width: 400px; // Max width for larger screen size
-  margin: 12px auto;
+  // Fixed width for each card
+  width: 300px;
 
-  //For smaller screen size
-  @media (width < 750px) {
-    max-width: 90%;
+  // Prevent shrinking & growing for each card
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  &:hover {
+    // Slight lift effect & increase shade on hover
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
   }
-}
 
-.card-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @media (width < 1000px) {
+    // Adjust width for smaller screens
+    width: 90%;
+  }
 
-  h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: bold;
+  .card-title {
+    display: flex;
+    justify-content: space-between;
     padding-top: 4px;
-    border-radius: 4px;
-  }
-  button {
-    background: none;
-    border: none;
-    cursor: pointer;
 
-    img {
-      width: 16px;
-      height: 16px;
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
     }
   }
-}
 
-.card-status {
-  font-size: 14px;
-  padding: 4px 8px;
-  border-radius: 7px;
-  width: fit-content;
-  color: colors.$white;
-
-  &.upcoming {
-    background-color: colors.$brightRed;
-  }
-
-  &.live {
-    background-color: colors.$green;
-  }
-
-  &.closed {
-    background-color: colors.$mediumGray;
-  }
-}
-
-.card-description {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  .card-info {
-    display: flex;
-    align-items: center;
+  .card-status {
+    margin-top: -10px;
     font-size: 14px;
-    color: colors.$mediumGray;
+    padding: 4px 8px;
+    border-radius: 9px;
+    width: fit-content;
+    color: colors.$white;
 
-    img {
-      width: 16px;
-      height: 16px;
-      margin-right: 8px;
+    &.upcoming {
+      background-color: colors.$brightRed;
+    }
+
+    &.live {
+      background-color: colors.$green;
+    }
+
+    &.closed {
+      background-color: colors.$mediumGray;
+    }
+
+    &.canceled {
+      background-color: colors.$yellow;
+    }
+  }
+
+  .card-description {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .card-info {
+      display: flex;
+      align-items: center;
+      font-size: smaller;
+      color: colors.$mediumGray;
+
+      img {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+      }
     }
   }
 }

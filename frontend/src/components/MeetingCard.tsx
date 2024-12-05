@@ -1,9 +1,9 @@
 import React from "react";
-import bin_icon from "../../images/bin.png";
-import clock_icon from "../../images/clock.png";
-import location_icon from "../../images/location.png";
-import person_icon from "../../images/person.png";
-import "../../styles/MeetingCard.scss";
+import bin_icon from "../images/bin.png";
+import clock_icon from "../images/clock.png";
+import location_icon from "../images/location.png";
+import person_icon from "../images/person.png";
+import "../styles/MeetingCard.scss";
 
 interface Props {
   title: string;
