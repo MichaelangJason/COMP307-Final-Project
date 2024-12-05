@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
-import "../styles/Meetings.scss";
+import "../styles/MeetingsGrid.scss";
 
 interface Card {
   title: string;

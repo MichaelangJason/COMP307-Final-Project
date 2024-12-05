@@ -12,6 +12,7 @@ import Create from "private-pages/Create";
 import Manage from "private-pages/Manage";
 import Request from "private-pages/Request";
 import Profile from "private-pages/Profile";
+import Edit from "private-pages/Edit";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
           <Route index element={<Meetings />} />
           <Route path="/user/:id/create" element={<Create />} />
           <Route path="/user/:id/manage" element={<Manage />} />
+          <Route path="/user/:id/manage/:meetingid/edit" element={<Edit />} />
           <Route path="/user/:id/request" element={<Request />} />
           <Route path="/user/:id/profile" element={<Profile />} />
         </Route>

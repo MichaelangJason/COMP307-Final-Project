@@ -93,7 +93,7 @@ h1 {
   min-width: 400px;
   min-height: 250px;
 
-  background: white;
+  background: colors.$white;
   width: 40%;
   height: 30%;
   text-align: left;
@@ -134,10 +134,10 @@ p {
 
 .popup-buttons button:first-child {
   background-color: colors.$mediumGray;
-  color: white;
+  color: colors.$white;
 }
 
 .popup-buttons button:last-child {
   background-color: colors.$brightRed;
-  color: white;
+  color: colors.$white;
 }
