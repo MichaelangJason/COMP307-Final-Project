@@ -15,7 +15,8 @@ export interface RequestResponse {
   proposedSlot: {
     date: string;
     time: string;
-  }
+  },
+  reason: string;
 }
 
 export interface RequestQuery {

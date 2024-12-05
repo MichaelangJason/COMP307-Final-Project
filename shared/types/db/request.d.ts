@@ -3,6 +3,11 @@ import { RequestStatus } from "../api/common";
 
 interface Request {
   _id: ObjectId;
+  proposerInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  }
   proposedSlot: {
     date: string;
     time: string;
