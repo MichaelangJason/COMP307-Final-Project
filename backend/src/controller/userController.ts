@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "@shared/types/db/user"; 
 import { ObjectId } from "mongodb";
-import { getCollection } from "utils";
+import { getCollection } from "../utils/db";
 
 import { CollectionNames } from "./constants";
 

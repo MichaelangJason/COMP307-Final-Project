@@ -1,7 +1,7 @@
 import { Document, ObjectId } from "mongodb";
 import { RequestStatus } from "../api/common";
 
-interface Request extends Document {
+export interface Request extends Document {
   _id: ObjectId;
   proposerInfo: {
     firstName: string;

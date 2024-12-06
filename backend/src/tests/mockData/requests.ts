@@ -1,5 +1,5 @@
 import { Request } from "@shared/types/db";
-import { RequestStatus } from "utils";
+import { RequestStatus } from "../../utils";
 import { ObjectId } from "mongodb";
 
 export const validRequests: Request[] = [

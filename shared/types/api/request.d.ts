@@ -4,13 +4,16 @@ export interface RequestParams {
   requestId: string; //
 }
 
+export interface RequestUpdateBody {
+  status: RequestStatus;
+}
+
 export interface RequestBody {
   
 }
 
 // get corresponding response status + date + time
-export interface RequestResponse {
-  message?: string;
+export interface RequestInfoResponse {
   status: RequestStatus;
   proposerInfo: {
     firstName: string;
