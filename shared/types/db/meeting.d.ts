@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, Document } from "mongodb";
 import { MeetingStatus, MeetingRepeat } from "../api/common";
 
 interface Participant {
@@ -13,7 +13,7 @@ interface MeetingAvailability {
   max: number;
 }
 
-interface Meeting {
+interface Meeting extends Document {
   _id: ObjectId;
   title: string;
   description: string;

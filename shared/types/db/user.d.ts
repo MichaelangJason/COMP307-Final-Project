@@ -1,5 +1,5 @@
 import { AlarmInterval, UserRole } from "../api/common";
-import { ObjectId } from "mongodb";
+import { ObjectId, Document } from "mongodb";
 
 interface UpcomingMeeting {
   meetingId: ObjectId;
@@ -7,7 +7,7 @@ interface UpcomingMeeting {
   date: string;
 }
 
-interface User {
+interface User extends Document {
     _id: ObjectId;
     email: string; // should end with @mail.mcgill.ca
     password: string;

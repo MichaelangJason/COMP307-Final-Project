@@ -29,3 +29,7 @@ export enum MeetingRepeat {
     ONCE = 0,
     WEEKLY = 1
 }
+
+export interface MessageResponse {
+    message?: string;
+}

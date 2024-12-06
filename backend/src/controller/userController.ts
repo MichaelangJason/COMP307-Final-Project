@@ -5,12 +5,13 @@ import { User } from "@shared/types/db/user";
 import { ObjectId } from "mongodb";
 import { getCollection } from "utils";
 
-const USERS_COLLECTION = "user";
+import { CollectionNames } from "./constants";
+
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Register API - Check for existing user records in the database and save the new user record
 const register = async (req: Request, res: Response): Promise<void> => {
-  const usersCollection = await getCollection<User>(USERS_COLLECTION);
+  const usersCollection = await getCollection<User>(CollectionNames.USERS_COLLECTION);
   const { email, password, firstName, lastName } = req.body;
 
   if (!email || !password || !firstName || !lastName) {
@@ -63,7 +64,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
 // Login API -  Validate user credentials against the database and return session token
 const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
-  const usersCollection = await getCollection<User>(USERS_COLLECTION);
+  const usersCollection = await getCollection<User>(CollectionNames.USERS_COLLECTION);
 
   if (!email || !password) {
     res.status(400).json({ message: "Email and password are required" });

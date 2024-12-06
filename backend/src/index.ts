@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
+import requestRoutes from "./routes/requestRoutes";
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ app.get("/", (req, res) => {
 app.use(express.json()); 
 
 // Routes
-app.use(userRoutes);
+// app.use("userRoutes");
+app.use("/request", requestRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

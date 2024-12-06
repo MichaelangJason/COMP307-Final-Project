@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import { RequestStatus } from './common';
 
 export interface RequestParams {
@@ -11,7 +10,13 @@ export interface RequestBody {
 
 // get corresponding response status + date + time
 export interface RequestResponse {
+  message?: string;
   status: RequestStatus;
+  proposerInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  },
   proposedSlot: {
     date: string;
     time: string;
@@ -22,7 +27,4 @@ export interface RequestResponse {
 export interface RequestQuery {
 
 }
-
-// hahahhhaha
-export type RequestRequest = Request<RequestParams, RequestResponse, RequestBody, RequestQuery>;
 

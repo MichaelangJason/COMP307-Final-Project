@@ -1,7 +1,7 @@
-import { ObjectId } from "mongodb";
+import { Document, ObjectId } from "mongodb";
 import { RequestStatus } from "../api/common";
 
-interface Request {
+interface Request extends Document {
   _id: ObjectId;
   proposerInfo: {
     firstName: string;
