@@ -1,7 +1,7 @@
 // Collections
-const USERS_COLLECTION = "user";
-const REQUESTS_COLLECTION = "request";
-const MEETINGS_COLLECTION = "meeting";
-const POLLS_COLLECTION = "poll";
+const USER = "user";
+const REQUEST = "request";
+const MEETING = "meeting";
+const POLL = "poll";
 
-export const CollectionNames = { USERS_COLLECTION, REQUESTS_COLLECTION, MEETINGS_COLLECTION, POLLS_COLLECTION };
+export const CollectionNames = { USER, REQUEST, MEETING, POLL };

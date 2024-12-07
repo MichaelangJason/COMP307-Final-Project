@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 app.use(express.json()); 
 
 // Routes
-// app.use("userRoutes");
+app.use(userRoutes);
 app.use("/request", requestRoutes);
 
 app.listen(port, () => {

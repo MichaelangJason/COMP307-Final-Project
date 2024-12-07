@@ -1,20 +1,14 @@
 import { RequestStatus } from './common';
 
 export interface RequestParams {
-  requestId: string; //
+  requestId: string; // host id (for creating request), user id (for managing request)
 }
 
 export interface RequestUpdateBody {
-  status: RequestStatus;
+  status: RequestStatus; // can only update status
 }
 
-export interface RequestBody {
-  
-}
-
-// get corresponding response status + date + time
-export interface RequestInfoResponse {
-  status: RequestStatus;
+export interface RequestInfo {
   proposerInfo: {
     firstName: string;
     lastName: string;
@@ -27,7 +21,12 @@ export interface RequestInfoResponse {
   reason: string;
 }
 
-export interface RequestQuery {
+// get corresponding response status + date + time
+export interface RequestInfoResponse extends RequestInfo {
+  status: RequestStatus;
+}
 
+export interface RequestCreateBody extends RequestInfo {
+  hostId: string; // host id (for creating request)
 }
 

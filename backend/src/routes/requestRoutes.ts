@@ -3,14 +3,17 @@ import requestController from '../controller/requestController';
 
 const requestRouter = Router();
 
+// create request
+requestRouter.post('/create', requestController.create);
+
 // ping
 requestRouter.get('/ping', requestController.ping);
 
 // update request
-// requestRouter.put('/:id', requestController.update);
+requestRouter.put('/:requestId', requestController.update);
 
 // get request info by id
-requestRouter.get('/:id', requestController.getInfo);
+requestRouter.get('/:requestId', requestController.getInfo);
 
 
 export default requestRouter;
