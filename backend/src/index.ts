@@ -1,7 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-import authRoutes from "./routes/authRoutes";
-import requestRoutes from "./routes/requestRoutes";
+import {
+  authRouter,
+  requestRouter,
+  meetingRouter,
+  userRouter
+} from "./routes";
 
 dotenv.config();
 
@@ -15,9 +19,10 @@ app.get("/", (req, res) => {
 app.use(express.json()); 
 
 // Routes
-app.use(authRoutes);
-app.use("/request", requestRoutes);
-
+app.use(authRouter);
+app.use("/request", requestRouter);
+app.use("/meeting", meetingRouter);
+  
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
