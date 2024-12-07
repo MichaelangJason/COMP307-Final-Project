@@ -13,6 +13,9 @@
   align-items: center;
   gap: 10px;
 
+  &.isGray {
+    background-color: colors.$darkGray;
+  }
   @media (max-width: 650px) {
     padding: 8px 8px;
     font-size: 14px;

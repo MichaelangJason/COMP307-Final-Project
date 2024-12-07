@@ -8,9 +8,15 @@ interface Props {
   pageTo?: string;
   text: string;
   goBack?: boolean;
+  isGray?: boolean;
 }
 
-const RedButtonLink = ({ pageTo = "/", text, goBack = false }: Props) => {
+const RedButtonLink = ({
+  pageTo = "/",
+  text,
+  goBack = false,
+  isGray = false,
+}: Props) => {
   const navigate = useNavigate();
 
   const handleClick = (e: React.MouseEvent) => {
@@ -20,7 +26,7 @@ const RedButtonLink = ({ pageTo = "/", text, goBack = false }: Props) => {
 
   return (
     <Link
-      className="redButton"
+      className={`redButton ${isGray ? "isGray" : ""}`} //add condition
       to={pageTo}
       onClick={goBack ? handleClick : undefined}
     >
