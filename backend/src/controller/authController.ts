@@ -23,6 +23,13 @@ const register = async (req: Request, res: Response): Promise<void> => {
     res.status(400).json({ message: "Invalid email domain" });
     return;
   }
+  
+  const passwordValidation = validatePassword(password);
+  if (!passwordValidation.isValid) {
+    res.status(400).json({ message: passwordValidation.message });
+    return;
+  }
+
 
   try {
     const existingUser = await usersCollection.findOne({ email });
@@ -94,5 +101,40 @@ const logout = (req: Request, res: Response): void => {
   //res.clearCookie("token"); 
   res.status(200).json({ message: "Logout successful" });
 };
+
+/**
+ * Validates a password against specific complexity rules.
+ * @param password - The password to validate.
+ * @returns An object containing `isValid` and `message` with validation details.
+ */
+function validatePassword (password: string): { isValid: boolean; message: string } {
+  if (!password) {
+    return { isValid: false, message: "Password cannot be empty." };
+  }
+
+  const lengthRegex = /^.{8,16}$/;
+  const lowercaseRegex = /[a-z]/;
+  const uppercaseRegex = /[A-Z]/;
+  const digitRegex = /\d/;
+  const symbolRegex = /[@$!%*?&#]/;
+
+  if (!lengthRegex.test(password)) {
+    return { isValid: false, message: "Password must be 8–16 characters long." };
+  }
+  if (!lowercaseRegex.test(password)) {
+    return { isValid: false, message: "Password must contain at least 1 lowercase letter." };
+  }
+  if (!uppercaseRegex.test(password)) {
+    return { isValid: false, message: "Password must contain at least 1 uppercase letter." };
+  }
+  if (!digitRegex.test(password)) {
+    return { isValid: false, message: "Password must contain at least 1 digit." };
+  }
+  if (!symbolRegex.test(password)) {
+    return { isValid: false, message: "Password must contain at least 1 special character." };
+  }
+
+  return { isValid: true, message: "Password is valid." };
+}
 
 export default { register, login, logout };
