@@ -22,6 +22,8 @@ const SignUp = () => {
     const emailInput = e.currentTarget.email as HTMLInputElement; // Access the email input
     const passwordInput = e.currentTarget.password as HTMLInputElement; // Access the password input
 
+    const validDomains = ["@mail.mcgill.ca", "@mail.ca"]; // List of allowed domains
+
     // error - Invalid email address
     if (!emailInput.checkValidity()) {
       setError("Please enter a valid email address");
@@ -32,6 +34,13 @@ const SignUp = () => {
       setError("Email is required");
       return;
     }
+
+    // error - Invalid domain
+    if (!validDomains.some((domain) => emailInput.value.endsWith(domain))) {
+      setError("Please supply your McGill email to sign up");
+      return;
+    }
+
     // error - Missing password
     if (!passwordInput.value) {
       setError("Password is required");
