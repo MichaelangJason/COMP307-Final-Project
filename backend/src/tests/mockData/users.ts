@@ -142,7 +142,7 @@ export const invalidUsers: any[] = [
   {
     _id: new ObjectId(),
     email: "user3@mcgill.ca",
-    password: "shortadffa", // password too short / invalid password
+    password: null, // password too short / invalid password
     firstName: "User",
     lastName: "Three",
     role: UserRole.MEMBER,

@@ -1,13 +1,13 @@
 import { ObjectId, Document } from "mongodb";
 import { MeetingStatus, MeetingRepeat } from "../api/common";
 
-interface Participant {
+export interface Participant {
   email: string;
   firstName: string;
   lastName: string;
 }
 
-interface MeetingAvailability {
+export interface MeetingAvailability {
   date: string;
   slots: Record<string, Participant[]>;
   max: number;
@@ -25,6 +25,7 @@ interface Meeting extends Document {
     type: MeetingRepeat;
     endDate: string;
   };
+  pollId?: ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

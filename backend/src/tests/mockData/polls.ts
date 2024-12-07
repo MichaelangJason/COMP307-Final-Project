@@ -13,6 +13,8 @@ export const validPolls: Poll[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     results: 1,
     createdAt: new Date(),
@@ -46,6 +48,8 @@ export const validPolls: Poll[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     results: 3,
     createdAt: new Date(),
@@ -79,6 +83,8 @@ export const validPolls: Poll[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     results: 2,
     createdAt: new Date(),
@@ -112,6 +118,8 @@ export const invalidPolls: any[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     results: 2,
     createdAt: new Date(),
@@ -128,6 +136,8 @@ export const invalidPolls: any[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     results: 2,
     createdAt: new Date(),
@@ -142,6 +152,8 @@ export const invalidPolls: any[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     // Invalid results (less than minimum: 1)
     results: 0,
@@ -158,6 +170,8 @@ export const invalidPolls: any[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     timeout: new Date(),
     results: 1,
     createdAt: new Date(),
@@ -172,6 +186,8 @@ export const invalidPolls: any[] = [
         }
       }
     ],
+    hostId: new ObjectId(),
+    meetingId: new ObjectId(),
     // Missing required date fields
     timeout: undefined,
     results: 1,
