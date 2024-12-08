@@ -51,9 +51,9 @@ export const deleteDocument = async <T extends Document>(collectionName: string,
   return result.deletedCount === 1;
 };
 
-export const updateOneDocument = async <T extends Document>(collectionName: string, id: ObjectId, update: UpdateFilter<T>) => {
+export const updateOneDocument = async <T extends Document>(collectionName: string, id: ObjectId, update: UpdateFilter<T>, arrayFilters: any = undefined) => {
   const collection = await getCollection<T>(collectionName);
-  const result = await collection.updateOne({ _id: id } as any, update);
+  const result = await collection.updateOne({ _id: id } as any, update, arrayFilters);
   return result.modifiedCount === 1;
 }
 

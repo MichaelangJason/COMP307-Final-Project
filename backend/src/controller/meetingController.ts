@@ -1,9 +1,20 @@
 import { ObjectId, UpdateFilter } from "mongodb";
-import { MeetingCreateRequest, MeetingCreateResponse, MeetingRequest, MeetingResponse } from "./types/meeting";
+import {
+  MeetingBookRequest,
+  MeetingBookResponse,
+  MeetingCreateRequest,
+  MeetingCreateResponse,
+  MeetingRequest,
+  MeetingResponse,
+  MeetingUnbookRequest,
+  MeetingUnbookResponse,
+  MeetingUpdateRequest,
+  MeetingUpdateResponse,
+} from "./types/meeting";
 import { deleteDocument, getDocument, insertDocument, updateOneDocument } from "../utils/db";
 import { CollectionNames } from "./constants";
-import { Meeting, MeetingAvailability, Poll, User } from "@shared/types/db";
-import { MeetingInfo, PollInfo } from "@shared/types/api/meeting";
+import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
+import { MeetingInfo } from "@shared/types/api/meeting";
 import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
 
 
@@ -25,9 +36,9 @@ const insertMeeting = async (meeting: Meeting): Promise<ObjectId | null> => {
   }
 };
 
-const updateMeeting = async (meetingId: string, update: UpdateFilter<Meeting>): Promise<boolean> => {
+const updateMeeting = async (meetingId: string, update: UpdateFilter<Meeting>, options: any = undefined): Promise<boolean> => {
   try {
-    return await updateOneDocument<Meeting>(CollectionNames.MEETING, new ObjectId(meetingId), update);
+    return await updateOneDocument<Meeting>(CollectionNames.MEETING, new ObjectId(meetingId), update, options);
   } catch (error) {
     console.error(error);
     return false;
@@ -148,6 +159,14 @@ const isValidAvailabilities = (availabilities: MeetingAvailability[]) => {
   });
 
   return emptySlots && noDuplicates && allFutureDates;
+}
+
+const isValidUserId = (userId: string) => {
+  try {
+    return new ObjectId(userId);
+  } catch (error) {
+    return false;
+  }
 }
 
 const createPollOptions = (availabilities: MeetingAvailability[]) => {
@@ -321,11 +340,177 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   res.status(200).json({ message: "Meeting created" });
 };
 
-const update = async () => {};
+// update info
+const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => {
+  const { meetingId } = req.params;
 
-const book = async () => {};
+  let meeting: Meeting | null;
+  if (!(meeting = await getMeeting(meetingId))) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+  
+  const update: UpdateFilter<Meeting> = { $set: { 
+    ...req.body,
+    updatedAt: new Date()
+  }};
 
-const unbook = async() => {};
+  meeting = { ...meeting, ...update.$set };
+
+  if (meeting.status === MeetingStatus.UPCOMING && isClosed(meeting)) {
+    // meeting.status = MeetingStatus.CLOSED;
+    update.$set = { ...update.$set, status: MeetingStatus.CLOSED };
+  }
+
+  if (!await updateMeeting(meetingId, update)) {
+    res.status(500).json({ message: "Failed to update meeting" });
+    return;
+  }
+
+  res.status(200).json({ message: "Meeting updated!" });
+};
+
+const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
+  const { meetingId } = req.params;
+  const { userId, participantInfo, date, slot } = req.body;
+
+  if (!participantInfo || !date || !slot) {
+    res.status(400).json({ message: "Missing required fields" });
+    return;
+  }
+
+  const meeting: Meeting | null = await getMeeting(meetingId);
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  const { availabilities } = meeting;
+  const availability = availabilities.find((a) => a.date === date);
+
+  if (!availability) {
+    res.status(400).json({ message: "Invalid date" });
+    return;
+  }
+
+  const time = availability.slots[slot];
+  if (!time) {
+    res.status(400).json({ message: "Invalid slot" });
+    return;
+  }
+  if (time.length >= availability.max) {
+    res.status(400).json({ message: "Meeting is full" });
+    return;
+  }
+
+  const isAlreadyBooked = time.find((p) => p.email.toLowerCase() === participantInfo.email.toLowerCase());
+  if (isAlreadyBooked) {
+    res.status(400).json({ message: "Email already booked" });
+    return;
+  }
+
+  const newParticipant: Participant = { ...participantInfo };
+  
+  const isSuccessfullyBooked = await updateOneDocument<Meeting>(CollectionNames.MEETING, meeting._id, {
+    $push: { [`availabilities.$[elem].slots.${slot}`]: newParticipant },
+  } as any, {
+    arrayFilters: [{ "elem.date": date }]
+  } as any);
+
+  if (!isSuccessfullyBooked) {
+    res.status(500).json({ message: "Failed to book meeting" });
+    return;
+  }
+
+  const newUpcomingMeeting: UpcomingMeeting = {
+    meetingId: meeting._id,
+    time: slot,
+    date,
+  }
+
+  if (userId && isValidUserId(userId)) {
+    try {
+      await updateOneDocument<User>(CollectionNames.USER, new ObjectId(userId), { 
+        $push: { 
+          upcomingMeetings: newUpcomingMeeting
+        }} as any);
+    } catch (error) {
+      await updateMeeting(meetingId, { 
+        $pull: { [`availabilities.$[elem].slots.${slot}`]: { email: participantInfo.email } } 
+      } as any, {
+        arrayFilters: [{ "elem.date": date }]
+      } as any);
+      res.status(500).json({ message: "Failed to add to user" });
+      return;
+    }
+  }
+
+  res.status(200).json({ message: "Meeting booked!" });
+};
+
+const unbook = async (req: MeetingUnbookRequest, res: MeetingUnbookResponse) => {
+  const { meetingId } = req.params;
+  const { userId, email, date, slot } = req.body;
+
+  if (!email || !date || !slot) {
+    res.status(400).json({ message: "Missing required fields" });
+    return;
+  }
+
+  const meeting: Meeting | null = await getMeeting(meetingId);
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  const { availabilities } = meeting;
+  const availability = availabilities.find((a) => a.date === date);
+
+  if (!availability) {
+    res.status(400).json({ message: "Invalid date" });
+    return;
+  }
+
+  const time = availability.slots[slot];
+  if (!time) {
+    res.status(400).json({ message: "Invalid slot" });
+    return;
+  }
+
+  const isSuccessfullyUnbooked = await updateMeeting(meetingId, {
+    $pull: { [`availabilities.$[elem].slots.${slot}`]: { email } },
+  } as any, {
+    arrayFilters: [{ "elem.date": date }]
+  } as any);
+  
+  if (!isSuccessfullyUnbooked) {
+    res.status(500).json({ message: "Failed to unbook meeting" });
+    return;
+  }
+
+  if (userId) {
+    try {
+      await updateOneDocument<User>(CollectionNames.USER, new ObjectId(userId), { 
+        $pull: { 
+          upcomingMeetings: { 
+            meetingId: meeting._id 
+          }
+        } 
+      } as any);
+    } catch (error) {
+      // rollback
+      await updateMeeting(meetingId, { 
+        $push: { [`availabilities.$[elem].slots.${slot}`]: { email } } 
+      } as any, {
+        arrayFilters: [{ "elem.date": date }]
+      } as any);
+      res.status(500).json({ message: "Failed to remove from user" });
+      return;
+    }
+  }
+
+  res.status(200).json({ message: "Meeting unbooked!" });
+};
 
 export default {
   getInfo,

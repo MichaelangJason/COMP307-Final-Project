@@ -32,24 +32,29 @@ export interface MeetingInfoResponse extends MeetingInfo {
 }
 
 export interface MeetingCreateBody extends MeetingInfo {
-  hostId: string;
   repeat: {
     type: MeetingRepeat;
     endDate: string;
   };
 }
 
+export interface MeetingUpdateBody extends Partial<MeetingCreateBody> {}
 export interface MeetingBookingBody {
-  hostId: string;
+  userId?: string;
   participantInfo: {
     firstName: string;
     lastName: string;
     email: string;
   };
   date: string;
-  time: string;
+  slot: string;
 }
-
+export interface MeetingUnbookBody {
+  userId?: string;
+  email: string;
+  date: string;
+  slot: string;
+}
 export interface MeetingPublicInfoResponse extends MeetingInfo {
   hostId: string;
   status: MeetingStatus;
