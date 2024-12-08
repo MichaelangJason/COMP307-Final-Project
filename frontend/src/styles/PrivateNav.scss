@@ -5,6 +5,10 @@ main {
   height: max-content;
 }
 
+body.no-scroll {
+  overflow: hidden;
+}
+
 #privateSeparator {
   background-color: colors.$darkGray;
   color: colors.$white;
@@ -14,10 +18,10 @@ main {
   padding: 0 2rem;
 }
 
-nav {
+#private-nav {
   margin-top: -11px;
 }
-nav a {
+#private-nav a {
   color: colors.$white;
   text-decoration: none;
 
@@ -26,7 +30,7 @@ nav a {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-nav a:hover {
+#private-nav a:hover {
   background-color: colors.$brightRed;
   color: colors.$white;
 }
@@ -55,7 +59,7 @@ nav a:hover {
     visibility: visible;
     opacity: 1;
   }
-  #privateSeparator nav {
+  #privateSeparator #private-nav {
     position: fixed;
     top: -150%; //hidden at the start
     left: 0;
@@ -70,18 +74,18 @@ nav a:hover {
     transition: transform 0.5s ease-in-out; //animation
   }
 
-  nav.responsive_nav {
+  #private-nav.responsive_nav {
     //slide down
     transform: translateY(160%);
   }
 
-  nav .nav-close-button {
+  #private-nav .nav-close-button {
     position: absolute;
     top: 2rem;
     right: 2rem;
   }
 
-  nav a {
+  #private-nav a {
     font-size: 1.5rem;
 
     //added
@@ -89,7 +93,7 @@ nav a:hover {
   }
 }
 @media (width < 1080px) and (height < 600px) {
-  nav.responsive_nav {
+  #private-nav.responsive_nav {
     //slide down
     transform: translateY(150%);
   }

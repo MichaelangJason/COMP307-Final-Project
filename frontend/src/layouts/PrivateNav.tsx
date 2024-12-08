@@ -34,13 +34,20 @@ const PrivateNav = () => {
 
   const toggleNavBar = () => {
     setIsNavVisible((prev) => !prev);
+
+    // Toggle the no-scroll class on the body element
+    if (!isNavVisible) {
+      document.body.classList.add("no-scroll");
+    } else {
+      document.body.classList.remove("no-scroll");
+    }
   };
 
   return (
     <>
       <NavBarContent pageTo="/" text="Log Out" userEmail={userEmail} />
       <div id="privateSeparator">
-        <nav className={isNavVisible ? "responsive_nav" : ""}>
+        <nav id="private-nav" className={isNavVisible ? "responsive_nav" : ""}>
           <Link to="/user/:id" onClick={toggleNavBar}>
             MEETING
           </Link>
