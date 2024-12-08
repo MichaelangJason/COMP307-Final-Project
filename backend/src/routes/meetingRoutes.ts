@@ -4,7 +4,7 @@ import express from "express";
 const meetingRouter = express.Router();
 
 // get meeting info
-meetingRouter.get('/', meetingController.get);
+meetingRouter.get('/:meetingId', meetingController.getInfo);
 // create new meeting
 meetingRouter.post('/', meetingController.create);
 // update meeting

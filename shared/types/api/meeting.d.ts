@@ -1,16 +1,27 @@
 import { MeetingAvailability } from "../db/meeting";
 import { MeetingRepeat, MeetingStatus } from "./common";
 
-export interface MeetingInfo {
+
+export interface MeetingRequestParams {
+  meetingId: string;
+}
+
+export interface PollInfo {
+  options: PollOption[];
+  timeout: Date;
+  results: number;
+}
+
+export interface MeetingInfo extends MeetingRequestParams {
   title: string;
   description: string;
   location: string;
   availabilities: MeetingAvailability[];
-  repeat: {
-    type: MeetingRepeat;
-    endDate: string;
-  };
+  pollInfo: PollInfo | null;
+  status: MeetingStatus;
 }
+
+
 
 export interface MeetingInfoResponse extends MeetingInfo {
   hostId: string;

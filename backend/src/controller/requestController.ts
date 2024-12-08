@@ -121,10 +121,14 @@ const create = async (
 
   const { proposerInfo, proposedSlot, reason, hostId } = req.body;
 
-  let host: User;
-  try {
-    host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId));
-  } catch (error) {
+  let host: User | null;
+  // try {
+  //   host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId));
+  // } catch (error) {
+  //   res.status(404).json({ message: "Host not found" });
+  //   return;
+  // }
+  if (!(host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId)))) {
     res.status(404).json({ message: "Host not found" });
     return;
   }
