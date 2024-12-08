@@ -1,6 +1,6 @@
 import MemberCard from "components/MemberCard";
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/MembersGrid.scss";
 
 interface Card {
@@ -24,6 +24,7 @@ const Members = () => {
 
   // navigate
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,8 +106,8 @@ const Members = () => {
 
   // TODO backend : navigate to the specific id
   const handleCardClick = (card: Card) => {
-    // navigate(`/admin/members/${cards.id}`);
-    navigate(`/admin/members/:id`);
+    const newPath = `${location.pathname}/:id`;
+    navigate(newPath);
   };
 
   const handleShowPopup = (card: Card, e: React.MouseEvent) => {

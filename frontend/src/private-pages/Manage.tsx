@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface Card {
   title: string;
@@ -15,8 +15,9 @@ const Manage = () => {
   const [cards, setCards] = useState<Card[]>([]);
   // Filter
   const [filter, setFilter] = useState("All");
-  // Edit
+  //Edit
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,8 +90,10 @@ const Manage = () => {
 
   // TODO : frontend - need to add a link to the Edit Page!!! - done
   // TODO : frontend - follow up to transfer data to Private 6!!!
+  // TODO : backend - meeting id
   const handleEdit = (card: Card) => {
-    navigate("/user/:id/manage/:meetingid/edit");
+    const newPath = `${location.pathname}/:meetingid/edit`;
+    navigate(newPath);
   };
 
   return (
