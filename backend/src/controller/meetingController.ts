@@ -33,16 +33,16 @@ const updateMeeting = async (meetingId: string, update: UpdateFilter<Meeting>): 
   }
 }
 
-const isExpired = (meeting: Meeting) => {
-  if (meeting.status !== MeetingStatus.UPCOMING) return false;
-  if (meeting.repeat.type === MeetingRepeat.ONCE) {
+const isClosed = (meeting: Meeting) => {
+  if (meeting.repeat.type === MeetingRepeat.WEEKLY) {
+    // recurring meeting has ended
+    return new Date() > new Date(`${meeting.repeat.endDate}T00:00:00`);
+  } else {
     const lastAvailability = meeting.availabilities[meeting.availabilities.length - 1];
-    const lastDate = new Date(lastAvailability.date);
-    lastDate.setHours(23, 59, 59, 999); // set to end of day
+    const lastDate = new Date(`${lastAvailability.date}T23:59:59`); // end of day
 
     return lastDate < new Date();
   }
-  return false; // recurring meeting does not expire until set to ONCE
 }
 
 const formatDate = (date: Date) => {
@@ -53,15 +53,42 @@ const formatDate = (date: Date) => {
   return `${year}-${month}-${day}`;
 }
 
-const nextAvailability = (availability: MeetingAvailability, mult: number) => {
-  const nextDate = new Date(availability.date);
+const nextAvailability = (availability: MeetingAvailability, mult: number, endDate: string) => {
+  const { date, slots } = availability;
+
+  let nextDate = new Date(`${date}T00:00:00`);
   nextDate.setDate(nextDate.getDate() + mult * 7);
+
+  // check if nextDate is still in the past
+  if (nextDate < new Date()) {
+    const dayOfWeek = nextDate.getDay(); // get day of week (0-6)
+    nextDate = new Date();
+    const daysUntilNext = (7 - (nextDate.getDay() - dayOfWeek)) % 7;
+
+    nextDate.setDate(nextDate.getDate() + daysUntilNext);
+
+    const latestStartTime = Object
+      .keys(slots)
+      .at(-1)!
+      .split("-")[0]
+      .split(":");
+
+    // console.log(latestStartTime);
+
+    nextDate.setHours(parseInt(latestStartTime[0]), parseInt(latestStartTime[1]), 0, 0);
+    if (nextDate < new Date()) {
+      nextDate.setDate(nextDate.getDate() + 7);
+    }
+  }
+
+  if (nextDate > new Date(`${endDate}T00:00:00`)) return null; // recurring meeting has ended
+
   const nextDateString = formatDate(nextDate);
 
   const newAvailability = { ...availability, date: nextDateString };
   // for different time slots, clear participants
-  for (const timeSlot in availability.slots) {
-    newAvailability.slots[timeSlot] = [];
+  for (const time in newAvailability.slots) {
+    newAvailability.slots[time] = [];
   }
 
   return newAvailability;
@@ -75,12 +102,12 @@ const updateFutureAvailabilities = async (meeting: Meeting) => {
   // the availabilities are in time order
   for (const availability of availabilities) {
     const { date } = availability;
-    const availabilityDate = new Date(date);
-    availabilityDate.setHours(23, 59, 59, 999); // set to end of day
+    const availabilityDate = new Date(`${date}T23:59:59`); // end of day
 
     if (availabilityDate > today) continue;
     // already passed
-    const newAvailability = nextAvailability(availability, 3);
+    const newAvailability = nextAvailability(availability, 3, meeting.repeat.endDate);
+    if (!newAvailability) break;
     newAvailabilities.push(newAvailability);
   }
 
@@ -98,8 +125,6 @@ const updateFutureAvailabilities = async (meeting: Meeting) => {
       },
       $set: { updatedAt: new Date() }
     } as any);
-
-    // await updateMeeting(meetingId.toString(), { $set: { updatedAt: new Date() } });
   }
   return newAvailabilities;
 }
@@ -124,14 +149,17 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     }
   }
   
-  // update future availabilities if meeting hasn't been updated in a while
-  if (meeting.updatedAt < new Date()) {
+  if (
+    meeting.repeat.type === MeetingRepeat.WEEKLY && // recurring meeting
+    meeting.updatedAt.toDateString() !== new Date().toDateString() // meeting hasn't been updated in a while
+  ) {
     const newAvailabilities = await updateFutureAvailabilities(meeting);
     meeting.availabilities.push(...newAvailabilities);
     meeting.availabilities = meeting.availabilities.slice(newAvailabilities.length);
   }
 
-  if (isExpired(meeting)) {
+  // does not check if meeting has ended/voting, only checks if it is upcoming
+  if (meeting.status === MeetingStatus.UPCOMING && isClosed(meeting)) {
     meeting.status = MeetingStatus.CLOSED;
     await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
   }
