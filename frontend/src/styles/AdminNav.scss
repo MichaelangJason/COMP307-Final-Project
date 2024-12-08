@@ -1,0 +1,111 @@
+@use "../themes/colors";
+
+main {
+  width: 100%;
+  height: max-content;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+#adminSeparator {
+  background-color: colors.$brightRed;
+  color: colors.$white;
+  display: flex;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 2rem;
+}
+
+#admin-nav {
+  margin-top: -11px;
+}
+
+#admin-nav a {
+  color: colors.$white;
+  text-decoration: none;
+  padding: 15px 20px;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+#admin-nav a.info {
+  color: colors.$white; /* Ensure default color for info links */
+  pointer-events: none; /* Disable click on info links */
+  cursor: default; /* Prevent pointer cursor */
+}
+
+#admin-nav a:hover {
+  background-color: colors.$darkGray;
+  color: colors.$white;
+}
+
+#adminSeparator .nav-button {
+  padding: 5px;
+  margin-top: 5px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: colors.$white;
+  font-size: 1.8rem;
+  visibility: hidden;
+  opacity: 0;
+}
+
+#adminSeparator .nav-button:hover {
+  color: colors.$darkGray;
+}
+
+@media (width < 1200px) {
+  #adminSeparator .nav-button {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  #adminSeparator #admin-nav {
+    position: fixed;
+    top: -150%; // Hidden at the start
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0rem;
+    background-color: colors.$brightRed;
+    transition: transform 0.25s ease-in-out; // Animation
+  }
+
+  #admin-nav.responsive_nav {
+    transform: translateY(160%);
+  }
+
+  #admin-nav .nav-close-button {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+  }
+
+  #admin-nav a {
+    font-size: 1.5rem;
+    width: 100%;
+  }
+
+  // Hide links with the class "info" in the slide-down state
+  #admin-nav.responsive_nav .info {
+    display: none;
+  }
+  #admin-nav.responsive_nav .userEmail {
+    background-color: colors.$silverGray;
+    color: colors.$brightRed;
+    display: block; /* Ensure the user email link is visible during slide down */
+  }
+}
+
+@media (width < 1080px) and (height < 600px) {
+  #admin-nav.responsive_nav {
+    transform: translateY(150%);
+  }
+}

@@ -13,6 +13,8 @@ import Manage from "private-pages/Manage";
 import Request from "private-pages/Request";
 import Profile from "private-pages/Profile";
 import Edit from "private-pages/Edit";
+import AdminNav from "layouts/AdminNav";
+import Members from "admin-pages/Members";
 
 const App = () => {
   return (
@@ -31,6 +33,18 @@ const App = () => {
           <Route path="/user/:id/manage/:meetingid/edit" element={<Edit />} />
           <Route path="/user/:id/request" element={<Request />} />
           <Route path="/user/:id/profile" element={<Profile />} />
+        </Route>
+        <Route path="/admin/members" element={<AdminNav />}>
+          <Route index element={<Members />} />
+          <Route path="/admin/members/:id" element={<Meetings />} />
+          <Route path="/admin/members/:id/create" element={<Create />} />
+          <Route path="/admin/members/:id/manage" element={<Manage />} />
+          <Route
+            path="/admin/members/:id/manage/:meetingid/edit"
+            element={<Edit />}
+          />
+          <Route path="/admin/members/:id/request" element={<Request />} />
+          <Route path="/admin/members/:id/profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>
