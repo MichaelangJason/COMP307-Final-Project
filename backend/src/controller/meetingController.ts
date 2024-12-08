@@ -54,7 +54,7 @@ const formatDate = (date: Date) => {
   return `${year}-${month}-${day}`;
 }
 
-const nextAvailability = (availability: MeetingAvailability, mult: number, endDate: string) => {
+const nextAvailability = (availability: MeetingAvailability, mult: number, endDate: string): MeetingAvailability | null => {
   const { date, slots } = availability;
 
   let nextDate = new Date(`${date}T00:00:00`);
@@ -259,6 +259,22 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     repeat: repeat,
     createdAt: now,
     updatedAt: now,
+  }
+
+  // push future availabilities
+  if (repeat.type === MeetingRepeat.WEEKLY) {
+    const futureAvailabilities: MeetingAvailability[] = [];
+    for (let i = 1; i < 4; i++) {
+      availabilities.forEach((availability) => {
+        const next = nextAvailability(availability, i, repeat.endDate);
+        if (next) {
+          futureAvailabilities.push(next);
+        }
+      });
+    }
+    newMeeting.availabilities.push(...futureAvailabilities);
+    // sort availabilities by date
+    newMeeting.availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 
   let pollId: ObjectId | null = null;
