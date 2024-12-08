@@ -64,7 +64,7 @@ describe("Updating data in different collections", () => {
       },
       invalidUpdate: {
         email: "invalidemail@test.mcgill.ca",
-        password: "InvalidPass!",
+        password: null,
         firstName: "",
         lastName: "",
         role: 10,
@@ -122,6 +122,7 @@ describe("Updating data in different collections", () => {
           type: MeetingRepeat.WEEKLY,
           endDate: "2024-01-05"
         },
+        pollId: new ObjectId(),
         updatedAt: new Date("2024-01-03"),
         createdAt: new Date("2024-01-02")
       },
@@ -167,6 +168,7 @@ describe("Updating data in different collections", () => {
           type: 10,
           endDate: "2024--05"
         },
+        pollId: null,
         updatedAt: null,
         createdAt: null
       }
@@ -227,6 +229,7 @@ describe("Updating data in different collections", () => {
         ],
         timeout: new Date(),
         results: 10,
+        meetingId: new ObjectId(),
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -241,6 +244,7 @@ describe("Updating data in different collections", () => {
         ],
         timeout: null,
         results: -1,
+        meetingId: null,
         createdAt: null,
         updatedAt: null
       }

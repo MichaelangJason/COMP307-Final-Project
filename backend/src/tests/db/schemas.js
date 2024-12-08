@@ -226,6 +226,10 @@ const meetingSchema = {
             },
           },
         },
+        pollId: {
+          bsonType: "objectId",
+          description: "Poll ID as ObjectId reference"
+        },
         createdAt: {
           bsonType: "date",
           description: "Timestamp of meeting creation",
@@ -308,7 +312,7 @@ const pollSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["options", "timeout", "results", "createdAt", "updatedAt"],
+      required: ["options", "timeout", "results", "meetingId", "createdAt", "updatedAt"],
       properties: {
         options: {
           bsonType: "array",
@@ -346,6 +350,10 @@ const pollSchema = {
           bsonType: "int",
           minimum: 1,
           description: "Number of final results"
+        },
+        meetingId: {
+          bsonType: "objectId",
+          description: "Meeting ID as ObjectId reference"
         },
         createdAt: {
           bsonType: "date",

@@ -27,10 +27,10 @@ export const getCollection = async <T extends Document>(collectionName: string):
   return database.collection<T>(collectionName);
 };
 
-export const getDocument = async <T extends Document>(collectionName: string, id: ObjectId): Promise<T> => {
+export const getDocument = async <T extends Document>(collectionName: string, id: ObjectId): Promise<T | null> => {
   const collection = await getCollection<T>(collectionName);
   const document = await collection.findOne({ _id: id } as any);
-  return document as T;
+  return document as T | null;
 }
 
 export const insertDocument = async <T extends Document>(
