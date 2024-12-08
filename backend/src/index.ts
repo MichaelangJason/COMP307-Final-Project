@@ -20,6 +20,7 @@ app.use(express.json());
 
 // Routes
 app.use(authRouter);
+app.use(userRouter);
 app.use("/request", requestRouter);
 app.use("/meeting", meetingRouter);
   

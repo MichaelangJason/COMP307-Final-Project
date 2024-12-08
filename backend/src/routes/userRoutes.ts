@@ -4,12 +4,14 @@ import userController from '../controller/userController';
 const userRouter = express.Router();
 
 //Profile
-userRouter.get('/profile/:id', async (req: Request, res: Response) => await userController.getProfile(req, res));
-userRouter.put('/profile/:id', async (req: Request, res: Response) => await userController.updateProfile(req, res));
+userRouter.get('/profile/:id', userController.getProfile);
+userRouter.put('/profile/:id', userController.updateProfile);
 //Admin
 userRouter.get('/admin/members', userController.getAllUsers);
+userRouter.put('/admin/members/:id', userController.updateUserAsAdmin);
 userRouter.delete('/admin/members/:id', userController.deleteUser);
 userRouter.post('/admin/members/:id/login-as', userController.loginAsUser);
+//TODO: add adminMiddleware to validate user.role
 
 
 export default userRouter;
