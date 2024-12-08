@@ -1,11 +1,11 @@
 import { ObjectId, Document } from "mongodb";
 
-interface PollOption {
+export interface PollOption {
   date: string;
   slots: Record<string, number>;
 }
 
-interface Poll extends Document {
+export interface Poll extends Document {
   _id: ObjectId;
   hostId: ObjectId;
   meetingId: ObjectId;

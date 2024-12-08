@@ -4,7 +4,7 @@ import requestController from '../controller/requestController';
 const requestRouter = Router();
 
 // create request
-requestRouter.post('/create', requestController.create);
+requestRouter.post('/:hostId', requestController.create);
 // update request
 requestRouter.put('/:requestId', requestController.update);
 // get request info by id

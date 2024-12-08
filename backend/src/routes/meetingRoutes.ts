@@ -6,9 +6,9 @@ const meetingRouter = express.Router();
 // get meeting info
 meetingRouter.get('/:meetingId', meetingController.getInfo);
 // create new meeting
-meetingRouter.post('/', meetingController.create);
+meetingRouter.post('/create/:hostId', meetingController.create);
 // update meeting
-meetingRouter.put('/:meetingId', meetingController.update);
+meetingRouter.put('/update/:meetingId', meetingController.update);
 // book a meeting
 meetingRouter.put('/book/:meetingId', meetingController.book);
 // unbook from a meeting

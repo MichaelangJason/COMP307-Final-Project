@@ -1,4 +1,5 @@
 import { MeetingAvailability } from "../db/meeting";
+import { PollOption } from "../db/poll";
 import { MeetingRepeat, MeetingStatus } from "./common";
 
 
@@ -6,9 +7,13 @@ export interface MeetingRequestParams {
   meetingId: string;
 }
 
+export interface MeetingCreateParams {
+  hostId: string;
+}
+
 export interface PollInfo {
-  options: PollOption[];
-  timeout: Date;
+  options?: PollOption[];
+  timeout: string;
   results: number;
 }
 
@@ -21,8 +26,6 @@ export interface MeetingInfo extends MeetingRequestParams {
   status: MeetingStatus;
 }
 
-
-
 export interface MeetingInfoResponse extends MeetingInfo {
   hostId: string;
   status: MeetingStatus;
@@ -30,6 +33,10 @@ export interface MeetingInfoResponse extends MeetingInfo {
 
 export interface MeetingCreateBody extends MeetingInfo {
   hostId: string;
+  repeat: {
+    type: MeetingRepeat;
+    endDate: string;
+  };
 }
 
 export interface MeetingBookingBody {

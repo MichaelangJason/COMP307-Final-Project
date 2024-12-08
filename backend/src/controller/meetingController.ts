@@ -1,10 +1,11 @@
 import { ObjectId, UpdateFilter } from "mongodb";
-import { MeetingRequest, MeetingResponse } from "./types/meeting";
-import { getDocument, insertDocument, updateOneDocument } from "../utils/db";
+import { MeetingCreateRequest, MeetingCreateResponse, MeetingRequest, MeetingResponse } from "./types/meeting";
+import { deleteDocument, getDocument, insertDocument, updateOneDocument } from "../utils/db";
 import { CollectionNames } from "./constants";
-import { Meeting, MeetingAvailability, Poll } from "@shared/types/db";
+import { Meeting, MeetingAvailability, Poll, User } from "@shared/types/db";
 import { MeetingInfo, PollInfo } from "@shared/types/api/meeting";
-import { MeetingRepeat, MeetingStatus } from "../utils";
+import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
+
 
 const getMeeting = async (meetingId: string): Promise<Meeting | null> => {
   try {
@@ -129,6 +130,34 @@ const updateFutureAvailabilities = async (meeting: Meeting) => {
   return newAvailabilities;
 }
 
+const isValidAvailabilities = (availabilities: MeetingAvailability[]) => {
+  // Check for empty slots
+  const emptySlots = availabilities.every((availability) => 
+    Object.values(availability.slots).every((slots) => slots.length === 0)
+  );
+
+  // Check for duplicate dates
+  const dates = availabilities.map(a => a.date);
+  const uniqueDates = new Set(dates);
+  const noDuplicates = dates.length === uniqueDates.size;
+
+  // check if all dates are in the future
+  const allFutureDates = availabilities.every((availability) => {
+    const latestStartTime = Object.keys(availability.slots).at(-1)!.split("-")[0];
+    return new Date(`${availability.date}T${latestStartTime}:00`) > new Date();
+  });
+
+  return emptySlots && noDuplicates && allFutureDates;
+}
+
+const createPollOptions = (availabilities: MeetingAvailability[]) => {
+  return availabilities.map((availability) => ({
+    date: availability.date,
+    slots: Object.fromEntries(Object.entries(availability.slots).map(([time, _]) => [time, 0])),
+  }));
+}
+
+
 const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   const { meetingId } = req.params;
   let meeting: Meeting | null;
@@ -174,7 +203,7 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     status: meeting.status,
     pollInfo: poll ? {
       options: poll.options,
-      timeout: poll.timeout,
+      timeout: formatDate(poll.timeout),
       results: poll.results,
     } : null,
   };
@@ -182,7 +211,99 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   res.status(200).json(meetingInfo);
 };
 
-const create = async () => {};
+const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => {
+  const { hostId } = req.params;
+  const { title, description, location, availabilities, repeat, pollInfo } = req.body;
+
+  if (
+    !title ||
+    !description ||
+    !location ||
+    !availabilities ||
+    !availabilities.length ||
+    !isValidAvailabilities(availabilities) ||
+    !repeat
+  ) {
+    res.status(400).json({ message: "Missing required fields" });
+    return;
+  }
+
+  if (pollInfo && (
+    !pollInfo.timeout || !dateRegex.test(pollInfo.timeout) || new Date(pollInfo.timeout+"T23:59:59") < new Date() ||
+    !pollInfo.results || typeof pollInfo.results !== "number"
+  )) {
+    res.status(400).json({ message: "Invalid poll info" });
+    return;
+  }
+
+  // check if host exists
+  try {
+    await getDocument<User>(CollectionNames.USER, new ObjectId(hostId));
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({ message: "Host not found" });
+    return;
+  }
+
+  // create meeting
+  let now = new Date();
+
+  const newMeeting: Meeting = {
+    _id: new ObjectId(),
+    hostId: new ObjectId(hostId),
+    title,
+    description,
+    location,
+    availabilities,
+    status: MeetingStatus.UPCOMING,
+    repeat: repeat,
+    createdAt: now,
+    updatedAt: now,
+  }
+
+  let pollId: ObjectId | null = null;
+  if (pollInfo) {
+    now = new Date();
+    
+    const newPoll: Poll = {
+      _id: new ObjectId(),
+      hostId: new ObjectId(hostId),
+      meetingId: newMeeting._id,
+      options: createPollOptions(availabilities),
+      timeout: new Date(pollInfo.timeout+"T23:59:59"),
+      results: pollInfo.results,
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    newMeeting.pollId = newPoll._id;
+    newMeeting.status = MeetingStatus.VOTING;
+
+    try {
+      pollId = await insertDocument<Poll>(CollectionNames.POLL, newPoll);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create poll" });
+      return;
+    }
+  }
+
+  if (!await insertMeeting(newMeeting)) {
+    res.status(500).json({ message: "Failed to create meeting" });
+    return;
+  }
+
+  if (!await updateOneDocument<User>(CollectionNames.USER, new ObjectId(hostId), { $push: { hostedMeetings: newMeeting._id } } as any)) {
+    // rollback
+    await deleteDocument<Meeting>(CollectionNames.MEETING, newMeeting._id);
+    if (pollId) {
+      await deleteDocument<Poll>(CollectionNames.POLL, pollId);
+    }
+    res.status(500).json({ message: "Failed to update host" });
+    return;
+  }
+
+  res.status(200).json({ message: "Meeting created" });
+};
 
 const update = async () => {};
 
