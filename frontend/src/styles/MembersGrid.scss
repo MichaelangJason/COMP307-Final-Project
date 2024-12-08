@@ -1,0 +1,194 @@
+@use "../themes/colors";
+@use "../themes/fonts.scss";
+
+.header-n-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 1rem;
+  margin-right: 5em;
+
+  h1 {
+    margin-left: 4rem;
+    margin-top: 2rem;
+    font-family: fonts.$title;
+    color: colors.$darkRed;
+  }
+  .search-container {
+    margin-top: 2rem;
+    display: flex;
+    gap: 10px; //gap between search bar and button
+
+    input {
+      padding: 4px 12px;
+      font-size: small;
+      border: 0;
+      background-color: colors.$silverGray;
+      border-radius: 4px;
+      width: 250px;
+    }
+
+    button {
+      padding: 4px 12px;
+      font-size: small;
+      background-color: colors.$brightRed;
+      color: colors.$white;
+      border: 0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .search-container {
+      input {
+        width: 150px;
+      }
+    }
+  }
+
+  // Media query for smaller screens
+  @media (max-width: 650px) {
+    flex-direction: column; // Stack items vertically
+    align-items: flex-start;
+    margin-left: 2rem;
+
+    h1 {
+      margin-left: 0;
+    }
+
+    .search-container {
+      margin-top: 1rem; // Adjust spacing
+      flex-direction: row; // Keep search bar and button side by side
+      justify-content: flex-start; // Align left
+      gap: 5px; // Reduce spacing between input and button
+    }
+  }
+}
+
+.members-page {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+
+  // Space between the cards and the filter
+  gap: 10px;
+
+  .card-list {
+    margin-left: 40px;
+    display: flex;
+    flex-wrap: wrap; // Allows cards to wrap to the next row
+    gap: 25px; // Space between cards
+    justify-content: flex-start; // Align cards to the left
+    align-items: flex-start; // Align items at the start of the row
+
+    // Adjust gap between cards for smaller screens
+    @media (width < 1124px) {
+      gap: 15px;
+    }
+    @media (width < 800px) {
+      gap: 10px;
+      margin-left: 20px;
+    }
+
+    @media (width < 650px) {
+      margin-left: 10px;
+      gap: 5px;
+    }
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; // Space between filter options
+    padding: 20px;
+    margin-right: 100px;
+    max-width: 300px;
+
+    /* Border for testing purposes */
+    // border: 1px solid #ddd;
+    // border-radius: 8px;
+    // background-color: #f9f9f9;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      input[type="radio"] {
+        margin: 0;
+      }
+    }
+
+    // Narrower filter for smaller screens
+    @media (max-width: 650px) {
+      max-width: 150px;
+      padding: 20px;
+      margin-right: 20px;
+    }
+  }
+}
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  min-width: 400px;
+  min-height: 250px;
+
+  background: colors.$white;
+  width: 40%;
+  height: 30%;
+  text-align: left;
+  padding-left: 3%;
+  padding-top: 3%;
+  padding-right: 3%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+strong {
+  font-size: 22px;
+}
+
+p {
+  font-weight: 600;
+  font-size: 14px;
+}
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 20px;
+  left: 10%;
+  right: 10%;
+  bottom: 15%;
+}
+
+.popup-buttons button {
+  padding: 8px 20px;
+  font-size: 18px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.popup-buttons button:first-child {
+  background-color: colors.$mediumGray;
+  color: colors.$white;
+}
+
+.popup-buttons button:last-child {
+  background-color: colors.$brightRed;
+  color: colors.$white;
+}

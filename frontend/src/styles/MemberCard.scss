@@ -1,0 +1,66 @@
+@use "../themes/colors";
+
+.memberCard {
+  background-color: colors.$white;
+  border: 1px solid colors.$white;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  // Fixed width for each card
+  width: 300px;
+
+  // Prevent shrinking & growing for each card
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  &:hover {
+    // Slight lift effect & increase shade on hover
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+  }
+
+  @media (width < 700px) {
+    // Adjust width for smaller screens
+    width: 100%;
+  }
+
+  .card-title {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 4px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      img {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  .card-description {
+    display: flex;
+    font-size: large;
+    flex-direction: column;
+    gap: 6px;
+
+    .card-info {
+      display: flex;
+      align-items: center;
+      font-size: smaller;
+      color: colors.$mediumGray;
+    }
+  }
+}
