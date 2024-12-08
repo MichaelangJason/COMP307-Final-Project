@@ -48,7 +48,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
       password: hashedPassword,
       firstName,
       lastName,
-      role: 0,
+      role: 1,
       notifications: {
         email: true,
         sms: false,
@@ -92,7 +92,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
     console.log("Session token:", token)
     res.status(200).json({ token, message: "Login successful" });
   } catch (error) {
-    res.status(500).json({ message: "Login failed", error });
+    res.status(500).json({ message: "Login failed" });
+    console.log("Login failed", error)
   }
 };
 
