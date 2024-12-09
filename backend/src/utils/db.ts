@@ -57,6 +57,8 @@ export const updateOneDocument = async <T extends Document>(collectionName: stri
   return result.modifiedCount === 1;
 }
 
+// export const updateManyDOcu
+
 
 // Close the database connection (e.g., on app shutdown)
 export const closeDatabaseConnection = async (): Promise<void> => {

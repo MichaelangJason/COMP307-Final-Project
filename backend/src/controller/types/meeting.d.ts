@@ -1,5 +1,5 @@
 import { Meeting, MeetingAvailability } from "@shared/types/db";
-import { MeetingCreateBody, MeetingCreateParams, MeetingInfo, MeetingRequestParams, MeetingBookingBody, MeetingUnbookBody } from "@shared/types/api/meeting";
+import { MeetingCreateBody, MeetingCreateParams, MeetingInfo, MeetingRequestParams, MeetingBookingBody, MeetingUnbookBody, MeetingCancelBody } from "@shared/types/api/meeting";
 import { Request, Response } from 'express'
 
 
@@ -26,3 +26,7 @@ export type MeetingBookResponse = Response<MessageResponse>;
 // unbook meeting
 export type MeetingUnbookRequest = Request<MeetingRequestParams, MessageResponse, MeetingUnbookBody>; // no query, no locals
 export type MeetingUnbookResponse = Response<MessageResponse>;
+
+// cancel meeting
+export type MeetingCancelRequest = Request<MeetingRequestParams, MessageResponse, MeetingCancelBody>; // no query, no locals
+export type MeetingCancelResponse = Response<MessageResponse>;

@@ -5,6 +5,7 @@ export interface Participant {
   email: string;
   firstName: string;
   lastName: string;
+  userId?: ObjectId;
 }
 
 export interface MeetingAvailability {

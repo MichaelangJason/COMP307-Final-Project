@@ -59,3 +59,8 @@ export interface MeetingPublicInfoResponse extends MeetingInfo {
   hostId: string;
   status: MeetingStatus;
 }
+
+export interface MeetingCancelBody {
+  date: string;
+  slot: string;
+}

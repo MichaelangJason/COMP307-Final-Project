@@ -13,5 +13,7 @@ meetingRouter.put('/:meetingId', meetingController.update);
 meetingRouter.put('/book/:meetingId', meetingController.book);
 // unbook from a meeting
 meetingRouter.put('/unbook/:meetingId', meetingController.unbook);
+// cancel a meeting slot
+meetingRouter.put('/cancel/:meetingId', meetingController.cancel);
 
 export default meetingRouter;

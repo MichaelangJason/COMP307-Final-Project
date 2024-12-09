@@ -2,6 +2,8 @@ import { ObjectId, UpdateFilter } from "mongodb";
 import {
   MeetingBookRequest,
   MeetingBookResponse,
+  MeetingCancelRequest,
+  MeetingCancelResponse,
   MeetingCreateRequest,
   MeetingCreateResponse,
   MeetingRequest,
@@ -11,7 +13,7 @@ import {
   MeetingUpdateRequest,
   MeetingUpdateResponse,
 } from "./types/meeting";
-import { deleteDocument, getDocument, insertDocument, updateOneDocument } from "../utils/db";
+import { deleteDocument, getCollection, getDocument, insertDocument, updateOneDocument } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
 import { MeetingInfo } from "@shared/types/api/meeting";
@@ -161,11 +163,11 @@ const isValidAvailabilities = (availabilities: MeetingAvailability[]) => {
   return emptySlots && noDuplicates && allFutureDates;
 }
 
-const isValidUserId = (userId: string) => {
+const isValidUserId = (userId: string | undefined) => {
   try {
     return new ObjectId(userId);
   } catch (error) {
-    return false;
+    return undefined;
   }
 }
 
@@ -179,9 +181,9 @@ const createPollOptions = (availabilities: MeetingAvailability[]) => {
 
 const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   const { meetingId } = req.params;
-  let meeting: Meeting | null;
 
-  if (!(meeting = await getMeeting(meetingId))) {
+  const meeting: Meeting | null = await getMeeting(meetingId);
+  if (!meeting) {
     res.status(404).json({ message: "Meeting not found" });
     return;
   }
@@ -249,7 +251,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
 
   if (pollInfo && (
     !pollInfo.timeout || !dateRegex.test(pollInfo.timeout) || new Date(pollInfo.timeout+"T23:59:59") < new Date() ||
-    !pollInfo.results || typeof pollInfo.results !== "number"
+    !pollInfo.results || typeof pollInfo.results !== "number" || !isValidUserId(hostId)
   )) {
     res.status(400).json({ message: "Invalid poll info" });
     return;
@@ -344,8 +346,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
 const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => {
   const { meetingId } = req.params;
 
-  let meeting: Meeting | null;
-  if (!(meeting = await getMeeting(meetingId))) {
+  let meeting: Meeting | null = await getMeeting(meetingId);
+  if (!meeting) {
     res.status(404).json({ message: "Meeting not found" });
     return;
   }
@@ -409,9 +411,9 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
     return;
   }
 
-  const newParticipant: Participant = { ...participantInfo };
+  const newParticipant: Participant = { ...participantInfo, userId: isValidUserId(userId)};
   
-  const isSuccessfullyBooked = await updateOneDocument<Meeting>(CollectionNames.MEETING, meeting._id, {
+  const isSuccessfullyBooked = await updateMeeting(meetingId, {
     $push: { [`availabilities.$[elem].slots.${slot}`]: newParticipant },
   } as any, {
     arrayFilters: [{ "elem.date": date }]
@@ -426,6 +428,7 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
     meetingId: meeting._id,
     time: slot,
     date,
+    isCancelled: false,
   }
 
   if (userId && isValidUserId(userId)) {
@@ -435,6 +438,7 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
           upcomingMeetings: newUpcomingMeeting
         }} as any);
     } catch (error) {
+      // rollback
       await updateMeeting(meetingId, { 
         $pull: { [`availabilities.$[elem].slots.${slot}`]: { email: participantInfo.email } } 
       } as any, {
@@ -512,10 +516,74 @@ const unbook = async (req: MeetingUnbookRequest, res: MeetingUnbookResponse) => 
   res.status(200).json({ message: "Meeting unbooked!" });
 };
 
+const cancel = async (req: MeetingCancelRequest, res: MeetingCancelResponse) => {
+  const { meetingId } = req.params;
+  const { date, slot } = req.body;
+
+  if (!date || !slot) {
+    res.status(400).json({ message: "Missing required fields, cancelling meeting failed" });
+    return;
+  }
+
+  const meeting: Meeting | null = await getMeeting(meetingId);
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  const availability = meeting.availabilities.find((a) => a.date === date);
+  if (!availability) {
+    res.status(400).json({ message: "Invalid date" });
+    return;
+  }
+
+  const time = availability.slots[slot];
+  if (!time) {
+    res.status(400).json({ message: "Invalid slot" });
+    return;
+  }
+  
+  let userIds = time.map((p) => p.userId).filter((id) => !!id); // filter out undefined userIds
+
+  try {
+    userIds = userIds.map((id) => new ObjectId(id));
+  } catch(error) {
+    res.status(400).json({ message: "Invalid userIds" });
+    return;
+  }
+
+  try {
+    const userCollection = await getCollection<User>(CollectionNames.USER);
+    const result = await userCollection.updateMany(
+      {
+        _id: { $in: userIds },
+        upcomingMeetings: {
+          $elemMatch: {
+            meetingId: meeting._id,
+            date: date,
+            time: slot
+          }
+        }
+      },
+      {
+        $set: { "upcomingMeetings.$.isCancelled": true }
+      } as any
+    );
+    if (result.modifiedCount !== userIds.length) throw new Error("Modified count does not match userIds length");
+  } catch(error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to cancel meeting slot for users" });
+    return;
+  }
+
+  res.status(200).json({ message: "Meeting slot cancelled successfully" });
+};
+
 export default {
   getInfo,
   create,
   update,
   book,
-  unbook
+  unbook,
+  cancel
 };

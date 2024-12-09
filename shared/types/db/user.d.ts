@@ -5,6 +5,7 @@ interface UpcomingMeeting {
   meetingId: ObjectId;
   time: string;
   date: string;
+  isCancelled: boolean;
 }
 
 interface User extends Document {
