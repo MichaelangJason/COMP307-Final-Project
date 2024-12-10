@@ -82,27 +82,36 @@ const getAllUsers = async (req: Request, res: Response): Promise<void> => {
     try {
         const usersCollection = await getCollection<User>(CollectionNames.USER);
         const users = await usersCollection.find().toArray();
-        console.log("GetAllUsers", users)
-        res.json(users);
+        const userCount = await usersCollection.countDocuments();
+        console.log("GetAllUsers", users, "totalUsers:", userCount)
+        res.json({totalUsers: userCount, users});
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
 
-// Get users by serching firstName or email
-// const getUsers = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const { search } = req.query;
-//         const query = search
-//           ? { $or: [{ firstName: new RegExp(search as string, "i") }, { email: new RegExp(search as string, "i") }] }
-//           : {};
-//           const usersCollection = await getCollection<User>(CollectionNames.USER);
-//         const users = await usersCollection.find(query).toArray();
-//         res.status(200).json(users);
-//       } catch (error) {
-//         res.status(500).json({ message: "Failed to fetch members", error });
-//       }
-// };
+// Get users by searching firstName, lastName, or email
+const getUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { search } = req.query;
+        const query = search
+            ? {
+                $or: [
+                    { firstName: { $regex: search as string, $options: "i" } },
+                    { lastName: { $regex: search as string, $options: "i" } },
+                    { email: { $regex: search as string, $options: "i" } }
+                ]
+            }
+            : {};
+        const usersCollection = await getCollection<User>(CollectionNames.USER);
+        const users = await usersCollection.find(query).toArray();
+        const userCount = await usersCollection.countDocuments(query);
+        console.log("QueryUsersBySearch", users, "totalUsers:", userCount)
+        res.status(200).json({totalUsers: userCount, users});
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch users", error });
+    }
+};
 
 // Update User Profile as Admin
 const updateUserAsAdmin = async (req: Request, res: Response): Promise<void> => {
@@ -192,6 +201,7 @@ export default {
     getProfile,
     updateProfile,
     getAllUsers,
+    getUsers,
     updateUserAsAdmin,
     deleteUser,
     loginAsUser,
