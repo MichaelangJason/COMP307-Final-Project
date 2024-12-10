@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { User } from "@shared/types/db/user";
 import { ObjectId } from "mongodb";
 import { getCollection, getDocument } from "../utils/db";
-
 import { CollectionNames } from "./constants";
 // Get User Profile
 const getProfile = async (req: Request, res: Response): Promise<void> => {
@@ -89,6 +88,21 @@ const getAllUsers = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
+
+// Get users by serching firstName or email
+// const getUsers = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const { search } = req.query;
+//         const query = search
+//           ? { $or: [{ firstName: new RegExp(search as string, "i") }, { email: new RegExp(search as string, "i") }] }
+//           : {};
+//           const usersCollection = await getCollection<User>(CollectionNames.USER);
+//         const users = await usersCollection.find(query).toArray();
+//         res.status(200).json(users);
+//       } catch (error) {
+//         res.status(500).json({ message: "Failed to fetch members", error });
+//       }
+// };
 
 // Update User Profile as Admin
 const updateUserAsAdmin = async (req: Request, res: Response): Promise<void> => {
