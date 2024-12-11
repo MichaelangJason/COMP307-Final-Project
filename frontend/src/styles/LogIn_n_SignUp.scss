@@ -56,7 +56,7 @@
   // display: none;
 }
 
-form label {
+.page-body form label {
   font-size: 20px;
   font-family: fonts.$title;
 }
@@ -71,7 +71,7 @@ form input {
   margin-bottom: 16px;
 }
 
-input:hover:not(.submit-button) {
+.page-body input:hover:not(.submit-button) {
   padding: 0 14px 0 14px;
   border: 2px solid colors.$brightRed;
 }

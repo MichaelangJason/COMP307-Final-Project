@@ -1,0 +1,49 @@
+@use '../themes/colors.scss';
+
+.overviewContainer {
+    width: 100%;
+    height: max-content;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    label {
+        white-space: nowrap;
+        font-weight: 700;
+        font-size: 20px;
+        color: colors.$darkRed
+    }
+
+    input, textarea {
+        margin: 5px 0;
+        border: 1px solid black;
+    }
+
+    textarea {
+        height: 100px;
+    }
+
+    .frequency {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 5%;
+        flex-wrap: wrap;
+
+        > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input {
+            float: right;
+        }
+
+        .radioInput {
+            width: auto;
+            height: 30px;
+        }
+    }
+}

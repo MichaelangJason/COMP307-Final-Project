@@ -92,17 +92,18 @@ const BookMeeting = () => {
               </div>
             </div>
           </div>
-          <form className="bookingForm">
+          <form className="bookingForm roundShadowBorder">
             <h1>Booking Form</h1>
             <label>Last Name:</label>
-            <input type="text" name="lname" required />
+            <input className="textInput" type="text" name="lname" required />
             <label>First Name:</label>
-            <input type="text" name="fname" required />
+            <input className="textInput" type="text" name="fname" required />
             <label>Email:</label>
-            <input type="email" name="email" required />
+            <input className="textInput" type="email" name="email" required />
             <div className="requestAlt">
               <label>Request an alternative time:</label>
               <input
+                className="textInput"
                 style={{ margin: "0", width: "25px", height: "25px" }}
                 type="checkbox"
                 name="isRequest"
@@ -113,7 +114,7 @@ const BookMeeting = () => {
               Reason of meeting:
             </label>
             <textarea
-              className={isRequestAlt ? "" : "readOnly"}
+              className={isRequestAlt ? "textInput" : "readOnly textInput"}
               readOnly={!isRequestAlt}
               name="reason"
             />
