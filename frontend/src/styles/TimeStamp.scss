@@ -1,0 +1,28 @@
+@use "../themes/colors.scss";
+
+.timeStamp {
+    position: relative;
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px 10px;
+    width: 30%;
+    font-weight: 700;
+    background-color: colors.$lightGray;
+    white-space: nowrap;
+
+    .xIcon {
+        width: 16px;
+        height: auto;
+        position: absolute;
+        top: -8px;
+        right: -7px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 1200px) {
+        font-size: 12px;
+    }
+    @media (max-width: 600px) {
+        font-size: 8px;
+    }
+}

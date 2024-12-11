@@ -32,7 +32,7 @@ const MeetingOverview = () => {
         </div>
         <div className="readOnly">
           <label>Ends at:</label>
-          <input className="grayInput textInput" type="text" name="end" />
+          <input readOnly className="grayInput textInput" type="text" name="end" />
         </div>
       </div>
     </div>

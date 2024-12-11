@@ -1,49 +1,47 @@
-@use '../themes/colors.scss';
+@use "../themes/colors.scss";
 
 .overviewContainer {
-    width: 100%;
-    height: max-content;
-    padding: 30px;
+  width: 100%;
+  height: max-content;
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 20px;
+    color: colors.$darkRed;
+  }
+
+  textarea {
+    height: 100px;
+  }
+
+  .frequency {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    width: 100%;
+    align-items: center;
+    gap: 5%;
+    flex-wrap: wrap;
 
-    label {
-        white-space: nowrap;
-        font-weight: 700;
-        font-size: 20px;
-        color: colors.$darkRed
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    input, textarea {
-        margin: 5px 0;
-        border: 1px solid black;
+    input {
+      float: right;
     }
 
-    textarea {
-        height: 100px;
+    .radioInput {
+      width: auto;
+      height: 30px;
     }
-
-    .frequency {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        gap: 5%;
-        flex-wrap: wrap;
-
-        > div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        input {
-            float: right;
-        }
-
-        .radioInput {
-            width: auto;
-            height: 30px;
-        }
-    }
+  }
+  @media (max-width: 1000px) {
+    padding: 30px 40px;
+  }
 }

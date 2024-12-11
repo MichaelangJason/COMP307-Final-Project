@@ -1,7 +1,15 @@
-#edit {
-    padding: 0 64px;
+@use "../themes/colors.scss";
 
-    > div {
-        margin: 20px 0;
-    }
+#edit {
+  padding: 0 64px;
+
+  > div {
+    margin: 20px 0;
+  }
+
+  input,
+  textarea {
+    margin: 5px 0;
+    border: 1px solid colors.$mediumGray;
+  }
 }

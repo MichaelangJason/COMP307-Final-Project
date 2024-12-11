@@ -76,7 +76,7 @@ const PrivateNav = () => {
           <FaBars />
         </button>
       </div>
-      <main>
+      <main id="private-main">
         <Outlet />
       </main>
     </>

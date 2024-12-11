@@ -1,5 +1,6 @@
 import MeetingOverview from "components/MeetingOverview";
 
+import MeetingDate from "components/MeetingDate";
 import "../styles/Edit.scss";
 
 const Edit = () => {
@@ -8,7 +9,7 @@ const Edit = () => {
       <h1>Edit Meeting</h1>
       <form id="edit">
         <MeetingOverview />
-        <div className="dateContainer"></div>
+        <MeetingDate />
         <div className="participantsContainer"></div>
         <div className="pollContainer"></div>
       </form>

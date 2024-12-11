@@ -8,7 +8,7 @@ const PublicNav = () => {
     <>
       <NavBarContent pageTo="/login" text="Log In" />
       <div id="publicSeparator"></div>
-      <main>
+      <main id="public-nav">
         <Outlet />
       </main>
     </>
