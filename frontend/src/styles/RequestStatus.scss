@@ -1,0 +1,35 @@
+@use "../themes/colors.scss";
+
+.requestStatus {
+  height: 30px;
+  width: 100px;
+  color: colors.$white;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 5px 10px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 1000px) {
+    font-size: 12px;
+  }
+  @media (max-width: 650px) {
+    height: 20px;
+    width: 50px;
+    font-size: 8px;
+  }
+}
+
+.expired {
+  background-color: colors.$mediumGray;
+}
+
+.pending {
+  background-color: colors.$brightRed;
+}
+
+.accepted {
+  background-color: colors.$green;
+}

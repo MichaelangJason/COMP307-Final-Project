@@ -6,13 +6,16 @@ interface Props {
   start: string;
   end: string;
   onDelete: () => void;
+  readOnly: boolean;
 }
 
-const TimeStamp = ({ start, end, onDelete }: Props) => {
+const TimeStamp = ({ start, end, onDelete, readOnly }: Props) => {
   return (
     <div className="timeStamp">
       {start} - {end}
-      <img onClick={onDelete} src={deleteIcon} className="xIcon" />
+      {readOnly && (
+        <img onClick={onDelete} src={deleteIcon} className="xIcon" />
+      )}
     </div>
   );
 };

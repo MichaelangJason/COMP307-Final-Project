@@ -26,4 +26,8 @@
   .submitButton {
     align-self: flex-end;
   }
+
+  @media (max-width: 800px) {
+    padding: 0 2rem;
+  }
 }

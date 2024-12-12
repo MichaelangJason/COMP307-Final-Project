@@ -1,0 +1,147 @@
+@use "../themes/colors.scss";
+
+.requestAccordion {
+  width: 100%;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+
+  .visibleContent {
+    padding-inline: 15px;
+    height: 80px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2%;
+
+    button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background-color: colors.$white;
+      cursor: pointer;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      @media (max-width: 650px) {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .visibleInfo {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      label {
+        font-weight: 700;
+        font-size: 20px;
+
+        @media (max-width: 1000px) {
+          font-size: 16px;
+        }
+        @media (max-width: 800px) {
+          font-size: 12px;
+        }
+        @media (max-width: 650px) {
+          font-size: 8px;
+        }
+      }
+
+      p {
+        font-weight: 400;
+        font-size: 20px;
+
+        @media (max-width: 1000px) {
+          font-size: 16px;
+        }
+        @media (max-width: 800px) {
+          font-size: 12px;
+        }
+        @media (max-width: 650px) {
+          font-size: 8px;
+        }
+      }
+    }
+    @media (max-width: 1000px) {
+      padding-inline: 0px;
+    }
+  }
+  @media (max-width: 650px) {
+    padding: 0 10px;
+  }
+
+  .hiddenContent {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    height: 0;
+    padding: 0 0 0 calc(45px + 2%);
+
+    label {
+      font-weight: 700;
+      font-size: 20px;
+
+      @media (max-width: 1000px) {
+        font-size: 16px;
+      }
+      @media (max-width: 800px) {
+        font-size: 12px;
+      }
+      @media (max-width: 650px) {
+        font-size: 8px;
+      }
+    }
+
+    p {
+      font-weight: 400;
+      font-size: 20px;
+
+      @media (max-width: 1000px) {
+        font-size: 16px;
+      }
+      @media (max-width: 800px) {
+        font-size: 12px;
+      }
+      @media (max-width: 650px) {
+        font-size: 8px;
+      }
+    }
+
+    .decisionButtons {
+      display: flex;
+      gap: 30px;
+      align-self: flex-end;
+
+      .declineButton {
+        input {
+          background-color: colors.$mediumGray;
+        }
+      }
+    }
+
+    @media (max-width: 1000px) {
+      padding: 0 calc(30px + 2%);
+    }
+
+    @media (max-width: 650px) {
+      padding: 0 calc(20px + 2%);
+    }
+  }
+
+  .show {
+    height: max-content;
+    padding: 20px 0 20px calc(45px + 2%);
+  }
+}

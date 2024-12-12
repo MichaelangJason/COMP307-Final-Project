@@ -26,6 +26,19 @@ const MeetingDate = ({ readOnly = false }: Props) => {
   const [selectedTimes, setSelectedTimes] = useState<[number, number][]>([
     [1, 2],
     [15, 20],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
+    [35, 52],
   ]);
   const [selectedDateTimes, setSelectedDateTimes] = useState<
     {
@@ -38,6 +51,7 @@ const MeetingDate = ({ readOnly = false }: Props) => {
       times: [
         [1, 2],
         [15, 20],
+        [35, 52],
       ],
     },
   ]);
@@ -135,6 +149,7 @@ const MeetingDate = ({ readOnly = false }: Props) => {
               start={predefinedTimeSlots[timeIndices[0]]}
               end={predefinedTimeSlots[timeIndices[1]]}
               onDelete={() => handleDeleteTimeStamp(index)}
+              readOnly={readOnly}
             />
           ))}
         </div>
@@ -142,6 +157,7 @@ const MeetingDate = ({ readOnly = false }: Props) => {
           <label>Max Participants Number:</label>
           <input
             type="number"
+            min={0}
             readOnly={readOnly}
             className={readOnly ? "grayInput textInput" : "textInput"}
             name="participants"
