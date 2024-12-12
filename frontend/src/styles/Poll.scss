@@ -1,0 +1,12 @@
+@use "../themes/colors.scss";
+
+.poll {
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  h2 {
+    color: colors.$darkGray;
+  }
+}

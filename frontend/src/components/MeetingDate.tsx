@@ -23,6 +23,20 @@ const MeetingDate = () => {
     [1, 2],
     [15, 20],
   ]);
+  const [selectedDateTimes, setSelectedDateTimes] = useState<
+    {
+      date: string;
+      times: [number, number][];
+    }[]
+  >([
+    {
+      date: "February 8th 2024",
+      times: [
+        [1, 2],
+        [15, 20],
+      ],
+    },
+  ]);
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date.toISOString().split("T")[0]);
@@ -40,11 +54,11 @@ const MeetingDate = () => {
     if (!selectedDate) {
       return;
     }
-    setSelectedTimes(prevTimes => [...prevTimes, newTimeIndices])
+    setSelectedTimes((prevTimes) => [...prevTimes, newTimeIndices]);
   };
 
   const handleDeleteTimeStamp = (index: number) => {
-    setSelectedTimes(prevTimes => prevTimes.filter((_, i) => i != index) )
+    setSelectedTimes((prevTimes) => prevTimes.filter((_, i) => i != index));
   };
 
   return (
@@ -106,11 +120,10 @@ const MeetingDate = () => {
             />
           ))}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="participantsNumber">
           <label>Max Participants Number:</label>
           <input
             type="number"
-            style={{ flexGrow: 1, textAlign: "center" }}
             className="grayInput textInput"
             name="participants"
           />

@@ -16,11 +16,22 @@ const MeetingParticipants = () => {
 
   return (
     <div>
-      <h1 style={{ margin: "0 0 20px 0" }}>Participants</h1>
       <div className="meetingParticipants roundShadowBorder">
-        {participantsId.map((id) => (
-          <ParticipantCard onDelete={() => handleDelete(id)} />
-        ))}
+        {participantsId.length > 0 ? (
+          participantsId.map((id) => (
+            <ParticipantCard onDelete={() => handleDelete(id)} />
+          ))
+        ) : (
+          <div
+            style={{
+              textAlign: "center",
+              width: "100%",
+              fontSize: "20px",
+            }}
+          >
+            No participants
+          </div>
+        )}
       </div>
     </div>
   );

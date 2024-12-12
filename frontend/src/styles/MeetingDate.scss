@@ -23,6 +23,10 @@
     width: 40%;
     text-align: center;
 
+    label {
+      font-size: 24px;
+    }
+
     .react-calendar {
       margin-top: 20px;
       width: 100%;
@@ -32,6 +36,10 @@
 
       @media (max-width: 700px) {
         width: 100%;
+      }
+
+      @media (max-width: 500px) {
+        font-size: 12px;
       }
     }
 
@@ -53,6 +61,18 @@
 
     abbr {
       text-decoration: none;
+    }
+
+    .react-calendar__navigation button {
+      @media(max-width: 500px) {
+        min-width: 0;
+      }
+    }
+
+    .react-calendar__navigation__label__labelText {
+      @media (max-width: 500px) {
+        font-size: 12px;
+      }
     }
 
     @media (max-width: 1000px) {
@@ -91,11 +111,16 @@
       display: flex;
       gap: 20px;
       align-items: flex-end;
+      flex-wrap: wrap;
 
       .timeSelectContainer {
         width: calc(50% - 35px);
         display: flex;
         flex-direction: column;
+
+        @media (max-width: 500px) {
+          width: 100%;
+        }
       }
 
       .icon {
@@ -105,24 +130,53 @@
         cursor: pointer;
 
         svg {
-            width: 100%;
-            height: 100%;
+          width: 100%;
+          height: 100%;
         }
+      }
+
+      @media (max-width: 500px) {
+        justify-content: center;
       }
     }
 
     .timeStampsContainer {
-        width: 100%;
-        overflow-y: overlay;
-        height: max-content;
-        max-height: 220px;
-        padding-top: 8px;
-        align-content: flex-start;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+      width: 100%;
+      overflow-y: overlay;
+      height: max-content;
+      max-height: 220px;
+      padding-top: 8px;
+      align-content: flex-start;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    
+
+    .participantsNumber {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      label {
+        @media (max-width: 500px) {
+          white-space: wrap;
+        }
+      }
+
+      input {
+        flex-grow: 1;
+        text-align: center;
+
+        @media (max-width: 500px) {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 500px) {
+        display: block;
+      }
+    }
+
     @media (max-width: 700px) {
       justify-content: space-evenly;
     }

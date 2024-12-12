@@ -9,6 +9,10 @@
   flex-direction: column;
   gap: 20px;
 
+  h1 {
+    margin: 0 0 20px 0;
+  }
+
   > div {
     margin: 20px 0;
   }
@@ -17,5 +21,9 @@
   textarea {
     margin: 5px 0;
     border: 1px solid colors.$mediumGray;
+  }
+
+  .submitButton {
+    align-self: flex-end;
   }
 }
