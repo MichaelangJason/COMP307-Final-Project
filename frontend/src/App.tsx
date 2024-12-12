@@ -15,6 +15,7 @@ import Profile from "private-pages/Profile";
 import Edit from "private-pages/Edit";
 import AdminNav from "layouts/AdminNav";
 import Members from "admin-pages/Members";
+import MeetingPoll from "private-pages/MeetingPoll";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/" element={<PublicNav />}>
           <Route index element={<Home />} />
           <Route path="book/:id" element={<BookMeeting />} />
+          <Route path="poll/:id" element={<MeetingPoll />} />
         </Route>
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp />} />

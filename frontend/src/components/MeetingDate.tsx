@@ -6,6 +6,10 @@ import "../styles/MeetingDate.scss";
 import { useState } from "react";
 import TimeStamp from "./TimeStamp";
 
+interface Props {
+  readOnly?: boolean;
+}
+
 const predefinedTimeSlots: Array<string> = [];
 for (let hour = 0; hour < 24; hour++) {
   for (let minute = 0; minute < 60; minute += 15) {
@@ -15,7 +19,7 @@ for (let hour = 0; hour < 24; hour++) {
   }
 }
 
-const MeetingDate = () => {
+const MeetingDate = ({ readOnly = false }: Props) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [startTimeIndex, setStartTimeIndex] = useState<number>(0);
   const [endTimeIndex, setEndTimeIndex] = useState<number>(1);
@@ -50,8 +54,13 @@ const MeetingDate = () => {
     setEndTimeIndex(Number(e.target.value));
   };
 
-  const handleAddTimeStamp = (newTimeIndices: [number, number]) => {
-    if (!selectedDate) {
+  const handleAddTimeStamp = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    newTimeIndices: [number, number]
+  ) => {
+    e.preventDefault();
+
+    if (!selectedDate || readOnly) {
       return;
     }
     setSelectedTimes((prevTimes) => [...prevTimes, newTimeIndices]);
@@ -73,13 +82,18 @@ const MeetingDate = () => {
       <div className="col2">
         <div>
           <label>Location:</label>
-          <input className="grayInput textInput" name="location" />
+          <input
+            readOnly={readOnly}
+            className={readOnly ? "grayInput textInput" : "textInput"}
+            name="location"
+          />
         </div>
         <div className="startEndTime">
           <div className="timeSelectContainer">
             <label>Start Time</label>
             <select
-              className="grayInput"
+              disabled={readOnly}
+              className={readOnly ? "grayInput textInput" : "textInput"}
               value={startTimeIndex}
               onChange={handleStartTimeChange}
             >
@@ -91,7 +105,8 @@ const MeetingDate = () => {
           <div className="timeSelectContainer">
             <label>End Time</label>
             <select
-              className="grayInput"
+              disabled={readOnly}
+              className={readOnly ? "grayInput textInput" : "textInput"}
               value={endTimeIndex}
               onChange={handleEndTimeChange}
             >
@@ -104,12 +119,15 @@ const MeetingDate = () => {
               })}
             </select>
           </div>
-          <div
+          <button
+            disabled={readOnly}
             className={selectedDate ? "icon" : "icon readOnly"}
-            onClick={() => handleAddTimeStamp([startTimeIndex, endTimeIndex])}
+            onClick={(e) =>
+              handleAddTimeStamp(e, [startTimeIndex, endTimeIndex])
+            }
           >
             <FontAwesomeIcon icon={faCirclePlus} />
-          </div>
+          </button>
         </div>
         <div className="timeStampsContainer">
           {selectedTimes.map((timeIndices, index) => (
@@ -124,7 +142,8 @@ const MeetingDate = () => {
           <label>Max Participants Number:</label>
           <input
             type="number"
-            className="grayInput textInput"
+            readOnly={readOnly}
+            className={readOnly ? "grayInput textInput" : "textInput"}
             name="participants"
           />
         </div>

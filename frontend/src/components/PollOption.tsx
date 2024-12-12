@@ -4,6 +4,7 @@ interface Props {
   start: string;
   end: string;
   date: string;
+  id: string;
   toChoose?: boolean;
   isRed?: boolean;
 }
@@ -12,16 +13,25 @@ const PollOption = ({
   start,
   end,
   date,
+  id,
   toChoose = false,
   isRed = false,
 }: Props) => {
   return (
-    <div className={isRed ? "pollOption red" : "pollOption"}>
-      <div>
-        {start} - {end}
-      </div>
-      {toChoose && <input type="radio" value={`${start} - ${end}`} name={date} />}
-    </div>
+    <label
+      className={isRed ? "pollOption red" : toChoose ? "pollOption choice" : "pollOption"}
+      htmlFor={`poll${id}`}
+    >
+      {start} - {end}
+      {toChoose && (
+        <input
+          type="radio"
+          id={`poll${id}`}
+          value={`${start} - ${end}`}
+          name={date}
+        />
+      )}
+    </label>
   );
 };
 

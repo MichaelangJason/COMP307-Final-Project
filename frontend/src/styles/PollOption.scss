@@ -38,3 +38,13 @@
   color: colors.$white;
   background-color: colors.$brightRed;
 }
+
+.choice {
+  cursor: pointer;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.choice:hover {
+  color: colors.$white;
+  background-color: colors.$brightRed;
+}

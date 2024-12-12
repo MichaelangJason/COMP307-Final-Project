@@ -1,0 +1,22 @@
+@use "../themes/colors.scss";
+
+#meetingPoll {
+  padding: 30px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  input,
+  textarea {
+    margin: 5px 0;
+    border: 1px solid colors.$mediumGray;
+  }
+
+  > div {
+    margin: 20px 0;
+
+    h1 {
+      margin: 0 0 20px 0;
+    }
+  }
+}

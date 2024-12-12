@@ -1,15 +1,28 @@
 import "../styles/MeetingOverview.scss";
 
-const MeetingOverview = () => {
+interface Props {
+  readOnly?: boolean;
+}
+
+const MeetingOverview = ({ readOnly = false }: Props) => {
   return (
     <div className="meetingOverview roundShadowBorder">
       <div>
         <label>Title:</label>
-        <input className="grayInput textInput" type="text" name="title" />
+        <input
+          readOnly={readOnly}
+          className={readOnly ? "grayInput textInput" : "textInput"}
+          type="text"
+          name="title"
+        />
       </div>
       <div>
         <label>Description:</label>
-        <textarea className="grayInput textInput" name="description" />
+        <textarea
+          readOnly={readOnly}
+          className={readOnly ? "grayInput textInput" : "textInput"}
+          name="description"
+        />
       </div>
       <div className="frequency">
         <div>
@@ -32,7 +45,12 @@ const MeetingOverview = () => {
         </div>
         <div className="readOnly">
           <label>Ends at:</label>
-          <input readOnly className="grayInput textInput" type="text" name="end" />
+          <input
+            readOnly
+            className="grayInput textInput"
+            type="text"
+            name="end"
+          />
         </div>
       </div>
     </div>
