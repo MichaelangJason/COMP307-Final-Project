@@ -5,9 +5,10 @@
     text-align: center;
     border-radius: 5px;
     padding: 10px 10px;
-    width: 30%;
+    width: calc(100% / 3 - 9px);
+    height: max-content;
     font-weight: 700;
-    background-color: colors.$lightGray;
+    background-color: colors.$silverGray;
     white-space: nowrap;
 
     .xIcon {

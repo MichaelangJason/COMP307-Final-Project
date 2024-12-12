@@ -2,7 +2,7 @@ import "../styles/MeetingOverview.scss";
 
 const MeetingOverview = () => {
   return (
-    <div className="overviewContainer roundShadowBorder">
+    <div className="meetingOverview roundShadowBorder">
       <div>
         <label>Title:</label>
         <input className="grayInput textInput" type="text" name="title" />

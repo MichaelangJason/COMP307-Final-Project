@@ -1,0 +1,50 @@
+@use "../themes/colors.scss";
+
+.participantCard {
+  background-color: colors.$silverGray;
+  width: calc(100% / 3 - 20px);
+  height: max-content;
+  padding: 20px;
+  border-radius: 10px;
+
+  .firstLine {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    > p {
+      font-weight: 700;
+    }
+
+    img {
+      width: auto;
+      height: 25px;
+      cursor: pointer;
+
+      @media (max-width: 750px) {
+        height: 15px;
+      }
+    }
+  }
+
+  p {
+    font-weight: 400;
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
+
+    @media (max-width: 750px) {
+      font-size: 12px;
+    }
+    @media (max-width: 750px) {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    width: calc(100% / 2 - 20px);
+  }
+  @media (max-width: 650px) {
+    width: 100%;
+  }
+}

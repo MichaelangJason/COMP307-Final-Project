@@ -1,7 +1,13 @@
 @use "../themes/colors.scss";
 
 #edit {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
   padding: 0 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
   > div {
     margin: 20px 0;

@@ -19,7 +19,10 @@ const MeetingDate = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [startTimeIndex, setStartTimeIndex] = useState<number>(0);
   const [endTimeIndex, setEndTimeIndex] = useState<number>(1);
-  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [selectedTimes, setSelectedTimes] = useState<[number, number][]>([
+    [1, 2],
+    [15, 20],
+  ]);
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date.toISOString().split("T")[0]);
@@ -33,16 +36,16 @@ const MeetingDate = () => {
     setEndTimeIndex(Number(e.target.value));
   };
 
-  const handleAddTimeStamp = () => {
+  const handleAddTimeStamp = (newTimeIndices: [number, number]) => {
     if (!selectedDate) {
-        return;
+      return;
     }
-    return;
+    setSelectedTimes(prevTimes => [...prevTimes, newTimeIndices])
   };
 
-  const handleDeleteTimeStamp = () => {
-    return;
-  }
+  const handleDeleteTimeStamp = (index: number) => {
+    setSelectedTimes(prevTimes => prevTimes.filter((_, i) => i != index) )
+  };
 
   return (
     <div className="meetingDate roundShadowBorder">
@@ -87,36 +90,21 @@ const MeetingDate = () => {
               })}
             </select>
           </div>
-          <div className={selectedDate ? "icon" : "icon readOnly"} onClick={handleAddTimeStamp}>
+          <div
+            className={selectedDate ? "icon" : "icon readOnly"}
+            onClick={() => handleAddTimeStamp([startTimeIndex, endTimeIndex])}
+          >
             <FontAwesomeIcon icon={faCirclePlus} />
           </div>
         </div>
         <div className="timeStampsContainer">
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
-          <TimeStamp start="10:00" end="12:00" onDelete={handleAddTimeStamp} />
+          {selectedTimes.map((timeIndices, index) => (
+            <TimeStamp
+              start={predefinedTimeSlots[timeIndices[0]]}
+              end={predefinedTimeSlots[timeIndices[1]]}
+              onDelete={() => handleDeleteTimeStamp(index)}
+            />
+          ))}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <label>Max Participants Number:</label>
