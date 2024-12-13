@@ -4,9 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const MONGO_URI = "mongodb://localhost:27017/Bookedin";
-const DATABASE_NAME = "Bookedin";
-
 let client: MongoClient;
 let db: Db | null = null;
 

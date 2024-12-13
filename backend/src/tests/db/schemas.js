@@ -3,6 +3,7 @@ const userSchema = {
     $jsonSchema: {
       bsonType: "object",
       required: [
+        "_id",
         "email",
         "password",
         "firstName",
@@ -16,6 +17,10 @@ const userSchema = {
         "updatedAt",
       ],
       properties: {
+        _id: {
+          bsonType: "objectId",
+          description: "User ID as ObjectId reference"
+        },
         email: {
           bsonType: "string",
           pattern: "^[a-zA-Z0-9._%+-]+@(mail.)?mcgill.ca$",
@@ -116,7 +121,7 @@ const userSchema = {
           description: "Timestamp of last update",
         },
       },
-      additionalProperties: false,
+      // additionalProperties: false,
     },
   },
 };
@@ -126,6 +131,7 @@ const meetingSchema = {
     $jsonSchema: {
       bsonType: "object",
       required: [
+        "_id",
         "title",
         "description",
         "hostId",
@@ -137,6 +143,10 @@ const meetingSchema = {
         "updatedAt",
       ],
       properties: {
+        _id: {
+          bsonType: "objectId",
+          description: "Meeting ID as ObjectId reference"
+        },
         title: {
           bsonType: "string",
           minLength: 1,
@@ -257,8 +267,12 @@ const requestSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["proposerInfo", "proposedSlot", "status", "reason", "createdAt", "updatedAt"],
+      required: ["_id", "proposerInfo", "proposedSlot", "status", "reason", "createdAt", "updatedAt"],
       properties: {
+        _id: {
+          bsonType: "objectId",
+          description: "Request ID as ObjectId reference"
+        },
         proposerInfo: {
           bsonType: "object",
           required: ["firstName", "lastName", "email"],
@@ -323,8 +337,12 @@ const pollSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["options", "timeout", "results", "meetingId", "createdAt", "updatedAt"],
+      required: ["_id", "options", "timeout", "results", "meetingId", "createdAt", "updatedAt"],
       properties: {
+        _id: {
+          bsonType: "objectId",
+          description: "Poll ID as ObjectId reference"
+        },
         options: {
           bsonType: "array",
           minItems: 1,
