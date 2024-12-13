@@ -1,16 +1,28 @@
 #request {
+  width: 100%;
   padding: 0 64px;
+  display: flex;
+  justify-content: space-between;
 
-  > div {
-    margin: 20px 0;
+  .accordions {
+    margin-right: 20px;
+    width: 85%;
+    > div {
+      margin: 20px 0;
+    }
+
+    @media (max-width: 900px) {
+      width: 100%;
+      margin-right: 0;
+    }
   }
 
   .filter-options {
     display: flex;
     flex-direction: column;
     gap: 10px; // Space between filter options
-    padding: 20px;
-    margin-right: 100px;
+    margin-top: 20px;
+    padding-top: 20px;
     max-width: 300px;
 
     /* Border for testing purposes */
@@ -28,12 +40,24 @@
       }
     }
 
+    @media (max-width: 900px) {
+      flex-direction: row;
+      order: -1;
+    }
+
     // Narrower filter for smaller screens
     @media (max-width: 650px) {
+      font-size: 12px;
       max-width: 150px;
-      padding: 20px;
-      margin-right: 20px;
     }
+
+    @media(max-width: 450px) {
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    flex-wrap: wrap;
   }
 
   @media (max-width: 800px) {
