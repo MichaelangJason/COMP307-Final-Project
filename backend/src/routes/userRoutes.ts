@@ -1,12 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express';
 import userController from '../controller/userController';
 import adminMiddleware from '../middleware/adminMiddleware';
+import privateMiddleware from '../middleware/privateMiddleware';
 
 const userRouter = express.Router();
 
 //Profile
-userRouter.get('/profile/:id', userController.getProfile);
-userRouter.put('/profile/:id', userController.updateProfile);
+userRouter.get('/profile/:id', privateMiddleware, userController.getProfile);
+userRouter.put('/profile/:id', privateMiddleware, userController.updateProfile);
 
 // Admin
 userRouter.get('/admin/members', adminMiddleware, userController.getAllUsers);

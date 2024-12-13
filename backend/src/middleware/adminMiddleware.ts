@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "../controller/constants";
 
-const JWT_SECRET = "blue-bacon-stole-jamies-key";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Admin middleware to check user's role
 export const adminMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
