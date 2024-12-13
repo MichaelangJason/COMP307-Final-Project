@@ -1,4 +1,4 @@
-import { Document, ObjectId } from "mongodb";
+import { ObjectId, Document } from "../../../backend/node_modules/mongodb";
 import { RequestStatus } from "../api/common";
 
 export interface Request extends Document {

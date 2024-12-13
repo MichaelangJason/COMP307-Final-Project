@@ -1,5 +1,5 @@
 import { AlarmInterval, UserRole } from "../api/common";
-import { ObjectId, Document } from "mongodb";
+import { ObjectId, Document } from "../../../backend/node_modules/mongodb"
 
 interface UpcomingMeeting {
   meetingId: ObjectId;

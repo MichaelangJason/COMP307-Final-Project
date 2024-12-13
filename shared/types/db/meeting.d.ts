@@ -1,4 +1,4 @@
-import { ObjectId, Document } from "mongodb";
+import { ObjectId, Document } from "../../../backend/node_modules/mongodb";
 import { MeetingStatus, MeetingRepeat } from "../api/common";
 
 export interface Participant {

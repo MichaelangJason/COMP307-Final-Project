@@ -1,4 +1,4 @@
-import { ObjectId, Document } from "mongodb";
+import { ObjectId, Document } from "../../../backend/node_modules/mongodb"
 
 export interface PollOption {
   date: string;
