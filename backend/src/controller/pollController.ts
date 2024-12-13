@@ -83,8 +83,44 @@ const getPollVotes = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const updatePollVotes = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const pollId = new ObjectId(req.params.id);
+        const { date, slot } = req.body;
+
+        if (!date || !slot) {
+            res.status(400).json({ message: "Both 'date' and 'slot' are required in the request body" });
+            return;
+        }
+
+        const pollsCollection = await getCollection<Poll>(CollectionNames.POLL);
+        const poll = await pollsCollection.findOne({ _id: pollId } as any);
+        console.log("Poll votes: ", pollId, poll?.options)
+        const result = await pollsCollection.updateOne(
+            {
+                _id: pollId as any, 
+                "options.date": date,
+                [`options.slots.${slot}`]: { $exists: true }
+            },
+            {
+                $inc: { [`options.$.slots.${slot}`]: 1 }
+            }
+        );
+
+        if (result.matchedCount === 0) {
+            res.status(404).json({ message: "Poll or specified slot not found" });
+            return;
+        }
+        console.log("Succesfully voted for: ", pollId, poll?.options)
+
+        res.status(200).json({ message: "Vote updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+};
 
 export default {
     createPoll,
-    getPollVotes
+    getPollVotes,
+    updatePollVotes
 };

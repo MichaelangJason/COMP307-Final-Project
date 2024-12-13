@@ -42,11 +42,7 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const updatedFields: Partial<User> = {
-            firstName: firstName || user.firstName,
-            lastName: lastName || user.lastName,
-            email: email || user.email,
-        };
+        const updatedFields: Partial<User> = { ...req.body};
 
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -113,47 +109,47 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-// Update User Profile as Admin
-const updateUserAsAdmin = async (req: Request, res: Response): Promise<void> => {
-    const userId = new ObjectId(req.params.id);
-    const { firstName, lastName, email, role } = req.body;
+// // Update User Profile as Admin
+// const updateUserAsAdmin = async (req: Request, res: Response): Promise<void> => {
+//     const userId = new ObjectId(req.params.id);
+//     const { firstName, lastName, email, role } = req.body;
 
-    try {
-        const usersCollection = await getCollection<User>(CollectionNames.USER);
-        const user = await getUserById(userId);
-        if (!user) {
-            res.status(404).json({ message: "User not found" });
-            return;
-        }
+//     try {
+//         const usersCollection = await getCollection<User>(CollectionNames.USER);
+//         const user = await getUserById(userId);
+//         if (!user) {
+//             res.status(404).json({ message: "User not found" });
+//             return;
+//         }
 
-        const updatedFields: Partial<User> = {
-            firstName: firstName || user.firstName,
-            lastName: lastName || user.lastName,
-            email: email || user.email,
-            role: role ?? user.role, // Allow admins to update the user's role
-        };
+//         const updatedFields: Partial<User> = {
+//             firstName: firstName || user.firstName,
+//             lastName: lastName || user.lastName,
+//             email: email || user.email,
+//             role: role ?? user.role, // Allow admins to update the user's role
+//         };
 
-        const result = await usersCollection.updateOne(
-            { _id: userId } as any,
-            { $set: updatedFields }
-        );
+//         const result = await usersCollection.updateOne(
+//             { _id: userId } as any,
+//             { $set: updatedFields }
+//         );
 
-        if (result.modifiedCount > 0) {
-            const updatedUser = await getUserById(userId);
-            console.log(updatedUser);
-            if (updatedUser) {
-                res.status(200).json({
-                    message: "User updated successfully",
-                    name: updatedUser.firstName + " " + updatedUser.lastName
-                });
-            }
-        } else {
-            res.status(400).json({ message: "No changes made to the profile" });
-        }
-    } catch (error) {
-        res.status(500).json({ message: "Internal Server Error", error });
-    }
-};
+//         if (result.modifiedCount > 0) {
+//             const updatedUser = await getUserById(userId);
+//             console.log(updatedUser);
+//             if (updatedUser) {
+//                 res.status(200).json({
+//                     message: "User updated successfully",
+//                     name: updatedUser.firstName + " " + updatedUser.lastName
+//                 });
+//             }
+//         } else {
+//             res.status(400).json({ message: "No changes made to the profile" });
+//         }
+//     } catch (error) {
+//         res.status(500).json({ message: "Internal Server Error", error });
+//     }
+// };
 
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
     const userId = new ObjectId(req.params.id);
@@ -202,7 +198,7 @@ export default {
     updateProfile,
     getAllUsers,
     getUsers,
-    updateUserAsAdmin,
+    //updateUserAsAdmin,
     deleteUser,
     loginAsUser,
 };

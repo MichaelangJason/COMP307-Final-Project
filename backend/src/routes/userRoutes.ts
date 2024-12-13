@@ -11,7 +11,7 @@ userRouter.put('/profile/:id', userController.updateProfile);
 // Admin
 userRouter.get('/admin/members', adminMiddleware, userController.getAllUsers);
 userRouter.get('/admin/members/search', adminMiddleware, userController.getUsers);
-userRouter.put('/admin/members/:id', adminMiddleware, userController.updateUserAsAdmin);
+userRouter.put('/admin/members/:id', adminMiddleware, userController.updateProfile);
 userRouter.delete('/admin/members/:id', adminMiddleware, userController.deleteUser);
 userRouter.post('/admin/members/:id/login-as', adminMiddleware, userController.loginAsUser);
 
