@@ -116,6 +116,7 @@ const userSchema = {
           description: "Timestamp of last update",
         },
       },
+      additionalProperties: false,
     },
   },
 };
@@ -247,6 +248,7 @@ const meetingSchema = {
           description: "Timestamp of last update",
         },
       },
+      additionalProperties: false,
     },
   },
 };
@@ -312,6 +314,7 @@ const requestSchema = {
           description: "Timestamp of last update",
         },
       },
+      additionalProperties: false,
     },
   },
 };
@@ -371,7 +374,8 @@ const pollSchema = {
           bsonType: "date",
           description: "Timestamp of last update"
         }
-      }
+      },
+      additionalProperties: false,
     }
   }
 };

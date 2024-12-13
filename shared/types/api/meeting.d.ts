@@ -3,20 +3,15 @@ import { PollOption } from "../db/poll";
 import { MeetingRepeat, MeetingStatus } from "./common";
 
 
-export interface MeetingRequestParams {
-  meetingId: string;
-}
-
-export interface MeetingCreateParams {
-  hostId: string;
-}
-
+// common
 export interface PollInfo {
   options?: PollOption[];
   timeout: string;
   results: number;
 }
-
+export interface MeetingRequestParams {
+  meetingId: string;
+}
 export interface MeetingInfo extends MeetingRequestParams {
   title: string;
   description: string;
@@ -26,11 +21,10 @@ export interface MeetingInfo extends MeetingRequestParams {
   status: MeetingStatus;
 }
 
-export interface MeetingInfoResponse extends MeetingInfo {
-  hostId: string;
-  status: MeetingStatus;
+// create meeting
+export interface MeetingCreateParams {
+  hostId: string; // this means POST /meeting/:hostId
 }
-
 export interface MeetingCreateBody extends MeetingInfo {
   repeat: {
     type: MeetingRepeat;
@@ -38,9 +32,12 @@ export interface MeetingCreateBody extends MeetingInfo {
   };
 }
 
+// update existing meeting
 export interface MeetingUpdateBody extends Partial<MeetingCreateBody> {}
+
+// book meeting
 export interface MeetingBookingBody {
-  userId?: string;
+  userId?: string; // for logged in user 
   participantInfo: {
     firstName: string;
     lastName: string;
@@ -49,17 +46,16 @@ export interface MeetingBookingBody {
   date: string;
   slot: string;
 }
+
+// unbook meeting
 export interface MeetingUnbookBody {
   userId?: string;
   email: string;
   date: string;
   slot: string;
 }
-export interface MeetingPublicInfoResponse extends MeetingInfo {
-  hostId: string;
-  status: MeetingStatus;
-}
 
+// cancel meeting
 export interface MeetingCancelBody {
   date: string;
   slot: string;
