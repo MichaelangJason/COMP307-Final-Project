@@ -1,21 +1,60 @@
 import { ObjectId, UpdateFilter } from "mongodb";
 import { MongoClient, Db, Collection, Document } from "mongodb";
 import dotenv from "dotenv";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import schemas from "../tests/db/schemas";
+import mockData from "../tests/mockData";
 
 dotenv.config();
 
 let client: MongoClient;
 let db: Db | null = null;
+let mongoServer: MongoMemoryServer;
+
+const initDevServer = async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
+  
+  client = new MongoClient(uri);
+  await client.connect();
+  db = client.db();
+
+  // create schemas
+  await db.createCollection("user", schemas.userSchema);
+  await db.createCollection("meeting", schemas.meetingSchema);
+  await db.createCollection("request", schemas.requestSchema);
+  await db.createCollection("poll", schemas.pollSchema);
+
+  // insert mock data
+  const data = {
+    user: mockData.validUsers,
+    meeting: mockData.validMeetings,
+    request: mockData.validRequests,
+    poll: mockData.validPolls
+  }
+
+  Object.entries(data).forEach(([collectionName, data]) => {
+    const collection = db!.collection(collectionName);
+    collection.insertMany(data);
+  });
+
+  console.log(`Connected to BookedIn database`);
+  console.log(`MongoDB Memory Server is running on ${uri}`);
+}
 
 // Initialize MongoDB connection
 export const connectToDatabase = async (): Promise<Db> => {
   if (!db) {
-    client = new MongoClient(process.env.MONGO_URI!);
-    await client.connect();
-    db = client.db();
-    console.log(`Connected to BookedIn database`);
+    if (process.env.DEV_MODE) {
+      await initDevServer();
+    } else {
+      client = new MongoClient(process.env.MONGO_URI!);
+      await client.connect();
+      db = client.db();
+      console.log(`Connected to BookedIn database`);
+    }
   }
-  return db;
+  return db!;
 };
 
 // Get a specific collection
