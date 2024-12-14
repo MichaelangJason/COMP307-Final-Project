@@ -1,8 +1,8 @@
 @use "../themes/colors";
 
-main {
+#adminSeparator-main {
   width: 100%;
-  height: max-content;
+  height: calc(90% - 125px);
 }
 
 body.no-scroll {
