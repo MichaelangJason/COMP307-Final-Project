@@ -17,7 +17,7 @@ const initDevServer = async () => {
   
   client = new MongoClient(uri);
   await client.connect();
-  db = client.db();
+  db = client.db("BookedIn");
 
   // create schemas
   await db.createCollection("user", schemas.userSchema);
