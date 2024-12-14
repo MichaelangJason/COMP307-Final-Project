@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import userController from '../controller/userController';
 import adminMiddleware from '../middleware/adminMiddleware';
 import privateMiddleware from '../middleware/privateMiddleware';
