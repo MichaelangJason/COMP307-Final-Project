@@ -56,7 +56,7 @@ const createPoll = async (req: Request, res: Response): Promise<void> => {
 
 const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<void> => {
     try {
-        const pollId= new ObjectId(req.params.pollId);
+        const pollId = new ObjectId(req.params.pollId);
 
         const pollsCollection = await getCollection<Poll>(CollectionNames.POLL);
         const poll = await pollsCollection.findOne({ _id: pollId } as any);
@@ -105,7 +105,7 @@ const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Pro
         console.log("Poll votes: ", pollId, poll?.options)
         const result = await pollsCollection.updateOne(
             {
-                _id: pollId, 
+                _id: pollId,
                 "options.date": date,
                 [`options.slots.${slot}`]: { $exists: true }
             },

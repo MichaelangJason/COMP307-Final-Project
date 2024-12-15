@@ -1,6 +1,14 @@
 import { Request, Response } from "express";
 import { UserParams, UserGetResponse, UserProfileUpdateBody } from "@shared/types/api/user";
 
+declare global {
+  namespace Express {
+    export interface Request {
+      user?: User; 
+    }
+  }
+}
+
 // common
 export type MessageResponse = {
   message: string;

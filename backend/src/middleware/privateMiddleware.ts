@@ -19,6 +19,8 @@ export const privateMiddleware = async <T>(req: Request<T>, res: Response, next:
 
         const decoded: any = jwt.verify(token, JWT_SECRET);
         console.log("decoded", decoded);
+        req.user = decoded;
+        console.log("Authenticated User:", {userId: req.user.userId, email: req.user.email});
     
         next()
     } catch (error) {

@@ -111,14 +111,14 @@ const getAllUsers = async (req: AdminGetRequest, res: AdminGetResponse): Promise
             lastName: user.lastName,
             role: user.role,
         }));
-    
+
         res.json({ totalUsers: userCount, users: usersBasicInfo });
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
 
-// Get users by searching firstName, lastName, or email
+// Get users by searching userId, firstName, lastName, or email
 const getUsers = async (req: AdminSearchRequest, res: AdminSearchResponse) => {
     try {
         const { search } = req.query;
@@ -132,17 +132,22 @@ const getUsers = async (req: AdminSearchRequest, res: AdminSearchResponse) => {
             return;
         }
 
-        const query = {
-                $or: [
-                    { firstName: { $regex: search as string, $options: "i" } },
-                    { lastName: { $regex: search as string, $options: "i" } },
-                    { email: { $regex: search as string, $options: "i" } }
-                ]
-            };
+        const query: any = {
+            $or: [
+                { firstName: { $regex: search as string, $options: "i" } },
+                { lastName: { $regex: search as string, $options: "i" } },
+                { email: { $regex: search as string, $options: "i" } },
+            ]
+        };
+
+        if (ObjectId.isValid(search)) {
+            query.$or.push({ _id: new ObjectId(search) });
+        }
+
         const usersCollection = await getCollection<User>(CollectionNames.USER);
         const users = await usersCollection.find(query).toArray();
         const userCount = await usersCollection.countDocuments(query);
-        
+
         const usersBasicInfo: UserBasicInfo[] = users.map(user => ({
             id: user._id.toString(),
             email: user.email,
@@ -153,7 +158,7 @@ const getUsers = async (req: AdminSearchRequest, res: AdminSearchResponse) => {
 
         console.log("QueryUsersBySearch", users, "totalUsers:", userCount)
 
-        res.status(200).json({totalUsers: userCount, users: usersBasicInfo});
+        res.status(200).json({ totalUsers: userCount, users: usersBasicInfo });
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch users", error });
     }
@@ -187,7 +192,7 @@ const loginAsUser = async (req: AdminLoginAsUserRequest, res: AdminLoginAsUserRe
         res.status(400).json({ message: 'Invalid User ID format' });
         return;
     }
-    
+
     const userId = new ObjectId(req.params.userId);
 
     try {
