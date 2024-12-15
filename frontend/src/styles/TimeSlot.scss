@@ -1,0 +1,40 @@
+@use "../themes/colors.scss";
+@use "../themes/fonts.scss";
+
+.timeSlot {
+  background-color: colors.$silverGray;
+  margin-left: -10px; 
+  margin-right: 10px;
+  flex-shrink: 1px;
+  position: relative; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  font-weight: 700;
+  text-align: center;
+  padding: 20px 22px;
+  width: calc(33.333% - 20px); 
+  white-space: nowrap;
+  height: 20px; 
+
+
+
+  .fa-times-circle {
+    color: colors.$brightRed;
+    font-size: 15px;
+    position: absolute; 
+    transform: translateY(11%); 
+    cursor: pointer;
+    right: -1px; 
+    top: -24%; 
+  }
+  span {
+    flex-grow: 1;
+    align-items: center;
+   
+  }
+}
+
+
+  
