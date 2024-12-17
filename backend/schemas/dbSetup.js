@@ -1,7 +1,5 @@
 const schemas = require("../src/tests/db/schemas");
 
-
-
 // Check if collections exist and are empty
 const collections = ["meeting", "poll", "request", "user"];
 let shouldSetup = false;
@@ -27,6 +25,7 @@ if (shouldSetup) {
   db.createCollection("poll", schemas.pollSchema);
   db.createCollection("request", schemas.requestSchema);
   db.createCollection("user", schemas.userSchema);
+  db.user.createIndex({ email: 1 }, { unique: true });
 
   print("Database setup completed");
 } else {
