@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 const PrivateNav = () => {
   const [isNavVisible, setIsNavVisible] = useState(false);
   // Welcome message
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
 
   // Extract /user/:id from the URL
   const { id } = useParams<{ id: string }>();
@@ -25,7 +25,7 @@ const PrivateNav = () => {
 
   return (
     <>
-      <NavBarContent pageTo="/" text="Log Out" userEmail={userEmail} />
+      <NavBarContent pageTo="/" text="Log Out" userName={userName} />
       <div id="privateSeparator">
         <nav id="private-nav" className={isNavVisible ? "responsive_nav" : ""}>
           <Link to={`/user/${id}`} onClick={toggleNavBar}>
