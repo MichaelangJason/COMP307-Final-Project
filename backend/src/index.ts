@@ -8,6 +8,7 @@ import {
   pollRouter,
 } from "./routes";
 import { connectToDatabase } from "./utils/db";
+import cors from "cors";
 
 dotenv.config();
 
@@ -18,7 +19,10 @@ app.get("/", async (req, res) => {
   res.send("Hello World");
 });
 
-app.use(express.json()); 
+app.use(express.json());
+app.use(cors({
+  origin: ["http://localhost:3000", "http://localhost:3007" ]
+}));
 
 // Routes
 app.use(authRouter);

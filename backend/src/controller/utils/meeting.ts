@@ -147,11 +147,7 @@ export const isValidAvailabilities = (availabilities: MeetingAvailability[]) => 
 }
 
 export const isValidUserId = (userId: string | undefined) => {
-  try {
-    return new ObjectId(userId);
-  } catch (error) {
-    return undefined;
-  }
+  return userId && ObjectId.isValid(userId);
 }
 
 export const createPollOptions = (availabilities: MeetingAvailability[]) => {
