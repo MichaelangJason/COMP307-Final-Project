@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { AdminDeleteParams, AdminGetResponse, MessageResponse, AdminGetQuery, AdminLoginAsUserParams, AdminLoginAsUserResponse } from "@shared/types/api/admin";
-
+import { AdminDeleteParams, AdminGetResponse, AdminGetQuery, AdminLoginAsUserParams, AdminLoginAsUserResponse } from "@shared/types/api/admin";
+import { MessageResponse } from "@shared/types/api/common";
 // get all users
 export type AdminGetRequest = Request<{}, AdminGetResponse>;
 export type AdminGetResponse = Response<AdminGetResponse | MessageResponse>;

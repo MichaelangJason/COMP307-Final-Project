@@ -15,7 +15,7 @@ const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
         return;
     }
 
-    if (!process.env.DEV_MODE && req.params.userId != req.user.userId) {
+    if (!Number(process.env.DEV_MODE) && req.params.userId != req.user.userId) {
         res.status(403).json({ message: 'You are not authorized to access this user' });
         return;
     }

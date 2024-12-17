@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "@shared/types/db/user";
@@ -6,11 +5,12 @@ import { ObjectId } from "mongodb";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { mcgillEmailRegex } from "../utils/regex";
+import { RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, VerifyRequest, VerifyResponse, LogoutRequest, LogoutResponse } from "./types/auth";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Register API - Check for existing user records in the database and save the new user record
-const register = async (req: Request, res: Response): Promise<void> => {
+const register = async (req: RegisterRequest, res: RegisterResponse): Promise<void> => {
   const usersCollection = await getCollection<User>(CollectionNames.USER);
   const { email, password, firstName, lastName } = req.body;
 
@@ -63,8 +63,8 @@ const register = async (req: Request, res: Response): Promise<void> => {
     };
 
     await usersCollection.insertOne(newUser);
-    res.status(201).json({ message: "User registered successfully", userId: newUser._id });
-    console.log("User registered successfully", (newUser._id))
+    res.status(201).json({ message: "User registered successfully " + email });
+    console.log("User registered successfully", (newUser._id.toString()))
   } catch (error) {
     res.status(500).json({ message: "Registration failed" });
     console.log("Registration failed", error)
@@ -72,7 +72,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Login API -  Validate user credentials against the database and return session token
-const login = async (req: Request, res: Response): Promise<void> => {
+const login = async (req: LoginRequest, res: LoginResponse): Promise<void> => {
   const { email, password } = req.body;
   const usersCollection = await getCollection<User>(CollectionNames.USER);
 
@@ -83,6 +83,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
   try {
     const user = await usersCollection.findOne({ email });
+
+    console.log("user:", user)
+    
     if (!user || !(await bcrypt.compare(password, user.password))) {
       res.status(401).json({ message: "Invalid credentials" });
       return;
@@ -91,7 +94,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign({ userId: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName }, JWT_SECRET, { expiresIn: "1h" });
 
     console.log("Session token:", token)
-    res.status(200).json({ token, userId: user._id, message: "Login successful" });
+    res.status(200).json({ token, userId: user._id.toString(), message: "Login successful" });
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
     console.log("Login failed", error)
@@ -99,13 +102,17 @@ const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Login GET API - Check if the user is logged in
-const loginGet = async (req: Request, res: Response): Promise<void> => {
+const loginGet = async (req: VerifyRequest, res: VerifyResponse): Promise<void> => {
+  if (!req.user) {
+    res.status(401).json({ message: "User is not logged in" });
+    return;
+  }
   const { userId, email, firstName, lastName } = req.user;
-  res.status(200).json({ userId, email, firstName, lastName, message: "Login successful" });
+  res.status(200).json({ userId, email, firstName, lastName, message: "User is logged in" });
 };
 
 // Logout API - Clear the session token
-const logout = (req: Request, res: Response): void => {
+const logout = (req: LogoutRequest, res: LogoutResponse): void => {
   res.status(200).json({ message: "Logout successful" });
 };
 

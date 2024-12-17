@@ -10,7 +10,8 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Admin middleware to check user's role
 export const adminMiddleware = async <T>(req: Request<T>, res: Response, next: NextFunction): Promise<void>  => {
-    if (process.env.BYPASS_AUTH) {
+    if (Number(process.env.BYPASS_AUTH)) {
+        console.log("Bypassing admin middleware");
         next();
         return;
     }

@@ -31,5 +31,7 @@ export enum MeetingRepeat {
 }
 
 export interface MessageResponse {
-    message?: string;
+    message: string;
+    error?: any;
+    name?: string;
 }
