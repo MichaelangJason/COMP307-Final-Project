@@ -5,7 +5,7 @@ import { User } from "@shared/types/db/user";
 import { ObjectId } from "mongodb";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
-import { mcgillEmailRegex } from "utils/regex";
+import { mcgillEmailRegex } from "../utils/regex";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
