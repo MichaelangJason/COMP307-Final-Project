@@ -1,3 +1,6 @@
+@use "../themes/colors";
+@use "../themes/fonts";
+
 .createInput {
   padding: 12px 25px;
   background-color: colors.$brightRed;
