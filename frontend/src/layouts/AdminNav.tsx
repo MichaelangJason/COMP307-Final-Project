@@ -50,12 +50,7 @@ const AdminNav = () => {
 
   return (
     <>
-      <NavBarContent
-        pageTo="/"
-        text="Log Out"
-        userEmail="Admin"
-        isGray={true}
-      />
+      <NavBarContent pageTo="/" text="Log Out" userName="Admin" isGray={true} />
       <div id="adminSeparator">
         <nav id="admin-nav" className={isNavVisible ? "responsive_nav" : ""}>
           {/* Display only "MEMBERS" when no `id` */}
