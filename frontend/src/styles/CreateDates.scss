@@ -69,6 +69,10 @@
       }
     }
 
+
+   
+    
+
     .react-calendar__navigation__label__labelText {
       @media (max-width: 500px) {
         font-size: 12px;
@@ -78,7 +82,17 @@
     @media (max-width: 1000px) {
       width: 100%;
     }
+
+    .highlight {
+      border: 2px solid blue; 
+      color: blue; 
+    }
+    
+    
+    
   }
+
+ 
 
   .col2 {
     width: 40%;
@@ -86,14 +100,15 @@
     height: max-content;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 13px;
 
     select {
-      height: 35px;
+      height: 30px;
       margin: 5px 0;
       border-radius: 5px;
       text-align: center;
       font-size: 16px;
+      width: 100%
     }
 
     .dateDetailsContainer {
@@ -147,7 +162,7 @@
         width: 100%;
         overflow-y: overlay;
         height: max-content;
-        max-height: 220px;
+        max-height: 235px;
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-start; 
@@ -155,18 +170,18 @@
         align-content: flex-start;
         margin-top: 10px; 
 
-    @media (max-width: 500px) {
+    @media (max-width: 400px) {
         font-size: 10px;
         align-items: center;
         text-align: center;
       }
-      @media (max-width: 700px) {
+      @media (max-width: 800px) {
         font-size: 10px;
         align-items: center;
         text-align:center;
       }
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1080px) {
         font-size: 10px;
         align-items: center;
         text-align:center;
@@ -180,8 +195,26 @@
       align-items: center;
       gap: 10px;
       margin-top: 160px;
+      margin-left: 1px;
+  
+
+      @media (max-width: 800px) {
+          
+        }
+        @media (max-width: 1080px) {
+          white-space: wrap;
+          align-items: center;
+          margin-top: 160px;
+          flex-wrap: wrap;
+          
+        
+          
+        }
+
+
 
       label {
+        margin-right: 10px;
         @media (max-width: 500px) {
           white-space: wrap;
         }
@@ -199,9 +232,25 @@
         flex-grow: 1;
         text-align: center;
 
-        @media (max-width: 500px) {
-          width: 100%;
+        @media (max-width: 400px) {
+          flex-wrap: wrap;
+          max-width: 80px;
+          height: 30px;
+      
         }
+        @media (max-width: 800px) {
+          height: 30px;
+          max-width: 80px;
+          flex-wrap: wrap;
+        
+        }
+        @media (max-width: 1080px) {
+          max-width: 80px;
+          height: 30px;
+          align-items: center;
+          text-align: center;
+        }
+
       }
 
       @media (max-width: 500px) {

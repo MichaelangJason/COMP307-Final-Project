@@ -29,7 +29,7 @@
     > div {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 5px;
     }
 
     input {
@@ -50,7 +50,7 @@
   }
 
   @media (max-width: 1000px) {
-    padding: 30px 40px;
+    padding: 20px 40px;
   }
 
   .timeSlotsContainer {
@@ -60,6 +60,11 @@
     justify-content: flex-start;
   }
 
+  
+  
+
+
+ 
 
   
 }
