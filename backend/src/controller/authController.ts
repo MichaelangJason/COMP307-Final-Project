@@ -5,6 +5,7 @@ import { User } from "@shared/types/db/user";
 import { ObjectId } from "mongodb";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
+import { mcgillEmailRegex } from "../utils/regex";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -13,13 +14,13 @@ const register = async (req: Request, res: Response): Promise<void> => {
   const usersCollection = await getCollection<User>(CollectionNames.USER);
   const { email, password, firstName, lastName } = req.body;
 
-  if (!email || !password || !firstName || !lastName) {
+  if (!email?.trim() || !password?.trim() || !firstName?.trim() || !lastName?.trim()) {
     res.status(400).json({ message: "All fields are required" });
     return;
   }
 
-  if (!email.endsWith("@mail.mcgill.ca")) {
-    res.status(400).json({ message: "Invalid email domain" });
+  if (!mcgillEmailRegex.test(email)) {
+    res.status(400).json({ message: "Invalid McGill email" });
     return;
   }
   console.log("User Email:", email);
@@ -75,7 +76,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const usersCollection = await getCollection<User>(CollectionNames.USER);
 
-  if (!email || !password) {
+  if (!email?.trim() || !password?.trim()) {
     res.status(400).json({ message: "Email and password are required" });
     return;
   }
@@ -87,7 +88,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName }, JWT_SECRET, { expiresIn: "1h" });
 
     console.log("Session token:", token)
     res.status(200).json({ token, userId: user._id, message: "Login successful" });
@@ -99,7 +100,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 // Logout API - Clear the session token
 const logout = (req: Request, res: Response): void => {
-  //res.clearCookie("token"); 
   res.status(200).json({ message: "Logout successful" });
 };
 

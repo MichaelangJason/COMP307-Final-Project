@@ -10,7 +10,7 @@ import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetRespo
 // Get User Profile
 const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
 
-    if (!ObjectId.isValid(req.params.userId)) {
+    if (!ObjectId.isValid(req.params.userId) || req.params.userId != req.user.userId) {
         res.status(400).json({ message: 'Invalid User ID format' });
         return;
     }
@@ -53,6 +53,12 @@ const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) =>
 
     const userId = new ObjectId(req.params.userId);
     console.log("userId", userId);
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+        res.status(400).json({ message: 'Nothing to update. Please fill the field you wish to update.' });
+        return;
+    }
+
     const { password } = req.body;
     const usersCollection = await getCollection<User>(CollectionNames.USER);
 
