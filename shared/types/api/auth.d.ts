@@ -17,6 +17,7 @@ export interface LoginBody {
 export interface LoginResponse extends MessageResponse {
   token: string;
   userId: string;
+  role: UserRole;
 }
 
 // Verify Login Status

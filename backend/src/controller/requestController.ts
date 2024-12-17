@@ -1,4 +1,4 @@
-import { Request, User } from "@shared/types/db";
+import { Meeting, Request, User } from "@shared/types/db";
 import {
   RequestCreateRequest,
   RequestCreateResponse,
@@ -10,48 +10,13 @@ import {
 import {
   deleteDocument,
   getDocument,
-  insertDocument,
   updateOneDocument,
 } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { ObjectId } from "mongodb";
-import { RequestStatus } from "../utils";
-
-const getRequest = async (requestId: string): Promise<Request | null> => {
-  try {
-    const document = await getDocument<Request>(
-      CollectionNames.REQUEST,
-      new ObjectId(requestId)
-    );
-    return document;
-  } catch (error) {
-    return null;
-  }
-};
-
-const updateRequest = async (
-  requestId: string,
-  status: RequestStatus
-): Promise<boolean> => {
-  try {
-    await updateOneDocument<Request>(
-      CollectionNames.REQUEST,
-      new ObjectId(requestId),
-      { $set: { status } } as any
-    );
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-const insertRequest = async (document: Request): Promise<ObjectId | null> => {
-  try {
-    return await insertDocument<Request>(CollectionNames.REQUEST, document);
-  } catch (error) {
-    return null;
-  }
-}
+import { RequestStatus } from "../utils/statusEnum";
+import { getRequest, updateRequest, insertRequest } from "./utils/request";
+import { getMeeting } from "./utils/meeting";
 
 const getInfo = async (req: RequestInfoRequest, res: RequestInfoResponse) => {
   const requestId = req.params.requestId;
@@ -92,6 +57,17 @@ const update = async (
 
   if (!(request = await getRequest(requestId))) {
     res.status(404).json({ message: "Request not found" });
+    return;
+  }
+
+  let meeting: Meeting | null;
+  if (!(meeting = await getMeeting(request.meetingId))) {
+    res.status(404).json({ message: "Meeting does not exist" });
+    return;
+  }
+
+  if (meeting.hostId !== req.user.userId) {
+    res.status(403).json({ message: "You are not authorized to update this request" });
     return;
   }
 

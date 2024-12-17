@@ -7,6 +7,7 @@ import { UserBasicInfo } from "@shared/types/api/admin";
 import { UserGetRequest, UserGetResponse, UserUpdateRequest, UserUpdateResponse } from "./types/user";
 import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetResponse, AdminLoginAsUserRequest, AdminLoginAsUserResponse, AdminSearchRequest, AdminSearchResponse } from "./types/admin";
 import { validatePassword } from "./authController";
+import { isAllowed } from "./utils/user";
 
 // Get User Profile
 const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
@@ -16,7 +17,7 @@ const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
         return;
     }
 
-    if (!Number(process.env.DEV_MODE) && req.params.userId != req.user.userId) {
+    if (isAllowed(req.user.role, req.params.userId, req.user.userId)) {
         res.status(403).json({ message: 'You are not authorized to access this user' });
         return;
     }
@@ -56,7 +57,7 @@ const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) =>
         res.status(400).json({ message: 'Invalid User ID format' });
         return;
     }
-    if (!Number(process.env.DEV_MODE) && req.params.userId != req.user.userId) {
+    if (isAllowed(req.user.role, req.params.userId, req.user.userId)) {
         res.status(403).json({ message: 'You are not authorized to update this user' });
         return;
     }
