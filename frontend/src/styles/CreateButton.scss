@@ -1,18 +1,23 @@
-@use "../themes/colors";
-@use "../themes/fonts.scss";
-
 .createInput {
-  font-size: 16px;
-  max-height: 75px;
+  padding: 12px 25px;
+  background-color: colors.$brightRed;
+  border-radius: 5px;
+  font-size: 20px;
   font-family: fonts.$body;
-  width: 80px;
-  cursor: pointer;
+  color: colors.$white;
+  text-decoration: none;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: colors.$white;
-  background-color: colors.$brightRed;
-  border: none;
-  border-radius: 5px;
+  gap: 10px;
+  cursor: pointer;
+  border-width: 0;
+
+  @media (max-width: 650px) {
+    padding: 8px 8px;
+    font-size: 14px;
+  }
+  @media (max-height: 500px) {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
 }
