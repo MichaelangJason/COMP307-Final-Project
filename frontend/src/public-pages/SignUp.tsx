@@ -8,7 +8,12 @@ import "../styles/LogIn_n_SignUp.scss";
 import { Link } from "react-router-dom";
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -17,51 +22,44 @@ const SignUp = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const emailInput = e.currentTarget.email as HTMLInputElement; // Access the email input
-    const passwordInput = e.currentTarget.password as HTMLInputElement; // Access the password input
 
-    const validDomains = ["@mail.mcgill.ca", "@mail.ca"]; // List of allowed domains
+    // POST request
+    try {
+      const response = await fetch("http://localhost:3007/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        }),
+      });
+      // Parse the response
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
 
-    // error - Invalid email address
-    if (!emailInput.checkValidity()) {
-      setError("Please enter a valid email address");
-      return;
-    }
-    // error - Missing Email
-    if (!emailInput.value) {
-      setError("Email is required");
-      return;
-    }
+      const data = await response.json();
+      console.log("API Response:", data);
 
-    // error - Invalid domain
-    if (!validDomains.some((domain) => emailInput.value.endsWith(domain))) {
-      setError("Please supply your McGill email to sign up");
-      return;
-    }
-
-    // error - Missing password
-    if (!passwordInput.value) {
-      setError("Password is required");
-      return;
-    }
-
-    // TODO backend: error - Account already exists
-    const accountAlreadyExists = false;
-    if (accountAlreadyExists) {
-      setError("Account already exists");
-      return;
+      // Success: Navigate to a different page
+      navigate(`/user/${data.userId}`);
+    } catch (err: any) {
+      // Handle errors
+      setError(err.message || "Something went wrong. Please try again later.");
+      console.error("Error during registration:", err);
     }
 
-    // TODO backend: success - New email => Link to Meeting Private Page
-    navigate("/user/:id");
-
-    // Testing: View the formData through the console
-    console.log("Submitted Data:", formData);
-
-    // Reset error
-    setError("");
+    // Testing purposes
+    console.log(formData.firstName);
+    console.log(formData.lastName);
+    console.log(formData.email);
+    console.log(formData.password);
+    console.log("inside handle submit~");
   };
 
   return (
@@ -81,6 +79,20 @@ const SignUp = () => {
           {error && <div className="errormsg">{error}</div>}
 
           <form onSubmit={handleSubmit}>
+            <label>First Name</label>
+            <input
+              id="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+            />
+            <label>Last Name</label>
+            <input
+              id="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+            />
             <label>Email</label>
             <input
               type="email"
