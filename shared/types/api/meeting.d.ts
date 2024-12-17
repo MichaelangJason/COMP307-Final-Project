@@ -2,7 +2,6 @@ import { MeetingAvailability } from "../db/meeting";
 import { PollOption } from "../db/poll";
 import { MeetingRepeat, MeetingStatus } from "./common";
 
-
 // common
 export interface PollInfo {
   options?: PollOption[];
@@ -13,6 +12,9 @@ export interface MeetingRequestParams {
   meetingId: string;
 }
 export interface MeetingInfo extends MeetingRequestParams {
+  hostId: string;
+  hostFirstName: string;
+  hostLastName: string;
   title: string;
   description: string;
   location: string;
