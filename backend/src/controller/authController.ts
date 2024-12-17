@@ -100,7 +100,12 @@ const login = async (req: LoginRequest, res: LoginResponse): Promise<void> => {
     }, JWT_SECRET, { expiresIn: "1h" });
 
     console.log("Session token:", token)
-    res.status(200).json({ token, userId: user._id.toString(), message: "Login successful" });
+    res.status(200).json({ 
+      token, 
+      userId: user._id.toString(), 
+      role: user.role,
+      message: "Login successful" 
+    });
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
     console.log("Login failed", error)
