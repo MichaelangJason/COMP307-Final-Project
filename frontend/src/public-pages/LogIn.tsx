@@ -37,9 +37,16 @@ const LogIn = () => {
         // console.log(formData.email);
         // console.log(formData.password);
         // console.log(data.token);
+        // console.log(data.role);
 
         sessionStorage.setItem("token", data.token); //storing the token
-        navigate(`/user/${data.userId}`);
+
+        // Navigate base on role
+        if (data.role === 0) {
+          navigate(`/admin/members/`);
+        } else {
+          navigate(`/user/${data.userId}`);
+        }
       } else {
         setError(data.message || "Login failed");
       }

@@ -19,7 +19,6 @@ const NavBarContent = ({ pageTo, text, isGray }: Props) => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!id) return;
-      console.log(id);
       try {
         const response = await fetch(
           `http://localhost:3007/user/profile/${id}`,
