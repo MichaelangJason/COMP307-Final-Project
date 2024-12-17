@@ -91,7 +91,13 @@ const login = async (req: LoginRequest, res: LoginResponse): Promise<void> => {
       return;
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ 
+      userId: user._id, 
+      email: user.email, 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      role: user.role 
+    }, JWT_SECRET, { expiresIn: "1h" });
 
     console.log("Session token:", token)
     res.status(200).json({ token, userId: user._id.toString(), message: "Login successful" });
@@ -107,8 +113,8 @@ const loginGet = async (req: VerifyRequest, res: VerifyResponse): Promise<void> 
     res.status(401).json({ message: "User is not logged in" });
     return;
   }
-  const { userId, email, firstName, lastName } = req.user;
-  res.status(200).json({ userId, email, firstName, lastName, message: "User is logged in" });
+  const { userId, email, firstName, lastName, role } = req.user;
+  res.status(200).json({ userId, email, firstName, lastName, role, message: "User is logged in" });
 };
 
 // Logout API - Clear the session token

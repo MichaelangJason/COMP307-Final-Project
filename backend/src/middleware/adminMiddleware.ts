@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "../controller/constants";
+import { UserRole } from "../utils/statusEnum";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -39,7 +40,7 @@ export const adminMiddleware = async <T>(req: Request<T>, res: Response, next: N
             return;
         }
 
-        if (user.role !== 0) {
+        if (user.role !== UserRole.ADMIN) {
             res.status(403).json({ message: "Access forbidden: Admins only" });
             return;
         }
