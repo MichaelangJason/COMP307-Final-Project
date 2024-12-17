@@ -6,6 +6,7 @@ import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { mcgillEmailRegex } from "../utils/regex";
 import { RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, VerifyRequest, VerifyResponse, LogoutRequest, LogoutResponse } from "./types/auth";
+import { UserRole } from "../utils/statusEnum";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -49,7 +50,7 @@ const register = async (req: RegisterRequest, res: RegisterResponse): Promise<vo
       password: hashedPassword,
       firstName,
       lastName,
-      role: 1,
+      role: UserRole.MEMBER,
       notifications: {
         email: true,
         sms: false,
