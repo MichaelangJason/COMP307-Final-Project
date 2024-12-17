@@ -1,6 +1,7 @@
 import Calendar from "react-calendar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import 'react-calendar/dist/Calendar.css'; // Import default calendar styles
 import "../styles/CreateDates.scss";
 import { useState, useEffect } from "react";
 import TimeSlot from "./TimeSlot";
@@ -32,6 +33,17 @@ const CreateDate = () => {
     }
   }, [startTimeIndex]);
 
+  useEffect(() => {
+    if (selectedDate) {
+      const foundDateTimes = selectedDateTimes.find(dt => dt.date === selectedDate);
+      if (foundDateTimes) {
+        setSelectedTimes(foundDateTimes.times);
+      } else {
+        setSelectedTimes([]);
+      }
+    }
+  }, [selectedDate, selectedDateTimes]);
+
   const handleDateChange = (date: Date) => {
     setSelectedDate(date.toISOString().split("T")[0]);
   };
@@ -49,20 +61,59 @@ const CreateDate = () => {
     setEndTimeIndex(Number(e.target.value));
   };
 
-  const handleAddTimeSlot = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  const handleAddTimeStamp = (
+    e: React.MouseEvent<HTMLButtonElement>,
     newTimeIndices: [number, number]
   ) => {
     e.preventDefault();
-
-    if (!selectedDate || newTimeIndices[0] >= newTimeIndices[1]) {
-      return;
-    }
+  
+    if (!selectedDate || newTimeIndices[0] >= newTimeIndices[1]) return;
+  
+    setSelectedDateTimes((prevDateTimes) => {
+      const updatedDateTimes = prevDateTimes.map((dt) =>
+        dt.date === selectedDate
+          ? { ...dt, times: [...dt.times, newTimeIndices] }
+          : dt
+      );
+  
+      if (!updatedDateTimes.some((dt) => dt.date === selectedDate)) {
+        updatedDateTimes.push({
+          date: selectedDate,
+          times: [newTimeIndices],
+        });
+      }
+  
+      return updatedDateTimes;
+    });
+  
     setSelectedTimes((prevTimes) => [...prevTimes, newTimeIndices]);
   };
+  
 
-  const handleDeleteTimeSlot = (index: number) => {
-    setSelectedTimes((prevTimes) => prevTimes.filter((_, i) => i !== index));
+  const handleDeleteTimeStamp = (index: number) => {
+    setSelectedTimes((prevTimes) => {
+      const updatedTimes = prevTimes.filter((_, i) => i !== index);
+  
+      setSelectedDateTimes((prevDateTimes) =>
+        prevDateTimes
+          .map((dt) =>
+            dt.date === selectedDate
+              ? { ...dt, times: dt.times.filter((_, i) => i !== index) }
+              : dt
+          )
+          .filter((dt) => dt.times.length > 0)
+      );
+  
+      return updatedTimes;
+    });
+  };
+  
+
+  const tileClassName = ({ date, view }: { date: Date, view: string }) => {
+    if (view === 'month' && selectedDateTimes.some(dt => dt.date === date.toISOString().split("T")[0])) {
+      return 'highlight';
+    }
+    return null;
   };
 
   return (
@@ -72,6 +123,7 @@ const CreateDate = () => {
         <Calendar
           calendarType="gregory"
           onChange={(value, _) => handleDateChange(value as Date)}
+          tileClassName={tileClassName}
         />
       </div>
       <div className="col2">
@@ -115,7 +167,7 @@ const CreateDate = () => {
           <button
             className={selectedDate ? "icon" : "icon readOnly"}
             onClick={(e) =>
-              handleAddTimeSlot(e, [startTimeIndex, endTimeIndex])
+              handleAddTimeStamp(e, [startTimeIndex, endTimeIndex])
             }
           >
             <FontAwesomeIcon icon={faCirclePlus} />
@@ -127,7 +179,7 @@ const CreateDate = () => {
               key={index}
               start={predefinedTimeSlots[timeIndices[0]]}
               end={predefinedTimeSlots[timeIndices[1]]}
-              onDelete={() => handleDeleteTimeSlot(index)}
+              onDelete={() => handleDeleteTimeStamp(index)}
             />
           ))}
         </div>
@@ -146,6 +198,16 @@ const CreateDate = () => {
 };
 
 export default CreateDate;
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,13 +1,18 @@
 @use "../themes/colors";
+@use "../themes/fonts.scss";
 
 .createInput {
   font-size: 16px;
-  height: 75px;
-  width: 90px;
+  max-height: 75px;
+  font-family: fonts.$body;
+  width: 80px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
   color: colors.$white;
   background-color: colors.$brightRed;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
 }

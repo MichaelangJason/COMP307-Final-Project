@@ -35,14 +35,20 @@ const CreateElements: React.FC<CreateElementsProps> = ({ ppoll, setTimeoutInput 
   const updateTimeout = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeoutInput = e.target.value;
     const validFormat = /^(\d+d)?(\d+h)?(\d+m)?$/;
-
+  
+    setTimeout(timeoutInput);
+    setTimeoutInput(timeoutInput); 
+  
     if (validFormat.test(timeoutInput)) {
-      setTimeout(timeoutInput);
-      setTimeoutInput(timeoutInput); 
+
+      console.log("Valid format:", timeoutInput);
     } else {
-      console.log("Use 1d2h30m");
+      console.log("we have to use 1d2h30m");
     }
   };
+  
+
+  
 
   const pollFormat = (e: React.ChangeEvent<HTMLInputElement>) => {
     const ismarked = e.target.checked;
@@ -62,12 +68,12 @@ const CreateElements: React.FC<CreateElementsProps> = ({ ppoll, setTimeoutInput 
       </div>
       <div className="frequency">
         <div>
-          <label>Once</label>
           <input className="radioInput" type="radio" name="frequency" value="once" />
+          <label>Once</label>
         </div>
         <div>
-          <label>Every week</label>
           <input className="radioInput" type="radio" name="frequency" value="weekly" />
+          <label>Every week</label>
         </div>
         <div className="mn">
           <label>Ends at:</label>
@@ -80,14 +86,33 @@ const CreateElements: React.FC<CreateElementsProps> = ({ ppoll, setTimeoutInput 
             placeholder={placeholder}
           />
         </div>
-        <div className="pollRequired">
-          <label>Poll required</label><br />
-          <input className="checkbox" type="checkbox" onChange={pollFormat} /><br />
+
+        <div className="pboxes" >
+        <input className="checkbox" type="checkbox" onChange={pollFormat} style={{ visibility: 'hidden' }} />
+        <label style={{ marginLeft: '0px', visibility: 'hidden' }}>Poll requiredghvhgvg</label>
         </div>
+
+
+     
+
+          <div className="pollRequired">
+          <input className="checkbox" type="checkbox" onChange={pollFormat} style={{ marginLeft: '1px' }} />
+            <div style={{ marginLeft: '0px' }}>
+              <label>Poll required</label>
+          </div>
+          </div>
+
+        
+        
+
+  
         <div className="result">
           <label>#Results:</label>
           <input type="text" name="rs" className="textInput" />
         </div>
+
+  
+
         <div className="tm">
           <label>Timeout:</label>
           <input
@@ -97,8 +122,11 @@ const CreateElements: React.FC<CreateElementsProps> = ({ ppoll, setTimeoutInput 
             onChange={updateTimeout}
             value={timeoutInputValue}
             placeholder="1d12h30m"
+            readOnly={false}
+            disabled={false}
           />
         </div>
+        
       </div>
     </div>
   );
