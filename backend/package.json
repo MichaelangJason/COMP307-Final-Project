@@ -3,25 +3,38 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch '**/*.ts' --exec 'ts-node' server.ts",
-    "start": "tsc && node dist/server.js"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/index.ts",
+    "build:dev": "tsc",
+    "build:prod": "tsc --project tsconfig.prod.json",
+    "start": "tsc --project tsconfig.prod.json && node dist/index.js",
+    "test": "jest --verbose",
+    "setupDb": "./schemas/set-schemas.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
-    "mongoose": "^8.8.1"
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.11.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.9.0",
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.2",
     "nodemon": "^3.1.7",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.3"
   }
 }
