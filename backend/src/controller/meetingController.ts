@@ -251,8 +251,10 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
     res.status(400).json({ message: "Email already booked" });
     return;
   }
-
-  const newParticipant: Participant = { ...participantInfo, userId: isValidUserId(userId)};
+  
+  const newParticipant: Participant = isValidUserId(userId) 
+    ? { ...participantInfo, userId: new ObjectId(userId) } 
+    : { ...participantInfo };
   
   const isSuccessfullyBooked = await updateMeeting(meetingId, {
     $push: { [`availabilities.$[elem].slots.${slot}`]: newParticipant },
