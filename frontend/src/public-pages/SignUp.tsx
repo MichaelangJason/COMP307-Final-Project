@@ -98,7 +98,7 @@ const SignUp = () => {
               onChange={handleChange}
             />
 
-            <div className="submit-button">
+            <div className="submit-signup-login-button">
               <input type="submit" value="Sign Up" />
             </div>
           </form>

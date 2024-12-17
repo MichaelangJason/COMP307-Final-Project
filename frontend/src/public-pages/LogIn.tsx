@@ -105,7 +105,7 @@ const LogIn = () => {
               // required
             />
 
-            <div className="submit-button">
+            <div className="submit-signup-login-button">
               <input type="submit" value="Log In" />
             </div>
           </form>

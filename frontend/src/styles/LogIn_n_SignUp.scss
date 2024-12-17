@@ -71,12 +71,12 @@ form input {
   margin-bottom: 16px;
 }
 
-.page-body input:hover:not(.submit-button) {
+.page-body input:hover:not(.submit-signup-login-button) {
   padding: 0 14px 0 14px;
   border: 2px solid colors.$brightRed;
 }
 
-form .submit-button input {
+form .submit-signup-login-button input {
   border-radius: 5px;
   margin-top: 10px;
   background-color: colors.$brightRed;
