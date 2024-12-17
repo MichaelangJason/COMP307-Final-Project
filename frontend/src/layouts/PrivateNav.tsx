@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import NavBarContent from "./NavBarContent";
 import "../styles/PrivateNav.scss";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -9,28 +9,8 @@ const PrivateNav = () => {
   // Welcome message
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  // TODO - backend :  to query the userEmail / username
-  useEffect(() => {
-    // Simulating a backend API call to fetch user details
-    const fetchUserData = async () => {
-      try {
-        // const response = await fetch("/api/user");
-        // const data = await response.json();
-
-        // Dummy example
-        const data = {
-          email: "user@example.com",
-          name: "John Doe",
-        };
-
-        setUserEmail(data.email); // Assuming the backend returns { email: "user@example.com" }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
+  // Extract /user/:id from the URL
+  const { id } = useParams<{ id: string }>();
 
   const toggleNavBar = () => {
     setIsNavVisible((prev) => !prev);
@@ -48,21 +28,23 @@ const PrivateNav = () => {
       <NavBarContent pageTo="/" text="Log Out" userEmail={userEmail} />
       <div id="privateSeparator">
         <nav id="private-nav" className={isNavVisible ? "responsive_nav" : ""}>
-          <Link to="/user/:id" onClick={toggleNavBar}>
+          <Link to={`/user/${id}`} onClick={toggleNavBar}>
             MEETING
           </Link>
-          <Link to="/user/:id/create" onClick={toggleNavBar}>
+
+          <Link to={`/user/${id}/create`} onClick={toggleNavBar}>
             CREATE
           </Link>
-          <Link to="/user/:id/manage" onClick={toggleNavBar}>
+          <Link to={`/user/${id}/manage`} onClick={toggleNavBar}>
             MANAGE
           </Link>
-          <Link to="/user/:id/request" onClick={toggleNavBar}>
+          <Link to={`/user/${id}/request`} onClick={toggleNavBar}>
             REQUEST
           </Link>
-          <Link to="/user/:id/profile" onClick={toggleNavBar}>
+          <Link to={`/user/${id}/profile`} onClick={toggleNavBar}>
             PROFILE
           </Link>
+
           <button
             className="nav-button nav-close-button"
             onClick={toggleNavBar}
