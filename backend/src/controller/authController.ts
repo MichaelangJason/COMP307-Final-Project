@@ -121,7 +121,7 @@ const logout = (req: LogoutRequest, res: LogoutResponse): void => {
  * @param password - The password to validate.
  * @returns An object containing `isValid` and `message` with validation details.
  */
-function validatePassword(password: string): { isValid: boolean; message: string } {
+export function validatePassword(password: string): { isValid: boolean; message: string } {
   if (!password) {
     return { isValid: false, message: "Password cannot be empty." };
   }

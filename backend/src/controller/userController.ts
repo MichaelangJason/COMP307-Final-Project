@@ -6,6 +6,7 @@ import { CollectionNames } from "./constants";
 import { UserBasicInfo } from "@shared/types/api/admin";
 import { UserGetRequest, UserGetResponse, UserUpdateRequest, UserUpdateResponse } from "./types/user";
 import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetResponse, AdminLoginAsUserRequest, AdminLoginAsUserResponse, AdminSearchRequest, AdminSearchResponse } from "./types/admin";
+import { validatePassword } from "./authController";
 
 // Get User Profile
 const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
@@ -55,34 +56,48 @@ const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) =>
         res.status(400).json({ message: 'Invalid User ID format' });
         return;
     }
+    if (!Number(process.env.DEV_MODE) && req.params.userId != req.user.userId) {
+        res.status(403).json({ message: 'You are not authorized to update this user' });
+        return;
+    }
 
     const userId = new ObjectId(req.params.userId);
-    console.log("userId", userId);
 
     if (!req.body || Object.keys(req.body).length === 0) {
         res.status(400).json({ message: 'Nothing to update. Please fill the field you wish to update.' });
         return;
     }
 
-    const { password } = req.body;
+    const { password, notifications } = req.body;
     const usersCollection = await getCollection<User>(CollectionNames.USER);
 
     try {
         const user = await getUserById(userId);
-        console.log("user", user);
         if (!user) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
 
-        const updatedFields: Partial<User> = { ...req.body };
-        updatedFields.updatedAt = new Date();
-
+        const updatedFields: Partial<User> = {};
+        
         if (password) {
+            const { isValid, message } = validatePassword(password);
+            if (!isValid) {
+                res.status(400).json({ message });
+                return;
+            }
             const hashedPassword = await bcrypt.hash(password, 10);
             updatedFields.password = hashedPassword;
         }
-
+        if (notifications) {
+            updatedFields.notifications = notifications;
+        }
+        if (Object.keys(updatedFields).length === 0) {
+            res.status(400).json({ message: 'Nothing to update. Please fill the field you wish to update.' });
+            return;
+        }
+        
+        updatedFields.updatedAt = new Date();
         const result = await usersCollection.updateOne(
             { _id: userId } as any,
             { $set: updatedFields }
