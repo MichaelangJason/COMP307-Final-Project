@@ -6,11 +6,11 @@ import { UserParams } from '@shared/types/api/user';
 
 const userRouter = express.Router();
 
-//Profile
-userRouter.get('/profile/:userId', privateMiddleware<UserParams>, userController.getProfile);
-userRouter.put('/profile/:userId', privateMiddleware<UserParams>, userController.updateProfile);
+// Profile
+userRouter.get('/user/profile/:userId', privateMiddleware<UserParams>, userController.getProfile);
+userRouter.put('/user/profile/:userId', privateMiddleware<UserParams>, userController.updateProfile);
 
-// // Admin
+// Admin
 userRouter.get('/admin/members', adminMiddleware<{}>, userController.getAllUsers);
 userRouter.get('/admin/members/search', adminMiddleware, userController.getUsers as any);
 userRouter.put('/admin/members/:userId', adminMiddleware<UserParams>, userController.updateProfile);

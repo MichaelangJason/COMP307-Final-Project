@@ -5,7 +5,9 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Private middleware validate authentication for private pages
 export const privateMiddleware = async <T>(req: Request<T>, res: Response, next: NextFunction) => {
-    if (process.env.BYPASS_AUTH) {
+    
+    if (Number(process.env.BYPASS_AUTH)) {
+        console.log("Bypassing authentication");
         next();
         return;
     }
@@ -18,9 +20,8 @@ export const privateMiddleware = async <T>(req: Request<T>, res: Response, next:
         }
 
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        console.log("decoded", decoded);
         req.user = decoded;
-        console.log("Authenticated User:", {userId: req.user.userId, email: req.user.email, firstName: req.user.firstName, lastName: req.user.lastName});
+        console.log("Authenticated User:", decoded);
     
         next()
     } catch (error) {

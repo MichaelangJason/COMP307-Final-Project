@@ -5,10 +5,10 @@ import { AlarmInterval, UserRole } from "../../utils";
 export const validUsers: any[] = [
   {
     _id: new ObjectId(),
-    email: "test@mail.mcgill.ca",
-    password: "TestPass1223asdf",
-    firstName: "Test",
-    lastName: "Test",
+    email: "admin@mcgill.ca",
+    password: "$2b$10$Oaaf4h.OQG.ZunWt69.n1.2K52Uec4L9l/fW4w6wsMBPxNlo.T4NW",
+    firstName: "AdminFirstName",
+    lastName: "AdminLastName",
     role: UserRole.ADMIN,
     notifications: {
       email: true,
@@ -24,7 +24,7 @@ export const validUsers: any[] = [
   {
     _id: new ObjectId(),
     email: "user3@mcgill.ca",
-    password: "user3Pass1223!",
+    password: "$2b$10$nAMtjHIwpzBsghs7k9lcze1msR6nZCvo1oMNL.WflAHPGpZYBXVqG",
     firstName: "User",
     lastName: "Three",
     role: UserRole.MEMBER,
@@ -41,11 +41,11 @@ export const validUsers: any[] = [
   },
   {
     _id: new ObjectId(),
-    email: "user4@mcgill.ca",
-    password: "user4Pass1223!",
+    email: "user4@mail.mcgill.ca",
+    password: "$2b$10$66Cr62H8MjEFeFQ.u5Iq9esgPfo8InjA4KAVACQHSNoIoHt.S/XsW",
     firstName: "User",
     lastName: "Four",
-    role: UserRole.ADMIN,
+    role: UserRole.MEMBER,
     notifications: {
       email: true,
       sms: true,

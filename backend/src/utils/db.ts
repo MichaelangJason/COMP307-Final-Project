@@ -28,6 +28,7 @@ const initDevServer = async () => {
   await db.createCollection("meeting", schemas.meetingSchema);
   await db.createCollection("request", schemas.requestSchema);
   await db.createCollection("poll", schemas.pollSchema);
+  await db.collection("user").createIndex({ email: 1 }, { unique: true });
 
   // insert mock data
   const data = {
@@ -49,7 +50,7 @@ const initDevServer = async () => {
 // Initialize MongoDB connection
 export const connectToDatabase = async (): Promise<Db> => {
   if (!db) {
-    if (process.env.DEV_MODE) {
+    if (Number(process.env.DEV_MODE)) {
       await initDevServer();
     } else {
       client = new MongoClient(process.env.MONGO_URI!);
