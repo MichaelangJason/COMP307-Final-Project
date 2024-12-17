@@ -98,6 +98,12 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// Login GET API - Check if the user is logged in
+const loginGet = async (req: Request, res: Response): Promise<void> => {
+  const { userId, email, firstName, lastName } = req.user;
+  res.status(200).json({ userId, email, firstName, lastName, message: "Login successful" });
+};
+
 // Logout API - Clear the session token
 const logout = (req: Request, res: Response): void => {
   res.status(200).json({ message: "Logout successful" });
@@ -138,4 +144,4 @@ function validatePassword(password: string): { isValid: boolean; message: string
   return { isValid: true, message: "Password is valid." };
 }
 
-export default { register, login, logout };
+export default { register, login, logout, loginGet };

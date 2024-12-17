@@ -10,8 +10,13 @@ import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetRespo
 // Get User Profile
 const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
 
-    if (!ObjectId.isValid(req.params.userId) || req.params.userId != req.user.userId) {
+    if (!ObjectId.isValid(req.params.userId)) {
         res.status(400).json({ message: 'Invalid User ID format' });
+        return;
+    }
+
+    if (!process.env.DEV_MODE && req.params.userId != req.user.userId) {
+        res.status(403).json({ message: 'You are not authorized to access this user' });
         return;
     }
 
