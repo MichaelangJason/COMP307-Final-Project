@@ -17,7 +17,7 @@ const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
         return;
     }
 
-    if (isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
+    if (!isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
         res.status(403).json({ message: 'You are not authorized to access this user' });
         return;
     }
@@ -57,7 +57,7 @@ const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) =>
         res.status(400).json({ message: 'Invalid User ID format' });
         return;
     }
-    if (isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
+    if (!isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
         res.status(403).json({ message: 'You are not authorized to update this user' });
         return;
     }
