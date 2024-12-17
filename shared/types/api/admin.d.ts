@@ -15,7 +15,10 @@ export interface UserBasicInfo {
     role: UserRole;
 }
 
-// also for search
+/**
+ * Applied API:
+ * GET - /admin/members
+ */
 export interface AdminGetResponse {
     totalUsers: number;
     users: UserBasicInfo[]; // admin gets everything
