@@ -12,7 +12,11 @@ let db: Db | null = null;
 let mongoServer: MongoMemoryServer;
 
 const initDevServer = async () => {
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryServer.create({
+    instance: {
+      port: 27019
+    }
+  });
   const uri = mongoServer.getUri();
   
   client = new MongoClient(uri);
