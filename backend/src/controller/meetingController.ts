@@ -87,7 +87,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   const { hostId } = req.params;
   const { title, description, location, availabilities, repeat, pollInfo } = req.body;
 
-  if (!isAllowed(req.user?.role, hostId, req.user.userId)) {
+  if (!isAllowed(req.user?.role, hostId, req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to create a meeting" });
     return;
   }
@@ -208,7 +208,7 @@ const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => 
     return;
   }
 
-  if (!isAllowed(req.user?.role, meeting.hostId.toString(), req.user.userId)) {
+  if (!isAllowed(req.user?.role, meeting.hostId.toString(), req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to update this meeting" });
     return;
   }
@@ -318,7 +318,7 @@ const unbook = async (req: MeetingUnbookRequest, res: MeetingUnbookResponse) => 
   const { meetingId } = req.params;
   const { userId, email, date, slot } = req.body;
 
-  if (!isAllowed(req.user?.role, userId, req.user.userId)) {
+  if (!isAllowed(req.user?.role, userId, req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to unbook this meeting" });
     return;
   }
@@ -398,7 +398,7 @@ const cancel = async (req: MeetingCancelRequest, res: MeetingCancelResponse) => 
     return;
   }
 
-  if (!isAllowed(req.user?.role, meeting.hostId.toString(), req.user.userId)) {
+  if (!isAllowed(req.user?.role, meeting.hostId.toString(), req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to cancel this meeting" });
     return;
   }
