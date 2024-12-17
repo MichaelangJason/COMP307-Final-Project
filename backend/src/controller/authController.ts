@@ -5,6 +5,7 @@ import { User } from "@shared/types/db/user";
 import { ObjectId } from "mongodb";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
+import { mcgillEmailRegex } from "utils/regex";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -18,8 +19,8 @@ const register = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  if (!email.endsWith("@mail.mcgill.ca")) {
-    res.status(400).json({ message: "Invalid email domain" });
+  if (!mcgillEmailRegex.test(email)) {
+    res.status(400).json({ message: "Invalid McGill email" });
     return;
   }
   console.log("User Email:", email);
