@@ -67,16 +67,16 @@
 }
 
 .red-box {
+  justify-content: space-between;
   flex: 1;
   background-color: colors.$brightRed;
   color: black;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 20px;
   flex-direction: row;
 
-  .feature-text {
+  .red-text {
     flex: 1;
     
     padding: 10px 0px 0px 35px;
@@ -94,7 +94,7 @@
       }
   }
 
-  .feature-image {
+  .red-image {
     flex: 1;
     text-align: right;
   }
@@ -109,12 +109,12 @@
     flex-direction: column;
     justify-content: flex-start;
 
-    .feature-text {
+    .red-text {
       padding: 10px 0px;
       text-align: center;
     }
 
-    .feature-image {
+    .red-image {
       width: 100%;
       padding: 10px 0px 0px 0px;
       text-align: center;
@@ -135,7 +135,7 @@
   }
 
   @media (max-width: 400px) {
-    .feature-text {
+    .red-text {
       padding: 5px 0;
     }
 

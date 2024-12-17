@@ -15,12 +15,12 @@ const Home = () => {
 
       {}
       <div className="red-box">
-        <div className="feature-text">Our platform makes it easier for teachers and students to schedule and communicate. 
+        <div className="red-text">Our platform makes it easier for teachers and students to schedule and communicate. 
           It includes features such as quick meeting scheduling, surveys to collect student preferences for office hours, 
           and the option to check forthcoming appointments, ensuring that everyone is kept informed and organized.
            Alerts about upcoming meetings help everyone stay on track, reducing missed opportunities.
         </div>
-        <div className="feature-image">
+        <div className="red-image">
         <img src={homeImage} alt="Mn" />
         </div>
       </div>
