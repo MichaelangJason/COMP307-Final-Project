@@ -31,7 +31,7 @@ export const adminMiddleware = async <T>(req: Request<T>, res: Response, next: N
 
         const usersCollection = await getCollection<User>(CollectionNames.USER);
         const user = await usersCollection.findOne({ _id: new ObjectId(decoded.userId as string) } as any);
-        console.log("user", user);
+        console.log("Admin user", user);
         
         if (!user) {
             res.status(404).json({ message: "User not found" });
