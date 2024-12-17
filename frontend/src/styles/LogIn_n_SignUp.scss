@@ -51,9 +51,15 @@
   border: 3px solid colors.$brightRed;
   color: colors.$darkRed;
   margin-bottom: 30px;
-
-  // Uncomment to hide the error msg
-  // display: none;
+}
+.wrapper .successmsg {
+  padding: 20px 20px 20px 20px;
+  text-align: center;
+  display: block;
+  font-size: 16px;
+  border: 3px solid colors.$green;
+  color: colors.$green;
+  margin-bottom: 30px;
 }
 
 .page-body form label {
@@ -71,12 +77,12 @@ form input {
   margin-bottom: 16px;
 }
 
-.page-body input:hover:not(.submit-button) {
+.page-body input:hover:not(.submit-signup-login-button) {
   padding: 0 14px 0 14px;
   border: 2px solid colors.$brightRed;
 }
 
-form .submit-button input {
+form .submit-signup-login-button input {
   border-radius: 5px;
   margin-top: 10px;
   background-color: colors.$brightRed;
@@ -125,7 +131,7 @@ p {
     width: 100%;
     margin-bottom: 10px;
   }
-  form .submit-button input {
+  form .submit-signup-login-button input {
     font-size: 20px;
   }
   .separator {
