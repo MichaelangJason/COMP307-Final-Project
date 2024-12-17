@@ -1,0 +1,70 @@
+@use "../themes/colors.scss";
+
+.createElements {
+  width: 100%;
+  height: max-content;
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 20px;
+    color: colors.$darkRed;
+  }
+
+  textarea {
+    height: 100px;
+  }
+
+  .frequency {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 5%;
+    flex-wrap: wrap;
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    input {
+      float: right;
+    }
+
+    .radioInput {
+      width: auto;
+      height: 30px;
+    }
+    .result input {
+      background-color: colors.$white; 
+    }
+    .mn input {
+      background-color: colors.$white; 
+    }
+
+  }
+
+  @media (max-width: 1000px) {
+    padding: 20px 40px;
+  }
+
+  .timeSlotsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; 
+    justify-content: flex-start;
+  }
+
+  
+  
+
+
+ 
+
+  
+}
