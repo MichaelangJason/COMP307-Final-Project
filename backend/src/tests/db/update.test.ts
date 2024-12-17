@@ -54,7 +54,8 @@ describe("Updating data in different collections", () => {
           {
             meetingId: mockData.validMeetings[0]._id,
             time: "10:00-11:00",
-            date: "2024-01-01"
+            date: "2024-01-01",
+            isCancelled: true
           }
         ],
         hostedMeetings: [mockData.validMeetings[1]._id, mockData.validMeetings[2]._id],

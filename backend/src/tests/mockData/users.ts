@@ -2,11 +2,11 @@ import { User } from "@shared/types/db";
 import { ObjectId } from "mongodb";
 import { AlarmInterval, UserRole } from "../../utils";
 
-export const validUsers: User[] = [
+export const validUsers: any[] = [
   {
     _id: new ObjectId(),
     email: "test@mail.mcgill.ca",
-    password: "TestPass1223!",
+    password: "TestPass1223asdf",
     firstName: "Test",
     lastName: "Test",
     role: UserRole.ADMIN,
@@ -14,48 +14,6 @@ export const validUsers: User[] = [
       email: true,
       sms: true,
       alarm: AlarmInterval.MINUTE_1
-    },
-    upcomingMeetings: [],
-    hostedMeetings: [new ObjectId()],
-    requests: [new ObjectId()],
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    _id: new ObjectId(),
-    email: "user1@mcgill.ca",
-    password: "user1Pass1223!",
-    firstName: "User",
-    lastName: "One",
-    role: UserRole.MEMBER,
-    notifications: {
-      email: true,
-      sms: true,
-      alarm: AlarmInterval.MINUTE_5
-    },
-    upcomingMeetings: [
-      {
-        meetingId: new ObjectId(),
-        time: "10:00-11:00",
-        date: "2024-01-01"
-      }
-    ],
-    hostedMeetings: [new ObjectId()],
-    requests: [new ObjectId()],
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    _id: new ObjectId(),
-    email: "user2@mcgill.ca",
-    password: "user2Pass1223!",
-    firstName: "User",
-    lastName: "Two",
-    role: UserRole.ADMIN,
-    notifications: {
-      email: true,
-      sms: true,
-      alarm: AlarmInterval.MINUTE_10
     },
     upcomingMeetings: [],
     hostedMeetings: [],

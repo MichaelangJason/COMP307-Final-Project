@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Poll, PollOption } from "@shared/types/db/poll";
 import { Meeting } from "@shared/types/db/meeting";
 import { ObjectId } from "mongodb";
-import { getCollection, getDocument } from "../utils/db";
+import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
+import { PollGetRequest, PollGetResponse, PollVoteRequest, PollVoteResponse } from "./types/poll";
 
 const createPoll = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -55,9 +54,9 @@ const createPoll = async (req: Request, res: Response): Promise<void> => {
 };
 
 
-const getPollVotes = async (req: Request, res: Response): Promise<void> => {
+const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<void> => {
     try {
-        const pollId= new ObjectId(req.params.id);
+        const pollId = new ObjectId(req.params.pollId);
 
         const pollsCollection = await getCollection<Poll>(CollectionNames.POLL);
         const poll = await pollsCollection.findOne({ _id: pollId } as any);
@@ -69,13 +68,13 @@ const getPollVotes = async (req: Request, res: Response): Promise<void> => {
 
         // Check if the poll has expired
         const currentTime = new Date();
-        const pollStatus = currentTime > poll.timeout ? "expired" : "active";
 
         res.json({
+            meetingId: poll.meetingId,
             pollId: poll._id,
             options: poll.options,
             results: poll.results,  // Could be enhanced to show individual option results
-            status: pollStatus,
+            timeout: poll.timeout,
         });
     } catch (error) {
         console.error("Error fetching poll votes:", error);
@@ -83,9 +82,13 @@ const getPollVotes = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-const updatePollVotes = async (req: Request, res: Response): Promise<void> => {
+const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Promise<void> => {
     try {
-        const pollId = new ObjectId(req.params.id);
+        if (!ObjectId.isValid(req.params.pollId)) {
+            res.status(400).json({ message: "Invalid pollId" });
+            return;
+        }
+        const pollId = new ObjectId(req.params.pollId);
         const { date, slot } = req.body;
 
         if (!date || !slot) {
@@ -94,11 +97,15 @@ const updatePollVotes = async (req: Request, res: Response): Promise<void> => {
         }
 
         const pollsCollection = await getCollection<Poll>(CollectionNames.POLL);
-        const poll = await pollsCollection.findOne({ _id: pollId } as any);
+        const poll = await pollsCollection.findOne({ _id: pollId });
+        if (!poll) {
+            res.status(404).json({ message: "Poll not found" });
+            return;
+        }
         console.log("Poll votes: ", pollId, poll?.options)
         const result = await pollsCollection.updateOne(
             {
-                _id: pollId as any, 
+                _id: pollId,
                 "options.date": date,
                 [`options.slots.${slot}`]: { $exists: true }
             },

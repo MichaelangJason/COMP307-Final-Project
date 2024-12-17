@@ -1,23 +1,39 @@
-import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { User } from "@shared/types/db/user";
 import { ObjectId } from "mongodb";
-import { getCollection, getDocument } from "../utils/db";
+import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
+import { UserBasicInfo } from "@shared/types/api/admin";
+import { UserGetRequest, UserGetResponse, UserUpdateRequest, UserUpdateResponse } from "./types/user";
+import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetResponse, AdminLoginAsUserRequest, AdminLoginAsUserResponse, AdminSearchRequest, AdminSearchResponse } from "./types/admin";
+
 // Get User Profile
-const getProfile = async (req: Request, res: Response): Promise<void> => {
-    const userId = new ObjectId(req.params.id);
+const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
+
+    if (!ObjectId.isValid(req.params.userId)) {
+        res.status(400).json({ message: 'Invalid User ID format' });
+        return;
+    }
+
+    const userId = new ObjectId(req.params.userId);
     console.log("userId", userId);
+
     try {
-        if (!ObjectId.isValid(userId)) {
-            res.status(400).json({ message: 'Invalid User ID format' });
-            return;
-        }
         const user = await getUserById(userId);
         console.log("user", user);
         if (user) {
-            res.json(user);
+            res.status(200).json({
+                id: user._id.toString(),
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                role: user.role,
+                notifications: user.notifications,
+                upcomingMeetings: user.upcomingMeetings,
+                hostedMeetings: user.hostedMeetings,
+                requests: user.requests
+                // filter out fields only used for backend
+            });
             return;
         }
         res.status(404).json({ message: 'User not found' });
@@ -29,11 +45,17 @@ const getProfile = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Update User Profile
-const updateProfile = async (req: Request, res: Response): Promise<void> => {
-    const userId = new ObjectId(req.params.id);
+const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) => {
+    if (!ObjectId.isValid(req.params.userId)) {
+        res.status(400).json({ message: 'Invalid User ID format' });
+        return;
+    }
+
+    const userId = new ObjectId(req.params.userId);
     console.log("userId", userId);
-    const { firstName, lastName, email, password } = req.body;
+    const { password } = req.body;
     const usersCollection = await getCollection<User>(CollectionNames.USER);
+
     try {
         const user = await getUserById(userId);
         console.log("user", user);
@@ -42,7 +64,8 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const updatedFields: Partial<User> = { ...req.body};
+        const updatedFields: Partial<User> = { ...req.body };
+        updatedFields.updatedAt = new Date();
 
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -74,85 +97,79 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
 
 // **Admin Endpoints**
 
-const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+const getAllUsers = async (req: AdminGetRequest, res: AdminGetResponse): Promise<void> => {
     try {
         const usersCollection = await getCollection<User>(CollectionNames.USER);
         const users = await usersCollection.find().toArray();
         const userCount = await usersCollection.countDocuments();
         console.log("GetAllUsers", users, "totalUsers:", userCount)
-        res.json({totalUsers: userCount, users});
+
+        const usersBasicInfo: UserBasicInfo[] = users.map(user => ({
+            id: user._id.toString(),
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+        }));
+
+        res.json({ totalUsers: userCount, users: usersBasicInfo });
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
 
-// Get users by searching firstName, lastName, or email
-const getUsers = async (req: Request, res: Response): Promise<void> => {
+// Get users by searching userId, firstName, lastName, or email
+const getUsers = async (req: AdminSearchRequest, res: AdminSearchResponse) => {
     try {
         const { search } = req.query;
-        const query = search
-            ? {
-                $or: [
-                    { firstName: { $regex: search as string, $options: "i" } },
-                    { lastName: { $regex: search as string, $options: "i" } },
-                    { email: { $regex: search as string, $options: "i" } }
-                ]
-            }
-            : {};
+
+        if (search === undefined || typeof search !== 'string') {
+            res.status(400).json({ message: 'Invalid search query' });
+            return;
+        }
+        if (search.length === 0) {
+            res.status(200).json({ totalUsers: 0, users: [] });
+            return;
+        }
+
+        const query: any = {
+            $or: [
+                { firstName: { $regex: search as string, $options: "i" } },
+                { lastName: { $regex: search as string, $options: "i" } },
+                { email: { $regex: search as string, $options: "i" } },
+            ]
+        };
+
+        if (ObjectId.isValid(search)) {
+            query.$or.push({ _id: new ObjectId(search) });
+        }
+
         const usersCollection = await getCollection<User>(CollectionNames.USER);
         const users = await usersCollection.find(query).toArray();
         const userCount = await usersCollection.countDocuments(query);
+
+        const usersBasicInfo: UserBasicInfo[] = users.map(user => ({
+            id: user._id.toString(),
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+        }));
+
         console.log("QueryUsersBySearch", users, "totalUsers:", userCount)
-        res.status(200).json({totalUsers: userCount, users});
+
+        res.status(200).json({ totalUsers: userCount, users: usersBasicInfo });
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch users", error });
     }
 };
 
-// // Update User Profile as Admin
-// const updateUserAsAdmin = async (req: Request, res: Response): Promise<void> => {
-//     const userId = new ObjectId(req.params.id);
-//     const { firstName, lastName, email, role } = req.body;
-
-//     try {
-//         const usersCollection = await getCollection<User>(CollectionNames.USER);
-//         const user = await getUserById(userId);
-//         if (!user) {
-//             res.status(404).json({ message: "User not found" });
-//             return;
-//         }
-
-//         const updatedFields: Partial<User> = {
-//             firstName: firstName || user.firstName,
-//             lastName: lastName || user.lastName,
-//             email: email || user.email,
-//             role: role ?? user.role, // Allow admins to update the user's role
-//         };
-
-//         const result = await usersCollection.updateOne(
-//             { _id: userId } as any,
-//             { $set: updatedFields }
-//         );
-
-//         if (result.modifiedCount > 0) {
-//             const updatedUser = await getUserById(userId);
-//             console.log(updatedUser);
-//             if (updatedUser) {
-//                 res.status(200).json({
-//                     message: "User updated successfully",
-//                     name: updatedUser.firstName + " " + updatedUser.lastName
-//                 });
-//             }
-//         } else {
-//             res.status(400).json({ message: "No changes made to the profile" });
-//         }
-//     } catch (error) {
-//         res.status(500).json({ message: "Internal Server Error", error });
-//     }
-// };
-
-const deleteUser = async (req: Request, res: Response): Promise<void> => {
-    const userId = new ObjectId(req.params.id);
+const deleteUser = async (req: AdminDeleteRequest, res: AdminDeleteResponse) => {
+    if (!ObjectId.isValid(req.params.userId)) {
+        res.status(400).json({ message: 'Invalid User ID format' });
+        return;
+    }
+    const userId = new ObjectId(req.params.userId);
     const usersCollection = await getCollection<User>(CollectionNames.USER);
 
     try {
@@ -170,8 +187,13 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-const loginAsUser = async (req: Request, res: Response): Promise<void> => {
-    const userId = new ObjectId(req.params.id);
+const loginAsUser = async (req: AdminLoginAsUserRequest, res: AdminLoginAsUserResponse) => {
+    if (!ObjectId.isValid(req.params.userId)) {
+        res.status(400).json({ message: 'Invalid User ID format' });
+        return;
+    }
+
+    const userId = new ObjectId(req.params.userId);
 
     try {
         const user = await getUserById(userId);

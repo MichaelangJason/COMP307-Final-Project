@@ -7,7 +7,6 @@ import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-//const JWT_SECRET="blue-bacon-stole-jamies-key";
 
 // Register API - Check for existing user records in the database and save the new user record
 const register = async (req: Request, res: Response): Promise<void> => {
@@ -23,7 +22,8 @@ const register = async (req: Request, res: Response): Promise<void> => {
     res.status(400).json({ message: "Invalid email domain" });
     return;
   }
-  
+  console.log("User Email:", email);
+
   const passwordValidation = validatePassword(password);
   if (!passwordValidation.isValid) {
     res.status(400).json({ message: passwordValidation.message });
@@ -62,7 +62,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     };
 
     await usersCollection.insertOne(newUser);
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "User registered successfully", userId: newUser._id });
     console.log("User registered successfully", (newUser._id))
   } catch (error) {
     res.status(500).json({ message: "Registration failed" });
@@ -87,10 +87,10 @@ const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
     console.log("Session token:", token)
-    res.status(200).json({ token, message: "Login successful" });
+    res.status(200).json({ token, userId: user._id, message: "Login successful" });
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
     console.log("Login failed", error)
@@ -108,7 +108,7 @@ const logout = (req: Request, res: Response): void => {
  * @param password - The password to validate.
  * @returns An object containing `isValid` and `message` with validation details.
  */
-function validatePassword (password: string): { isValid: boolean; message: string } {
+function validatePassword(password: string): { isValid: boolean; message: string } {
   if (!password) {
     return { isValid: false, message: "Password cannot be empty." };
   }

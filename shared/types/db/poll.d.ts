@@ -7,7 +7,6 @@ export interface PollOption {
 
 export interface Poll extends Document {
   _id: ObjectId;
-  hostId: ObjectId;
   meetingId: ObjectId;
   options: PollOption[];
   timeout: Date;
