@@ -51,9 +51,15 @@
   border: 3px solid colors.$brightRed;
   color: colors.$darkRed;
   margin-bottom: 30px;
-
-  // Uncomment to hide the error msg
-  // display: none;
+}
+.wrapper .successmsg {
+  padding: 20px 20px 20px 20px;
+  text-align: center;
+  display: block;
+  font-size: 16px;
+  border: 3px solid colors.$green;
+  color: colors.$green;
+  margin-bottom: 30px;
 }
 
 .page-body form label {

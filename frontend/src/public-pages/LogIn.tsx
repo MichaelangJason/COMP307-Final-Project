@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import logo from "../images/mini_logo.png";
 import RedButtonLink from "../components/RedButtonLink";
@@ -11,62 +11,41 @@ const LogIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const successMessage = location.state?.successMessage; // To check if we are redirected from the sign up page after successful registration
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const emailInput = e.currentTarget.email as HTMLInputElement; // Access the email input
-    const passwordInput = e.currentTarget.password as HTMLInputElement; // Access the password input
+    try {
+      const response = await fetch("http://localhost:3007/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+      // Parse the response
+      const data = await response.json();
+      if (response.ok) {
+        // Testing purposes
+        // console.log(formData.email);
+        // console.log(formData.password);
+        // console.log(data.token);
 
-    const validDomains = ["@mail.mcgill.ca", "@mail.ca"]; // List of allowed domains
-
-    // error - Invalid email address
-    if (!emailInput.checkValidity()) {
-      setError("Please enter a valid email address");
-      return;
+        sessionStorage.setItem("token", data.token); //storing the token
+        navigate(`/user/${data.userId}`);
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      setError("An error occurred during login");
     }
-    // error - Missing Email
-    if (!emailInput.value) {
-      setError("Email is required");
-      return;
-    }
-
-    // error - Invalid domain
-    if (!validDomains.some((domain) => emailInput.value.endsWith(domain))) {
-      setError("Please supply your McGill email to login");
-      return;
-    }
-
-    // error - Missing password
-    if (!passwordInput.value) {
-      setError("Password is required");
-      return;
-    }
-
-    // TODO backend: error - Account does not exist
-    const accountDoesNotExists = false;
-    if (accountDoesNotExists) {
-      setError("Account does not exists. Please Sign Up");
-      return;
-    }
-    // TODO backend: error - Wrong password
-    const wrongPassword = false;
-    if (wrongPassword) {
-      setError("Wrong Password. Please try again.");
-      return;
-    }
-    // TODO backend: success - Correct Account + Correct Password => Link to Meeting Private Page
-    navigate("/user/:id");
-
-    // Testing: View the formData through the console
-    console.log("Submitted Data:", formData);
-
-    //reset error
-    setError("");
   };
 
   return (
@@ -82,6 +61,9 @@ const LogIn = () => {
             <img src={logo} alt="Logo" />
           </header>
 
+          {/* Success message from successful sign up */}
+          {successMessage && <div className="successmsg">{successMessage}</div>}
+
           {/* Error handling */}
           {error && <div className="errormsg">{error}</div>}
 
@@ -93,7 +75,6 @@ const LogIn = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              // required
             />
             <label>Password</label>
             <input
@@ -102,7 +83,6 @@ const LogIn = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              // required
             />
 
             <div className="submit-signup-login-button">

@@ -44,10 +44,12 @@ const SignUp = () => {
       }
 
       const data = await response.json();
-      console.log("API Response:", data);
+      // console.log("API Response:", data); // Testing
 
-      // Success: Navigate to a different page
-      navigate(`/user/${data.userId}`);
+      // Successful SignUp: Navigate to a the login page
+      navigate(`/login`, {
+        state: { successMessage: "Signup successful! Please log in." },
+      });
     } catch (err: any) {
       // Handle errors
       setError(err.message || "Something went wrong. Please try again later.");
@@ -55,11 +57,11 @@ const SignUp = () => {
     }
 
     // Testing purposes
-    console.log(formData.firstName);
-    console.log(formData.lastName);
-    console.log(formData.email);
-    console.log(formData.password);
-    console.log("inside handle submit~");
+    // console.log(formData.firstName);
+    // console.log(formData.lastName);
+    // console.log(formData.email);
+    // console.log(formData.password);
+    // console.log("inside handle submit~");
   };
 
   return (
