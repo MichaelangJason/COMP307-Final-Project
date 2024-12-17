@@ -71,16 +71,35 @@ const userSchema = {
           uniqueItems: true,
           items: {
             bsonType: "object",
-            required: ["meetingId", "time", "date", "isCancelled"],
+            required: ["meetingId", "title", "hostFirstName", "hostLastName", "location", "time", "date", "isCancelled"],
             properties: {
               meetingId: {
                 bsonType: "objectId",
                 description: "Meeting ID as ObjectId reference"
               },
-              time: {
+              title: {
                 bsonType: "string",
-                pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$",
-                description: "Time of the meeting"
+                minLength: 1,
+                maxLength: 50,
+                description: "Title of the meeting"
+              },
+              hostFirstName: {
+                bsonType: "string",
+                minLength: 1,
+                maxLength: 16,
+                description: "First name of the host"
+              },
+              hostLastName: {
+                bsonType: "string",
+                minLength: 1,
+                maxLength: 16,
+                description: "Last name of the host"
+              },
+              location: {
+                bsonType: "string",
+                minLength: 1,
+                maxLength: 50,
+                description: "Location of the meeting"
               },
               date: {
                 bsonType: "string",

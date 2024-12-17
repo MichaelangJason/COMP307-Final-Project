@@ -11,9 +11,9 @@ DELETE `/logout`
 
 ## 2. Member
 
-GET  `/profile/:userId`
+GET  `/user/profile/:userId`
 
-PUT `/profile/:userId`
+PUT `/user/profile/:userId`
 
 ## 3. Admin
 
