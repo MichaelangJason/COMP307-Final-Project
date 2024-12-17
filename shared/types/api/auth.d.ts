@@ -1,4 +1,4 @@
-import { MessageResponse } from "./common";
+import { MessageResponse, UserRole } from "./common";
 
 // register
 export interface RegisterBody {
@@ -25,4 +25,5 @@ export interface VerifyResponse {
   email: string;
   firstName: string;
   lastName: string;
+  role: UserRole;
 }
