@@ -17,6 +17,10 @@ export interface MeetingInfo extends MeetingRequestParams {
   description: string;
   location: string;
   availabilities: MeetingAvailability[];
+  repeat: {
+    type: MeetingRepeat;
+    endDate: string;
+  };
   pollInfo: PollInfo | null;
   status: MeetingStatus;
 }
