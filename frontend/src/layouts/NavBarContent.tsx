@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, matchPath, Link } from "react-router-dom";
 import logo from "../images/logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/NavBarContent.scss";
@@ -13,12 +13,19 @@ interface Props {
 
 const NavBarContent = ({ pageTo, text, isGray }: Props) => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation(); //Accessing current URL path
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
 
   useEffect(() => {
+    const privatePagePatterns = ["/user/:id", "/admin/members"];
+
+    const isUserPage = privatePagePatterns.some((pattern) =>
+      matchPath(pattern, location.pathname)
+    );
+
     const fetchUserData = async () => {
-      if (!id) return;
+      if (!id || !isUserPage) return; // if not user page or no id, do not fetch
       try {
         const response = await fetch(
           `http://localhost:3007/user/profile/${id}`,
@@ -45,11 +52,13 @@ const NavBarContent = ({ pageTo, text, isGray }: Props) => {
       }
     };
     fetchUserData();
-  }, [id]);
+  }, [id, location.pathname]);
 
   return (
     <div id="navbar">
-      <img id="logo" src={logo} alt="Logo" />
+      <Link to="/">
+        <img id="logo" src={logo} alt="Logo" />
+      </Link>
       {firstName && lastName && (
         <span>
           Welcome {firstName} {lastName}!
