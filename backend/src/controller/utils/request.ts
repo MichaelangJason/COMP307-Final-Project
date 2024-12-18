@@ -39,3 +39,13 @@ export const insertRequest = async (document: Request): Promise<ObjectId | null>
     return null;
   }
 }
+
+export const updateIfExpired = async (request: Request) => {
+  const startTime = request.proposedSlot.time.split("-")[0];
+  if (
+    new Date(request.proposedSlot.date + "T" + startTime + ":00") < new Date()
+  ) {
+    await updateRequest(request._id.toString(), RequestStatus.EXPIRED);
+    request.status = RequestStatus.EXPIRED;
+  }
+}

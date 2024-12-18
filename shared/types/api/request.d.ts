@@ -5,6 +5,7 @@ export interface RequestParams {
   requestId: string; // host id (for creating request), user id (for managing request)
 }
 export interface RequestInfo {
+  requestId: string;
   proposerInfo: {
     firstName: string;
     lastName: string;
@@ -32,4 +33,8 @@ export interface RequestUpdateBody {
   status: RequestStatus; // can only update status
 }
 
+// get multiple requests
+export interface RequestGetMultipleResponse {
+  requests: RequestInfoResponse[];
+}
 
