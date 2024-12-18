@@ -168,7 +168,7 @@ export const validMeetings: Meeting[] = [
     status: MeetingStatus.UPCOMING,
     repeat: {
       type: MeetingRepeat.WEEKLY,
-      endDate: "2024-04-30"
+      endDate: "2024-12-30"
     },
     createdAt: new Date(),
     updatedAt: new Date()

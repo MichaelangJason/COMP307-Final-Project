@@ -45,9 +45,9 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     meeting.repeat.type === MeetingRepeat.WEEKLY && // recurring meeting
     meeting.updatedAt.toDateString() !== new Date().toDateString() // meeting hasn't been updated in a while
   ) {
-    const newAvailabilities = await updateFutureAvailabilities(meeting);
+    const { newAvailabilities, newArrSize } = await updateFutureAvailabilities(meeting);
     meeting.availabilities.push(...newAvailabilities);
-    meeting.availabilities = meeting.availabilities.slice(newAvailabilities.length);
+    meeting.availabilities = meeting.availabilities.slice(-newArrSize);
   }
 
   // does not check if meeting has ended/voting, only checks if it is upcoming
