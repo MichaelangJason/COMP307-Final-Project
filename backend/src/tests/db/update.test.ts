@@ -53,6 +53,10 @@ describe("Updating data in different collections", () => {
         upcomingMeetings: [
           {
             meetingId: mockData.validMeetings[0]._id,
+            title: "Meeting 1",
+            hostFirstName: "Host",
+            hostLastName: "One",
+            location: "Location 1",
             time: "10:00-11:00",
             date: "2024-01-01",
             isCancelled: true
@@ -70,7 +74,7 @@ describe("Updating data in different collections", () => {
         lastName: "",
         role: 10,
         notifications: {
-          email: true, sms: true, alarm: 10
+          email: true, sms: true, alarm: 20
         },
         upcomingMeetings: null,
         hostedMeetings: null,
