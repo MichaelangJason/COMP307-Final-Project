@@ -10,6 +10,7 @@ export const validRequests: Request[] = [
       lastName: "Doe",
       email: "john.doe@example.com"
     },
+    hostId: new ObjectId(),
     proposedSlot: {
       date: "2024-01-01",
       time: "00:00-01:00"
@@ -21,6 +22,7 @@ export const validRequests: Request[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -37,6 +39,7 @@ export const validRequests: Request[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -53,6 +56,7 @@ export const validRequests: Request[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -72,6 +76,7 @@ export const validRequests: Request[] = [
 export const invalidRequests: any[] = [
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -88,6 +93,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -104,6 +110,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -120,6 +127,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     // Missing required proposedSlot field
     status: RequestStatus.PENDING,
     reason: "asdfasd",
@@ -128,6 +136,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -144,6 +153,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -160,6 +170,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -176,6 +187,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(), 
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -192,6 +204,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -208,6 +221,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -224,6 +238,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     proposerInfo: {
       firstName: "John",
       lastName: "Doe",
@@ -240,6 +255,7 @@ export const invalidRequests: any[] = [
   },
   {
     _id: new ObjectId(),
+    hostId: new ObjectId(),
     // Missing required proposerInfo field
     proposedSlot: {
       date: "2024-01-01",

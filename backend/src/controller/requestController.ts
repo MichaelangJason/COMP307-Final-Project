@@ -17,6 +17,7 @@ import { ObjectId } from "mongodb";
 import { RequestStatus } from "../utils/statusEnum";
 import { getRequest, updateRequest, insertRequest, updateIfExpired } from "./utils/request";
 import { getMeeting } from "./utils/meeting";
+import { isAllowed } from "./utils/user";
 
 const getInfo = async (req: RequestInfoRequest, res: RequestInfoResponse) => {
   const requestId = req.params.requestId;
@@ -54,13 +55,7 @@ const update = async (
     return;
   }
 
-  let meeting: Meeting | null;
-  if (!(meeting = await getMeeting(request.meetingId))) {
-    res.status(404).json({ message: "Meeting does not exist" });
-    return;
-  }
-
-  if (meeting.hostId !== req.user.userId) {
+  if (!isAllowed(req.user?.role, request.hostId.toString(), req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to update this request" });
     return;
   }
@@ -91,13 +86,12 @@ const create = async (
 
   const { proposerInfo, proposedSlot, reason, hostId } = req.body;
 
+  if (!ObjectId.isValid(hostId)) {
+    res.status(400).json({ message: "Invalid host ID" });
+    return;
+  }
+  
   let host: User | null;
-  // try {
-  //   host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId));
-  // } catch (error) {
-  //   res.status(404).json({ message: "Host not found" });
-  //   return;
-  // }
   if (!(host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId)))) {
     res.status(404).json({ message: "Host not found" });
     return;
@@ -106,6 +100,7 @@ const create = async (
   const date = new Date();
   const newRequest: Request = {
     _id: new ObjectId(),
+    hostId: new ObjectId(hostId),
     proposerInfo,
     proposedSlot,
     reason,

@@ -5,6 +5,8 @@ import { ObjectId } from "mongodb";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { PollGetRequest, PollGetResponse, PollVoteRequest, PollVoteResponse } from "./types/poll";
+import { getMeeting, updateMeeting } from "./utils/meeting";
+import { MeetingStatus } from "../utils/statusEnum";
 
 const createPoll = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -66,9 +68,6 @@ const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<
             return;
         }
 
-        // Check if the poll has expired
-        const currentTime = new Date();
-
         res.json({
             meetingId: poll.meetingId,
             pollId: poll._id,
@@ -88,6 +87,7 @@ const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Pro
             res.status(400).json({ message: "Invalid pollId" });
             return;
         }
+
         const pollId = new ObjectId(req.params.pollId);
         const { date, slot } = req.body;
 
@@ -103,6 +103,24 @@ const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Pro
             return;
         }
         console.log("Poll votes: ", pollId, poll?.options)
+
+        // Check if the poll has expired
+        if (poll.timeout < new Date()) {
+            let meeting = await getMeeting(poll.meetingId.toString());
+            if (!meeting) {
+                await pollsCollection.deleteOne({ _id: pollId });
+                res.status(404).json({ message: "Meeting not found, poll deleted" });
+                return;
+            }
+            if (meeting.status === MeetingStatus.VOTING) {
+                // update meeting status to Upcoming
+                await updateMeeting(meeting._id.toString(), { $set: { status: MeetingStatus.UPCOMING } });
+            }
+
+            res.status(400).json({ message: "Poll has expired" });
+            return;
+        }
+
         const result = await pollsCollection.updateOne(
             {
                 _id: pollId,

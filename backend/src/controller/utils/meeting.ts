@@ -105,25 +105,31 @@ export const updateFutureAvailabilities = async (meeting: Meeting) => {
     // already passed
     const newAvailability = nextAvailability(availability, 3, meeting.repeat.endDate);
     if (!newAvailability) break;
+    // check if the no equal date in newAvailabilities
     newAvailabilities.push(newAvailability);
   }
 
   // remove first len(newAvailabilities) availabilities
-  const popSize = newAvailabilities.length;
+  const lenA = newAvailabilities.length;
+  // filter out duplicate dates
+  newAvailabilities = newAvailabilities.filter((a, index, self) => index === self.findIndex(t => t.date === a.date));
+  const lenB = lenA - newAvailabilities.length;
+  const newArrSize = availabilities.length - lenB;
+
   // console.log(popSize);
-  if (popSize > 0) {
+  if (lenA > 0) {
     await updateMeeting(meetingId.toString(), {
       $push: { 
         availabilities: 
         { 
           $each: newAvailabilities,
-          $slice: -availabilities.length // the array length unchanged, keep the last availabilities
+          $slice: -newArrSize // the array length unchanged, keep the last availabilities
         } 
       },
       $set: { updatedAt: new Date() }
     } as any);
   }
-  return newAvailabilities;
+  return { newAvailabilities, newArrSize };
 }
 
 export const isValidAvailabilities = (availabilities: MeetingAvailability[]) => {
