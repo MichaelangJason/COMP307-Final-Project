@@ -3,6 +3,10 @@ import { ObjectId, Document } from "../../../backend/node_modules/mongodb"
 
 interface UpcomingMeeting {
   meetingId: ObjectId;
+  title: string;
+  hostFirstName: string;
+  hostLastName: string;
+  location: string;
   time: string;
   date: string;
   isCancelled: boolean;

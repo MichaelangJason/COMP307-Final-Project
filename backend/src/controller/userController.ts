@@ -4,10 +4,13 @@ import { ObjectId } from "mongodb";
 import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { UserBasicInfo } from "@shared/types/api/admin";
-import { UserGetRequest, UserGetResponse, UserUpdateRequest, UserUpdateResponse } from "./types/user";
+import { UserGetRequest, UserGetRequestsRequest, UserGetRequestsResponse, UserGetResponse, UserUpdateRequest, UserUpdateResponse } from "./types/user";
 import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetResponse, AdminLoginAsUserRequest, AdminLoginAsUserResponse, AdminSearchRequest, AdminSearchResponse } from "./types/admin";
 import { validatePassword } from "./authController";
 import { isAllowed } from "./utils/user";
+import { RequestGetMultipleResponse } from "@shared/types/api/request";
+import { updateIfExpired } from "./utils/request";
+import { Request } from "@shared/types/db";
 
 // Get User Profile
 const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
@@ -17,7 +20,7 @@ const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
         return;
     }
 
-    if (isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
+    if (!isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
         res.status(403).json({ message: 'You are not authorized to access this user' });
         return;
     }
@@ -57,7 +60,7 @@ const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) =>
         res.status(400).json({ message: 'Invalid User ID format' });
         return;
     }
-    if (isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
+    if (!isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
         res.status(403).json({ message: 'You are not authorized to update this user' });
         return;
     }
@@ -121,6 +124,42 @@ const updateProfile = async (req: UserUpdateRequest, res: UserUpdateResponse) =>
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
+
+// Get Request
+const getRequests = async (req: UserGetRequestsRequest, res: UserGetRequestsResponse) => {
+    if (!ObjectId.isValid(req.params.userId)) {
+        res.status(400).json({ message: 'Invalid User ID format' });
+        return;
+    }
+    if (!isAllowed(req.user?.role, req.params.userId, req.user?.userId)) {
+        res.status(403).json({ message: 'You are not authorized to access this user' });
+        return;
+    }
+
+    const userId = new ObjectId(req.params.userId);
+
+    let user: User | null = null;
+    const usersCollection = await getCollection<User>(CollectionNames.USER);
+    user = await usersCollection.findOne({ _id: userId } as any);
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+    const requestIds = user.requests;
+
+    const requestsCollection = await getCollection<Request>(CollectionNames.REQUEST);
+    let requests = await requestsCollection.find({ _id: { $in: requestIds } } as any).toArray();
+
+    requests = requests.map((request) => ({
+        ...request,
+        requestId: request._id.toString()
+    }));
+    for (const request of requests) {
+        await updateIfExpired(request as Request);
+    }
+
+    res.status(200).json({ requests });
+}
 
 // **Admin Endpoints**
 
@@ -250,4 +289,5 @@ export default {
     //updateUserAsAdmin,
     deleteUser,
     loginAsUser,
+    getRequests
 };

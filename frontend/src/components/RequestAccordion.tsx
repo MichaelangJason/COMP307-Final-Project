@@ -56,11 +56,9 @@ const RequestAccordion = ({
             <SubmitButton
               className="declineButton"
               value="Decline"
-              onSubmit={() => console.log("decline")}
             />
             <SubmitButton
               value="Approve"
-              onSubmit={() => console.log("decline")}
             />
           </div>
         )}

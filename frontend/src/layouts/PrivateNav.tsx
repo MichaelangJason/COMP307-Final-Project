@@ -25,7 +25,7 @@ const PrivateNav = () => {
 
   return (
     <>
-      <NavBarContent pageTo="/" text="Log Out" userName={userName} />
+      <NavBarContent />
       <div id="privateSeparator">
         <nav id="private-nav" className={isNavVisible ? "responsive_nav" : ""}>
           <Link to={`/user/${id}`} onClick={toggleNavBar}>

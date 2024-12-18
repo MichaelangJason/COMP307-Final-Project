@@ -48,7 +48,6 @@ const Edit = () => {
         <SubmitButton
           className="submitButton"
           value="Submit"
-          onSubmit={() => console.log("submit")}
         />
       </form>
     </>

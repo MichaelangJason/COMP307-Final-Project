@@ -15,7 +15,7 @@ import {
 import { CollectionNames } from "./constants";
 import { ObjectId } from "mongodb";
 import { RequestStatus } from "../utils/statusEnum";
-import { getRequest, updateRequest, insertRequest } from "./utils/request";
+import { getRequest, updateRequest, insertRequest, updateIfExpired } from "./utils/request";
 import { getMeeting } from "./utils/meeting";
 
 const getInfo = async (req: RequestInfoRequest, res: RequestInfoResponse) => {
@@ -28,17 +28,11 @@ const getInfo = async (req: RequestInfoRequest, res: RequestInfoResponse) => {
   }
 
   // if request proposed slot is in the past, set status to expired
-  const startTime = request.proposedSlot.time.split("-")[0];
-  if (
-    new Date(request.proposedSlot.date + "T" + startTime + ":00") < new Date()
-  ) {
-    await updateRequest(request._id.toString(), RequestStatus.EXPIRED);
-    request.status = RequestStatus.EXPIRED;
-  }
+  await updateIfExpired(request);
 
   // only return fields in RequestInfo
   const { _id, createdAt, updatedAt, ...requestWithoutId } = request;
-  res.status(200).json(requestWithoutId);
+  res.status(200).json({ ...requestWithoutId, requestId: request._id.toString() });
 };
 
 const update = async (
