@@ -16,7 +16,7 @@ import {
 import { deleteDocument, getCollection, getDocument, insertDocument, updateOneDocument } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
-import { MeetingInfo } from "@shared/types/api/meeting";
+import { MeetingInfo, MeetingInfoWithHost } from "@shared/types/api/meeting";
 import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
 import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions } from "./utils/meeting";
 import { isAllowed } from "./utils/user";
@@ -63,7 +63,7 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   }
 
   // parse meeting to meeting info
-  const meetingInfo: MeetingInfo = {
+  const meetingInfo: MeetingInfoWithHost = {
     meetingId: meeting._id.toString(),
     title: meeting.title,
     description: meeting.description,
@@ -106,8 +106,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   }
 
   if (pollInfo && (
-    !pollInfo.timeout || !dateRegex.test(pollInfo.timeout) || new Date(pollInfo.timeout+"T23:59:59") < new Date() ||
-    !pollInfo.results || typeof pollInfo.results !== "number" || !isValidUserId(hostId)
+    !pollInfo.timeout || !pollInfo.results || typeof pollInfo.results !== "number" ||
+    !isValidUserId(hostId)
   )) {
     res.status(400).json({ message: "Invalid poll info" });
     return;
@@ -156,14 +156,22 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
 
   let pollId: ObjectId | null = null;
   if (pollInfo) {
+    const [_, days, hours, mins] = pollInfo.timeout.match(/(\d+)d(\d+)h(\d+)m/) || [];
     now = new Date();
-    
+
+    const pollTimeout = new Date();
+    // set poll timeout, add days, hours, mins to now
+    pollTimeout.setTime(now.getTime() + 
+        parseInt(days) * 24 * 60 * 60 * 1000 +  // days to milliseconds
+        parseInt(hours) * 60 * 60 * 1000 +      // hours to milliseconds
+        parseInt(mins) * 60 * 1000              // minutes to milliseconds
+    );
+
     const newPoll: Poll = {
       _id: new ObjectId(),
-      hostId: new ObjectId(hostId),
       meetingId: newMeeting._id,
       options: createPollOptions(availabilities),
-      timeout: new Date(pollInfo.timeout+"T23:59:59"),
+      timeout: pollTimeout,
       results: pollInfo.results,
       createdAt: now,
       updatedAt: now,
@@ -175,6 +183,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     try {
       pollId = await insertDocument<Poll>(CollectionNames.POLL, newPoll);
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "Failed to create poll" });
       return;
     }
@@ -255,11 +264,15 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
     return;
   }
 
+  console.log(availability.slots);
   const time = availability.slots[slot];
-  if (!time) {
+
+  if (time === undefined) {
     res.status(400).json({ message: "Invalid slot" });
     return;
   }
+
+  console.log(time);
   if (time.length >= availability.max) {
     res.status(400).json({ message: "Meeting is full" });
     return;

@@ -134,7 +134,7 @@ export const validMeetings: Meeting[] = [
     hostId: new ObjectId(),
     availabilities: [
       {
-        date: "2024-01-15",
+        date: "2024-12-23",
         slots: {
           "09:00-09:30": [],
           "09:30-10:00": [
@@ -155,7 +155,7 @@ export const validMeetings: Meeting[] = [
         max: 1
       },
       {
-        date: "2024-01-22",
+        date: "2024-12-24",
         slots: {
           "09:00-09:30": [],
           "09:30-10:00": [],
