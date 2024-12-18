@@ -58,6 +58,7 @@ export const validMeetings: Meeting[] = [
       type: MeetingRepeat.ONCE,
       endDate: "2024-01-03"
     },
+    pollId: new ObjectId(),
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -89,6 +90,7 @@ export const validMeetings: Meeting[] = [
       type: MeetingRepeat.WEEKLY,
       endDate: "2024-03-01"
     },
+    pollId: new ObjectId(),
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -124,6 +126,7 @@ export const validMeetings: Meeting[] = [
       type: MeetingRepeat.ONCE,
       endDate: "2024-03-15"
     },
+    pollId: new ObjectId(),
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -170,6 +173,7 @@ export const validMeetings: Meeting[] = [
       type: MeetingRepeat.WEEKLY,
       endDate: "2024-12-30"
     },
+    pollId: new ObjectId(),
     createdAt: new Date(),
     updatedAt: new Date()
   }
