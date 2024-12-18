@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 
@@ -18,64 +19,40 @@ const Meetings = () => {
   const [showPopup, setShowPopup] = useState(false); // Control popup visibility
   const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
+  const { id } = useParams<{ id: string }>();
+
   useEffect(() => {
     const fetchData = async () => {
-      //const response = await fetch("http://localhost:5000/api/cards"); //is the URL the frontend sends the request; it refers to an API route on the backend server that provides data about meeting cards
-      // const data = await response.json();
+      try {
+        const response = await fetch(
+          `http://localhost:3007/user/profile/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      // dummy example
-      const data: Card[] = [
-        {
-          title: "COMP 307 Office Hours",
-          status: "Upcoming",
-          dateTime: "2024-11-18, 15:30 - 18:00",
-          location: "MC24",
-          person: "Jiaju Nie",
-        },
-        {
-          title: "Team Meeting",
-          status: "Live",
-          dateTime: "2024-11-15, 10:00 - 11:00",
-          location: "LEA26",
-          person: "User1",
-        },
-        {
-          title: "COMP206 Team Meeting",
-          status: "Closed",
-          dateTime: "2024-11-18, 21:00 - 00:00",
-          location: "Zoom",
-          person: "User2",
-        },
-        {
-          title: "COMP206 Office Hours",
-          status: "Canceled",
-          dateTime: "2024-11-18, 09:00 - 10:00",
-          location: "McConnel310",
-          person: "User3",
-        },
-        {
-          title: "Team Meeting",
-          status: "Live",
-          dateTime: "2024-11-15, 10:00 - 11:00",
-          location: "LEA26",
-          person: "User1",
-        },
-        {
-          title: "COMP206 Team Meeting",
-          status: "Closed",
-          dateTime: "2024-11-18, 21:00 - 00:00",
-          location: "Zoom",
-          person: "User2",
-        },
-        {
-          title: "COMP206 Office Hours",
-          status: "Canceled",
-          dateTime: "2024-11-18, 09:00 - 10:00",
-          location: "McConnel310",
-          person: "User3",
-        },
-      ];
-      setCards(data);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const userData = await response.json();
+
+        // Transform upcomingMeetings into a Card
+        const meetings = userData.upcomingMeetings.map((meeting: any) => ({
+          title: meeting.title,
+          status: meeting.status === 0 ? "Upcoming" : "Unkown",
+          dataTime:
+            meeting.availabilities?.[0]?.dateTime || "No Date Available",
+          location: meeting.location,
+          person: `${userData.firstName} ${userData.lastName}`,
+        }));
+
+        setCards(meetings);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
     };
 
     fetchData();

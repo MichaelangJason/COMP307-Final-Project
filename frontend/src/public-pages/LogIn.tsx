@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import logo from "../images/mini_logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/LogIn_n_SignUp.scss";
-
-import { Link } from "react-router-dom";
 
 const LogIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -33,12 +30,7 @@ const LogIn = () => {
       // Parse the response
       const data = await response.json();
       if (response.ok) {
-        // Testing purposes
-        // console.log(formData.email);
-        // console.log(formData.password);
-        // console.log(data.token);
-        // console.log(data.role);
-
+        // *** store the token in sessionStorage
         sessionStorage.setItem("token", data.token); //storing the token
 
         // Navigate base on role

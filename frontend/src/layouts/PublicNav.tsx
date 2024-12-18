@@ -6,7 +6,7 @@ import "../styles/PublicNav.scss";
 const PublicNav = () => {
   return (
     <>
-      <NavBarContent pageTo="/login" text="Log In" />
+      <NavBarContent />
       <div id="publicSeparator"></div>
       <main id="public-nav">
         <Outlet />
