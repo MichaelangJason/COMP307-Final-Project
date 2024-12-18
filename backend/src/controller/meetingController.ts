@@ -286,8 +286,18 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
     return;
   }
 
+  const host: User | null = await getDocument<User>(CollectionNames.USER, meeting.hostId);
+  if (!host) {
+    res.status(500).json({ message: "Host not found, booking failed" });
+    return;
+  }
+
   const newUpcomingMeeting: UpcomingMeeting = {
     meetingId: meeting._id,
+    title: meeting.title,
+    hostFirstName: host.firstName,
+    hostLastName: host.lastName,
+    location: meeting.location,
     time: slot,
     date,
     isCancelled: false,

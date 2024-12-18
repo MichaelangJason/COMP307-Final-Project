@@ -22,6 +22,11 @@ export interface MeetingInfo extends MeetingRequestParams {
   pollInfo: PollInfo | null;
   status: MeetingStatus;
 }
+export interface MeetingInfoWithHost extends MeetingInfo {
+  hostId: string;
+  hostFirstName: string;
+  hostLastName: string;
+}
 
 // create meeting
 export interface MeetingCreateParams {

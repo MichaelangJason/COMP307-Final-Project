@@ -2,7 +2,7 @@ import { User } from "@shared/types/db";
 import { ObjectId } from "mongodb";
 import { AlarmInterval, UserRole } from "../../utils";
 
-export const validUsers: any[] = [
+export const validUsers: User[] = [
   {
     _id: new ObjectId(),
     email: "admin@mcgill.ca",
@@ -33,7 +33,38 @@ export const validUsers: any[] = [
       sms: true,
       alarm: AlarmInterval.MINUTE_15
     },
-    upcomingMeetings: [],
+    upcomingMeetings: [
+      {
+        meetingId: new ObjectId(),
+        title: "Meeting 1",
+        hostFirstName: "Host",
+        hostLastName: "One",
+        location: "Location 1",
+        time: "09:00-09:30",
+        date: "2024-01-15",
+        isCancelled: false
+      },
+      {
+        meetingId: new ObjectId(),
+        title: "Meeting 2",
+        hostFirstName: "Host",
+        hostLastName: "Two",
+        location: "Location 2",
+        time: "09:30-10:00",
+        date: "2024-01-15",
+        isCancelled: false
+      },
+      {
+        meetingId: new ObjectId(),
+        title: "Meeting 3",
+        hostFirstName: "Host",
+        hostLastName: "Three",
+        location: "Location 3",
+        time: "10:00-10:30",
+        date: "2024-01-15",
+        isCancelled: false
+      }
+    ],
     hostedMeetings: [],
     requests: [],
     createdAt: new Date(),
@@ -51,7 +82,38 @@ export const validUsers: any[] = [
       sms: true,
       alarm: AlarmInterval.MINUTE_30
     },
-    upcomingMeetings: [],
+    upcomingMeetings: [
+      {
+        meetingId: new ObjectId(),
+        title: "Meeting 1",
+        hostFirstName: "Host",
+        hostLastName: "One",
+        location: "Location 1",
+        time: "09:00-09:30",
+        date: "2024-01-15",
+        isCancelled: false
+      },
+      {
+        meetingId: new ObjectId(),
+        title: "Meeting 2",
+        hostFirstName: "Host",
+        hostLastName: "Two",
+        location: "Location 2",
+        time: "09:30-10:00",
+        date: "2024-01-15",
+        isCancelled: false
+      },
+      {
+        meetingId: new ObjectId(),
+        title: "Meeting 3",
+        hostFirstName: "Host",
+        hostLastName: "Three",
+        location: "Location 3",
+        time: "10:00-10:30",
+        date: "2024-01-15",
+        isCancelled: false
+      }
+    ],
     hostedMeetings: [],
     requests: [],
     createdAt: new Date(),
