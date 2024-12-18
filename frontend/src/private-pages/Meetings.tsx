@@ -3,7 +3,10 @@ import { useParams } from "react-router-dom";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 
+import { MeetingStatus } from "../statusEnum";
+
 interface Card {
+  id: string;
   title: string;
   status: string;
   dateTime: string;
@@ -39,15 +42,34 @@ const Meetings = () => {
         }
         const userData = await response.json();
 
-        // Transform upcomingMeetings into a Card
-        const meetings = userData.upcomingMeetings.map((meeting: any) => ({
-          title: meeting.title,
-          status: meeting.status === 0 ? "Upcoming" : "Unkown",
-          dataTime:
-            meeting.availabilities?.[0]?.dateTime || "No Date Available",
-          location: meeting.location,
-          person: `${userData.firstName} ${userData.lastName}`,
-        }));
+        const meetings = userData.upcomingMeetings.map((meeting: any) => {
+          // create start and end time Date
+          const currentTime = new Date();
+          const startTime = new Date(
+            `${meeting.date} ${meeting.time.split("-")[0]}`
+          );
+          const endTime = new Date(
+            `${meeting.date} ${meeting.time.split("-")[1]}`
+          );
+
+          // Determine the status based on the current time
+          let status = "Upcoming";
+          if (meeting.isCancelled) {
+            status = "Canceled";
+          } else if (currentTime >= startTime && currentTime <= endTime) {
+            status = "Live";
+          } else if (currentTime > endTime) {
+            status = "Closed";
+          }
+          return {
+            id: meeting.id,
+            title: meeting.title,
+            status: status,
+            dateTime: `${meeting.date} ${meeting.time}`,
+            location: meeting.location,
+            person: `${meeting.hostFirstName} ${meeting.hostLastName}`,
+          };
+        });
 
         setCards(meetings);
       } catch (error) {
@@ -56,7 +78,7 @@ const Meetings = () => {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   // Filter
   const filteredCards = cards.filter((card) => {
@@ -64,17 +86,34 @@ const Meetings = () => {
     return card.status === filter;
   });
 
-  // Pop up
+  // handle meeting deletion
   const handleDelete = async () => {
     if (selectedCard) {
-      // TODO backend : fetch
-      const response = await fetch(`URL_link_here`, {
-        method: "DELETE",
-        // TODO backend ....
-      });
-      console.error("Failed to delete meeting");
+      try {
+        const response = await fetch(
+          `http://localhost:3007/meeting/cancel/${selectedCard.id}`, // Need to be fixed by Jiaju
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      // TODO backend : handle response error from DB
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("Failed to delete meeting");
+        }
+
+        // Remove the meeting from the Array
+        setCards((prevCards) =>
+          prevCards.filter((card) => card.id !== selectedCard.id)
+        );
+        setShowPopup(false);
+        setSelectedCard(null);
+      } catch (error) {
+        console.error("Error deleting meeting:", error);
+      }
     }
   };
 
