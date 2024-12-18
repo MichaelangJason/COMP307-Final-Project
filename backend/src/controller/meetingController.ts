@@ -124,6 +124,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
 
   // create meeting
   let now = new Date();
+  // sort availabilities by date
+  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const newMeeting: Meeting = {
     _id: new ObjectId(),
@@ -166,6 +168,13 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
         parseInt(hours) * 60 * 60 * 1000 +      // hours to milliseconds
         parseInt(mins) * 60 * 1000              // minutes to milliseconds
     );
+
+    // check if poll timeout is before the first meeting start date
+    const firstMeetingStartTime = new Date(availabilities[0].date+"T00:00:00");
+    if (pollTimeout < firstMeetingStartTime) {
+      res.status(400).json({ message: "Poll timeout is before the first meeting start date" });
+      return;
+    }
 
     const newPoll: Poll = {
       _id: new ObjectId(),
