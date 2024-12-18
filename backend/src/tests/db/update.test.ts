@@ -186,6 +186,7 @@ describe("Updating data in different collections", () => {
           lastName: "NewLastName",
           email: "newemail@test.com"
         },
+        hostId: new ObjectId(),
         proposedSlot: {
           date: "2024-01-02", 
           time: "10:00-11:00"
@@ -205,6 +206,7 @@ describe("Updating data in different collections", () => {
           date: "10:00-11:00",
           time: "2024-01-02"
         },
+        hostId: null,
         status: 10,
         reason: null,
         updatedAt: null,
