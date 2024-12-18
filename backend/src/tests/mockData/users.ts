@@ -277,7 +277,7 @@ export const invalidUsers: any[] = [
     notifications: {
       email: true,
       sms: true,
-      alarm: 10 // invalid alarm interval
+      alarm: 20 // invalid alarm interval
     },
     upcomingMeetings: [],
     hostedMeetings: [],

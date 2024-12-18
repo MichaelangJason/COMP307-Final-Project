@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 
+import { MeetingStatus } from "../statusEnum";
+
 interface Card {
+  id: string;
   title: string;
   status: string;
   dateTime: string;
@@ -18,68 +22,64 @@ const Meetings = () => {
   const [showPopup, setShowPopup] = useState(false); // Control popup visibility
   const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
+  const { id } = useParams<{ id: string }>();
+
   useEffect(() => {
     const fetchData = async () => {
-      //const response = await fetch("http://localhost:5000/api/cards"); //is the URL the frontend sends the request; it refers to an API route on the backend server that provides data about meeting cards
-      // const data = await response.json();
+      try {
+        const response = await fetch(
+          `http://localhost:3007/user/profile/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      // dummy example
-      const data: Card[] = [
-        {
-          title: "COMP 307 Office Hours",
-          status: "Upcoming",
-          dateTime: "2024-11-18, 15:30 - 18:00",
-          location: "MC24",
-          person: "Jiaju Nie",
-        },
-        {
-          title: "Team Meeting",
-          status: "Live",
-          dateTime: "2024-11-15, 10:00 - 11:00",
-          location: "LEA26",
-          person: "User1",
-        },
-        {
-          title: "COMP206 Team Meeting",
-          status: "Closed",
-          dateTime: "2024-11-18, 21:00 - 00:00",
-          location: "Zoom",
-          person: "User2",
-        },
-        {
-          title: "COMP206 Office Hours",
-          status: "Canceled",
-          dateTime: "2024-11-18, 09:00 - 10:00",
-          location: "McConnel310",
-          person: "User3",
-        },
-        {
-          title: "Team Meeting",
-          status: "Live",
-          dateTime: "2024-11-15, 10:00 - 11:00",
-          location: "LEA26",
-          person: "User1",
-        },
-        {
-          title: "COMP206 Team Meeting",
-          status: "Closed",
-          dateTime: "2024-11-18, 21:00 - 00:00",
-          location: "Zoom",
-          person: "User2",
-        },
-        {
-          title: "COMP206 Office Hours",
-          status: "Canceled",
-          dateTime: "2024-11-18, 09:00 - 10:00",
-          location: "McConnel310",
-          person: "User3",
-        },
-      ];
-      setCards(data);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const userData = await response.json();
+
+        const meetings = userData.upcomingMeetings.map((meeting: any) => {
+          // create start and end time Date
+          const currentTime = new Date();
+          const startTime = new Date(
+            `${meeting.date} ${meeting.time.split("-")[0]}`
+          );
+          const endTime = new Date(
+            `${meeting.date} ${meeting.time.split("-")[1]}`
+          );
+
+          // Determine the status based on the current time
+          let status = "Upcoming";
+          if (meeting.isCancelled) {
+            status = "Canceled";
+          } else if (currentTime >= startTime && currentTime <= endTime) {
+            status = "Live";
+          } else if (currentTime > endTime) {
+            status = "Closed";
+          }
+          return {
+            id: meeting.id,
+            title: meeting.title,
+            status: status,
+            dateTime: `${meeting.date} ${meeting.time}`,
+            location: meeting.location,
+            person: `${meeting.hostFirstName} ${meeting.hostLastName}`,
+          };
+        });
+
+        setCards(meetings);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   // Filter
   const filteredCards = cards.filter((card) => {
@@ -87,17 +87,49 @@ const Meetings = () => {
     return card.status === filter;
   });
 
-  // Pop up
+  // handle meeting deletion
   const handleDelete = async () => {
     if (selectedCard) {
-      // TODO backend : fetch
-      const response = await fetch(`URL_link_here`, {
-        method: "DELETE",
-        // TODO backend ....
-      });
-      console.error("Failed to delete meeting");
+      try {
+        const [date, time] = selectedCard.dateTime.split(" ");
+        const slot = time;
 
-      // TODO backend : handle response error from DB
+        console.log("Stored email:", sessionStorage.getItem("email"));
+
+        console.log({ userId: id, email: sessionStorage.getItem("email") });
+
+        const response = await fetch(
+          `http://localhost:3007/meeting/unbook/${selectedCard.id}`, // Need to be fixed by Jiaju
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+
+            body: JSON.stringify({
+              userId: id,
+              email: sessionStorage.getItem("email"), // bug here, goto LogIn.tsx the variable data
+              date: date,
+              slot: slot,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("Failed to delete meeting");
+        }
+
+        // Remove the meeting from the Array
+        setCards((prevCards) =>
+          prevCards.filter((card) => card.id !== selectedCard.id)
+        );
+        setShowPopup(false);
+        setSelectedCard(null);
+      } catch (error) {
+        console.error("Error deleting meeting:", error);
+      }
     }
   };
 

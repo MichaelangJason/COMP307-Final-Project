@@ -74,7 +74,7 @@ describe("Updating data in different collections", () => {
         lastName: "",
         role: 10,
         notifications: {
-          email: true, sms: true, alarm: 10
+          email: true, sms: true, alarm: 20
         },
         upcomingMeetings: null,
         hostedMeetings: null,

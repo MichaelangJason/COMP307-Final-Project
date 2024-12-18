@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import logo from "../images/mini_logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/LogIn_n_SignUp.scss";
-
-import { Link } from "react-router-dom";
 
 const LogIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -24,7 +21,10 @@ const LogIn = () => {
     try {
       const response = await fetch("http://localhost:3007/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -32,14 +32,14 @@ const LogIn = () => {
       });
       // Parse the response
       const data = await response.json();
-      if (response.ok) {
-        // Testing purposes
-        // console.log(formData.email);
-        // console.log(formData.password);
-        // console.log(data.token);
-        // console.log(data.role);
 
+      console.log("Raw API response:", data); // Log the full response for debugging
+      if (response.ok) {
+        // *** store the token in sessionStorage
         sessionStorage.setItem("token", data.token); //storing the token
+        sessionStorage.setItem("userId", data.userId);
+        sessionStorage.setItem("role", data.role);
+        sessionStorage.setItem("email", formData.email);
 
         // Navigate base on role
         if (data.role === 0) {

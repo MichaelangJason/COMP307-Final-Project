@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 interface Card {
   title: string;
@@ -18,69 +18,63 @@ const Manage = () => {
   //Edit
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
-      //const response = await fetch("http://localhost:5000/api/cards"); //is the URL the frontend sends the request; it refers to an API route on the backend server that provides data about meeting cards
-      // const data = await response.json();
+      try {
+        const response = await fetch(
+          `http://localhost:3007/user/profile/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      // dummy example
-      const data: Card[] = [
-        {
-          title: "COMP 307 Office Hours",
-          status: "Upcoming",
-          dateTime: "2024-11-18, 15:30 - 18:00",
-          location: "MC24",
-          person: "Jiaju Nie",
-        },
-        {
-          title: "Team Meeting",
-          status: "Voting",
-          dateTime: "2024-11-15, 10:00 - 11:00",
-          location: "LEA26",
-          person: "User1",
-        },
-        {
-          title: "COMP206 Team Meeting",
-          status: "Closed",
-          dateTime: "2024-11-18, 21:00 - 00:00",
-          location: "Zoom",
-          person: "User2",
-        },
-        {
-          title: "COMP206 Office Hours",
-          status: "Upcoming",
-          dateTime: "2024-11-18, 09:00 - 10:00",
-          location: "McConnel310",
-          person: "User3",
-        },
-        {
-          title: "Team Meeting",
-          status: "Voting",
-          dateTime: "2024-11-15, 10:00 - 11:00",
-          location: "LEA26",
-          person: "User1",
-        },
-        {
-          title: "COMP206 Team Meeting",
-          status: "Closed",
-          dateTime: "2024-11-18, 21:00 - 00:00",
-          location: "Zoom",
-          person: "User2",
-        },
-        {
-          title: "COMP206 Office Hours",
-          status: "Voting",
-          dateTime: "2024-11-18, 09:00 - 10:00",
-          location: "McConnel310",
-          person: "User3",
-        },
-      ];
-      setCards(data);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const userData = await response.json();
+
+        const meetings = userData.hostedMeetings.map((meeting: any) => {
+          // create start and end time Date
+          const currentTime = new Date();
+          const startTime = new Date(
+            `${meeting.date} ${meeting.time.split("-")[0]}`
+          );
+          const endTime = new Date(
+            `${meeting.date} ${meeting.time.split("-")[1]}`
+          );
+          // Determine the status based on the current time
+          let status = "Upcoming";
+          if (meeting.isCancelled) {
+            status = "Canceled";
+          } else if (currentTime >= startTime && currentTime <= endTime) {
+            status = "Live";
+          } else if (currentTime > endTime) {
+            status = "Closed";
+          }
+          return {
+            id: meeting.id,
+            title: meeting.title,
+            status: status,
+            dateTime: `${meeting.date} ${meeting.time}`,
+            location: meeting.location,
+            person: `${meeting.hostFirstName} ${meeting.hostLastName}`,
+          };
+        });
+
+        setCards(meetings);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   // Filter
   const filteredCards = cards.filter((card) => {
