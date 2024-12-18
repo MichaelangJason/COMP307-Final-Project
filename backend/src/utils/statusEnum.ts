@@ -4,11 +4,11 @@ export enum UserRole {
 }
 
 export enum AlarmInterval {
-  MINUTE_1 = 0,
-  MINUTE_5 = 1,
-  MINUTE_10 = 2,
-  MINUTE_15 = 3,
-  MINUTE_30 = 4
+  MINUTE_1 = 1,
+  MINUTE_5 = 5,
+  MINUTE_10 = 10,
+  MINUTE_15 = 15,
+  MINUTE_30 = 30
 }
 
 export enum RequestStatus {

@@ -60,8 +60,8 @@ const userSchema = {
             },
             alarm: {
               bsonType: "int",
-              enum: [0, 1, 2, 3, 4],
-              description: "0=1 min, 1=5 min",
+              enum: [1, 5, 10, 15, 30],
+              description: "1=1 min, 5=5 min, 10=10 min, 15=15 min, 30=30 min",
             },
           },
         },
