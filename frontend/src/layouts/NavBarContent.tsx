@@ -38,6 +38,18 @@ const NavBarContent = () => {
     );
   }, [location.pathname]);
 
+  // Handle login/logout actions
+  const handleLoginLogout = () => {
+    if (isLoggedIn) {
+      sessionStorage.removeItem("token"); // Remove the token
+      setButtonText("Login"); // Update button text
+      setButtonPageTo("/login"); // Update button target page
+    } else {
+      setButtonText("Logout"); // Set button text to Logout
+      setButtonPageTo("/"); // Set button target to home page
+    }
+  };
+
   // fetching the user firstName and lastName
   useEffect(() => {
     const privatePagePatterns = ["/user/:id", "/admin/members"];
@@ -92,6 +104,9 @@ const NavBarContent = () => {
         text={buttonText}
         isGray={isGray}
         isLoggedIn={isLoggedIn}
+        onLogout={handleLoginLogout}
+        setButtonText={setButtonText}
+        setButtonPageTo={setButtonPageTo}
       />
     </div>
   );

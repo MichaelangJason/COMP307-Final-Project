@@ -11,6 +11,8 @@ interface Props {
   isGray?: boolean;
   isLoggedIn?: boolean;
   onLogout?: () => void; //used to handle logout
+  setButtonText?: React.Dispatch<React.SetStateAction<string>>;
+  setButtonPageTo?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const RedButtonLink = ({
@@ -20,6 +22,8 @@ const RedButtonLink = ({
   isGray = false,
   isLoggedIn,
   onLogout,
+  setButtonPageTo,
+  setButtonText,
 }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +40,9 @@ const RedButtonLink = ({
     if (isLoggedIn) {
       if (onLogout) onLogout();
       sessionStorage.removeItem("token"); //removes the token
-      text = "login"; // Reset the text of button to 'login'
+      if (setButtonText) setButtonText("Login");
+      if (setButtonPageTo) setButtonPageTo("/login"); // Update state here
+
       navigate("/"); //redirect to login page
     } else {
       navigate("/login");
