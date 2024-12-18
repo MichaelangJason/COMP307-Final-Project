@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import { data, useParams } from "react-router-dom";
+
 import "react-calendar/dist/Calendar.css";
 
+import { MeetingAvailability } from "../../../shared/types/db/meeting";
+import { VerifyResponse } from "../../../shared/types/api/auth";
 import "../styles/BookMeeting.scss";
 import SubmitButton from "components/SubmitButton";
 
@@ -15,13 +19,197 @@ for (let hour = 0; hour < 24; hour++) {
 }
 
 const BookMeeting = () => {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const params = useParams();
+  const id = params.id;
+
+  const [availabilities, setAvailabilities] = useState<MeetingAvailability[]>(
+    []
+  );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [slot, setSlot] = useState<string | null>(null);
   const [startTimeIndex, setStartTimeIndex] = useState<number>(0);
   const [endTimeIndex, setEndTimeIndex] = useState<number>(1);
   const [isRequestAlt, setIsRequestAlt] = useState<boolean>(false);
+  const [userInfo, setUserInfo] = useState<VerifyResponse | null>(null);
+  const [hostId, setHostId] = useState<VerifyResponse | null>(null);
+
+  const token = sessionStorage.getItem("token");
+
+  const fetchUserInfo = async () => {
+    const url = `http://localhost:3007/login`;
+
+    await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setUserInfo(data);
+      })
+      .catch((err) => {
+        console.error("Error occurred:", err.message);
+      });
+  };
+
+  const fetchHostId = async () => {
+    const url = `http://localhost:3007/meeting/${id}`;
+
+    await fetch(url, {
+      method: "GET",
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setHostId(data.hostId);
+      })
+      .catch((err) => {
+        console.error("Error occurred:", err.message);
+      });
+  };
+
+  const fetchAvailabilities = async () => {
+    const url = `http://localhost:3007/meeting/${id}`;
+
+    await fetch(url, {
+      method: "GET",
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setAvailabilities(data.availabilities);
+      })
+      .catch((err) => {
+        console.error("Error occurred:", err.message);
+      });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!slot && !isRequestAlt) {
+      alert("Select a valid date");
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+
+    const formObject: Record<string, string> = {};
+    const participantKeys = ["firstName", "lastName", "email"];
+
+    if (isRequestAlt) {
+      const proposerInfo: Record<string, string> = {};
+
+      formData.forEach((value, key) => {
+        if (participantKeys.includes(key)) {
+          proposerInfo[key] = value as string;
+        } else {
+          formObject[key] = value as string;
+        }
+      });
+
+      const finalData = {
+        ...formObject,
+        hostId,
+        proposerInfo,
+        proposedSlot: {
+          date: selectedDate.toLocaleDateString("en-CA"),
+          time: `${predefinedTimeSlots[startTimeIndex]}-${predefinedTimeSlots[endTimeIndex]}`,
+        },
+      };
+
+      const url = `http://localhost:3007/request/${hostId}`;
+
+      await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(() => {
+          alert("Submitted!");
+        })
+        .catch((err) => {
+          console.error("Error occurred:", err.message);
+          alert("An error occurred. Please try again.");
+        });
+    } else {
+      const participantInfo: Record<string, string> = {};
+
+      formData.forEach((value, key) => {
+        if (participantKeys.includes(key)) {
+          participantInfo[key] = value as string;
+        } else if (key === "reason") {
+          return;
+        } else {
+          formObject[key] = value as string;
+        }
+      });
+
+      const finalData = {
+        ...formObject,
+        participantInfo,
+        slot,
+        date: selectedDate.toLocaleDateString("en-CA"),
+      };
+      console.log(finalData);
+
+      const url = `http://localhost:3007/meeting/book/${id}`;
+
+      await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(() => {
+          alert("Submitted!");
+        })
+        .catch((err) => {
+          console.error("Error occurred:", err.message);
+          alert("An error occurred. Please try again.");
+        });
+    }
+  };
 
   const handleDateChange = (date: Date) => {
-    setSelectedDate(date.toISOString().split("T")[0]);
+    const slotsAtDate = Object.keys(getSlotsAtDate(date));
+
+    setSelectedDate(date);
+    if (slotsAtDate.length === 0) {
+      setSlot(null);
+    } else {
+      setSlot(slotsAtDate[0]);
+    }
   };
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -32,6 +220,30 @@ const BookMeeting = () => {
     setEndTimeIndex(Number(e.target.value));
   };
 
+  const isGreenDate = (date: Date) => {
+    const formattedDate = date.toLocaleDateString("en-CA").split("T")[0];
+
+    return availabilities
+      ?.map((a) => a.date)
+      .filter((date) => date != selectedDate.toLocaleDateString("en-CA"))
+      .includes(formattedDate);
+  };
+
+  const getSlotsAtDate = (date: Date) => {
+    const stringDate = date.toLocaleDateString("en-CA");
+
+    return (
+      availabilities?.find((a: MeetingAvailability) => a.date === stringDate)
+        ?.slots ?? {}
+    );
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+    fetchAvailabilities();
+    fetchHostId();
+  }, []);
+
   return (
     <div id="bookMeeting">
       <div className="bookContent">
@@ -39,8 +251,12 @@ const BookMeeting = () => {
         <div className="formContainer">
           <div className="calendarForm">
             <Calendar
+              value={selectedDate}
               calendarType="gregory"
               onChange={(value, _) => handleDateChange(value as Date)}
+              tileClassName={({ date }) =>
+                isGreenDate(date) ? "green-tile" : ""
+              }
             />
             <div
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
@@ -50,10 +266,25 @@ const BookMeeting = () => {
                 style={{ display: "flex", flexDirection: "column" }}
               >
                 <label>Select a time slot:</label>
-                <select disabled={isRequestAlt}>
-                  {["14:30-14:45"].map((timeSlot, index) => (
-                    <option value={index}>{timeSlot}</option>
+                <select
+                  required
+                  disabled={
+                    isRequestAlt ||
+                    Object.keys(getSlotsAtDate(selectedDate)).length === 0
+                  }
+                  onChange={(e) => setSlot(e.currentTarget.value)}
+                  value={
+                    slot ||
+                    Object.keys(getSlotsAtDate(selectedDate))[0] ||
+                    "No options available"
+                  }
+                >
+                  {Object.keys(getSlotsAtDate(selectedDate)).map((timeSlot) => (
+                    <option value={timeSlot}>{timeSlot}</option>
                   ))}
+                  {Object.keys(getSlotsAtDate(selectedDate)).length === 0 && (
+                    <option>No options available</option>
+                  )}
                 </select>
               </div>
               <div
@@ -92,21 +323,44 @@ const BookMeeting = () => {
               </div>
             </div>
           </div>
-          <form className="bookingForm roundShadowBorder">
+          <form
+            className="bookingForm roundShadowBorder"
+            onSubmit={handleSubmit}
+          >
             <h1>Booking Form</h1>
             <label>Last Name:</label>
-            <input className="textInput" type="text" name="lname" required />
+            <input
+              className={`textInput ${userInfo ? "grayInput" : ""}`}
+              readOnly={userInfo !== null}
+              type="text"
+              name="lastName"
+              required
+              defaultValue={userInfo?.lastName || ""}
+            />
             <label>First Name:</label>
-            <input className="textInput" type="text" name="fname" required />
+            <input
+              className={`textInput ${userInfo ? "grayInput" : ""}`}
+              readOnly={userInfo !== null}
+              type="text"
+              name="firstName"
+              required
+              defaultValue={userInfo?.firstName || ""}
+            />
             <label>Email:</label>
-            <input className="textInput" type="email" name="email" required />
+            <input
+              className={`textInput ${userInfo ? "grayInput" : ""}`}
+              readOnly={userInfo !== null}
+              type="email"
+              name="email"
+              required
+              defaultValue={userInfo?.email || ""}
+            />
             <div className="requestAlt">
               <label>Request an alternative time:</label>
               <input
                 className="textInput"
                 style={{ margin: "0", width: "25px", height: "25px" }}
                 type="checkbox"
-                name="isRequest"
                 onClick={() => setIsRequestAlt(!isRequestAlt)}
               />
             </div>
@@ -114,15 +368,12 @@ const BookMeeting = () => {
               Reason of meeting:
             </label>
             <textarea
+              required
               className={isRequestAlt ? "textInput" : "readOnly textInput"}
               readOnly={!isRequestAlt}
               name="reason"
             />
-            <SubmitButton
-              className="submitButton"
-              value="Submit"
-              onSubmit={() => console.log("submit")}
-            />
+            <SubmitButton className="submitButton" value="Submit" />
           </form>
         </div>
       </div>

@@ -3,10 +3,9 @@ import "../styles/SubmitButton.scss";
 interface Props {
   className?: string;
   value: string;
-  onSubmit: () => void;
 }
 
-const SubmitButton = ({ className = "", value, onSubmit }: Props) => {
+const SubmitButton = ({ className = "", value }: Props) => {
   return (
     <div className={className}>
       <input
@@ -14,7 +13,6 @@ const SubmitButton = ({ className = "", value, onSubmit }: Props) => {
         type="submit"
         name="submit"
         value={value}
-        onSubmit={onSubmit}
       />
     </div>
   );
