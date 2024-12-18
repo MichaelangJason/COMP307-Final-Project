@@ -1,71 +1,111 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; 
 import ProfileBox from "../components/profileBox";
 import "../styles/profileCard.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { AlarmInterval } from "../statusEnum";
+import { UserGetResponse, UserProfileUpdateBody } from "@shared/types/api/user";
 
 const Profile: React.FC = () => {
-  const [email, fixEmail] = useState("");
-  const [password, fixpassword] = useState("");
+  const { id } = useParams<{ id: string }>(); 
+  const [email, setEmail] = useState("");
   const [editPassw, setPasswordEdit] = useState(false);
-  const [editMode, fixEditMode] = useState(false);
-  const [newPass, fixNewPassword] = useState("");
+  const [editMode, setEditMode] = useState(false);
+  const [newPass, setNewPassword] = useState("");
   const [notification, setNotification] = useState("deactivate");
-  const [Timing, setTiming] = useState("input-box");
-  const [penciledit, fixpencil] = useState(false); 
+  const [Alarm, setAlarm] = useState(AlarmInterval.MINUTE_1); 
+  const [pencilEdit, setPencilEdit] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const emailFromBackend = "example@example.com"; 
-      const passwordFromBackend = "randomhg"; 
-      fixEmail(emailFromBackend);
-      fixpassword(passwordFromBackend);
+      if (!id) return;
+      try {
+        const response = await fetch(`http://localhost:3007/user/profile/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data: UserGetResponse = await response.json();
+        const { email, notifications } = data;
+
+        // setup state
+        setEmail(email);
+        setNotification(notifications.email ? "email" : notifications.sms ? "sms" : "deactivate");
+        setAlarm(notifications.alarm || AlarmInterval.MINUTE_30);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   const tn = (...fns: (() => void)[]) => fns.forEach(fn => fn());
+
   const clickEditSect = () => tn(
-  () => fixEditMode(true),
-  () => fixpencil(false)
-);
+    () => setEditMode(true),
+    () => setPencilEdit(false)
+  );
 
+  const clickIcon = () => editMode ? (setPasswordEdit(true), setPencilEdit(true)) : null;
 
+  const newPasswordEdit = (e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value);
 
-
-
-const clickIcon = () => editMode ? (setPasswordEdit(true), fixpencil(true)) : null;
-
-
-  const newPasswordEdit = (e: React.ChangeEvent<HTMLInputElement>) => fixNewPassword(e.target.value);
-
-  
-// saving info by reloading the page
   const submitButtonClick = async () => {
     try {
-      const response = await fetch('/api/saveProfile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newPass, notification, Timing }),
+      const updatedPassword = newPass;
+
+      const updateBody: UserProfileUpdateBody = {}
+
+      // this can be commented out since they must exist
+      if (!updatedPassword && !notification) {
+        window.alert("No changes to save");
+        return;
+      }
+
+      if (updatedPassword) {
+        updateBody.password = updatedPassword;
+      }
+
+      if (notification) {
+        updateBody.notifications = {
+          email: notification === "email",
+          sms: notification === "sms",
+          alarm: Alarm
+        };
+      }
+
+      const response = await fetch(`http://localhost:3007/user/profile/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${sessionStorage.getItem("token")}` 
+        },
+        body: JSON.stringify(updateBody),
       });
-  
+
       if (response.ok) {
-        console.log('Changes are saved:', await response.json());
-        fixEditMode(false);               
-        setPasswordEdit(false);       
-        fixNewPassword("");               
-        
-        window.location.reload();
+        console.log('Changes are saved');
+        setEditMode(false);
+        setPasswordEdit(false);
+        // no need to fetch again if success
+
+        // why navigate back? stay on the same page
+        // navigate(-1)
       } else {
         throw new Error('Failed to save info');
       }
     } catch (error) {
-      console.error('the error:', error);
+      console.error('Error:', error);
     }
   };
-  
-
   return (
     <>
       <h1 style={{ marginBottom: "2px" }}>Profile & Settings</h1>
@@ -76,15 +116,16 @@ const clickIcon = () => editMode ? (setPasswordEdit(true), fixpencil(true)) : nu
           <input type="text" className="input-box read-only" value={email} readOnly />
           <p className="sub-label">Password</p>
           <div className="box-input">
-          <FontAwesomeIcon 
-            icon={faPen} 
-            className={`icon ${editMode && penciledit && 'editable'}`} 
-            onClick={clickIcon} 
-          />
+            <FontAwesomeIcon 
+              icon={faPen} 
+              className={`icon ${editMode && pencilEdit && 'editable'}`} 
+              onClick={clickIcon} 
+            />
             <input
               type="password"
               className="input-box-with-icon read-only"
-              value={password}
+              value={"***********"}
+              placeholder="***********"
               readOnly />
             {editPassw && (
               <input
@@ -96,7 +137,6 @@ const clickIcon = () => editMode ? (setPasswordEdit(true), fixpencil(true)) : nu
             )}
           </div>
           <p className="sub-label">Notification Method</p>
-
           <select
             className={['input-box', editMode ? 'editable' : 'non-editable'].join(' ')}
             disabled={!editMode}
@@ -111,11 +151,18 @@ const clickIcon = () => editMode ? (setPasswordEdit(true), fixpencil(true)) : nu
           <select
             className={['input-box', editMode ? 'editable' : 'non-editable'].join(' ')}
             disabled={!editMode}
-            value={Timing}
-            onChange={(e) => setTiming(e.target.value)}
+            value={Alarm}
+            onChange={(e) => setAlarm(Number(e.target.value))}
           >
-            <option value="input-box">1 minute before event</option>
-            <option value="email">5 minutes before event</option>
+           {
+            Object.keys(AlarmInterval)
+            .filter(key => !isNaN(Number(key)))
+            .map((interval) => (
+              <option key={interval} value={Number(interval)}>
+                {interval + " minutes before event"}
+              </option>
+            ))
+           }
           </select>
           <div className="buttons">
             <button className="edit-button" onClick={clickEditSect}>Edit</button>
@@ -128,25 +175,3 @@ const clickIcon = () => editMode ? (setPasswordEdit(true), fixpencil(true)) : nu
 };
 
 export default Profile;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
