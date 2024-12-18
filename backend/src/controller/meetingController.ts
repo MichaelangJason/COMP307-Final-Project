@@ -16,7 +16,7 @@ import {
 import { deleteDocument, getCollection, getDocument, insertDocument, updateOneDocument } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
-import { MeetingInfo, MeetingInfoWithHost } from "@shared/types/api/meeting";
+import { MeetingInfoWithHost } from "@shared/types/api/meeting";
 import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
 import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions } from "./utils/meeting";
 import { isAllowed } from "./utils/user";
@@ -69,10 +69,11 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     description: meeting.description,
     location: meeting.location,
     availabilities: meeting.availabilities,
+    repeat: meeting.repeat,
     status: meeting.status,
     pollInfo: poll ? {
       options: poll.options,
-      timeout: formatDate(poll.timeout),
+      timeout: formatDate(poll.timeout) + " " + poll.timeout.getHours() + ":" + poll.timeout.getMinutes(),
       results: poll.results,
     } : null,
     hostId: host._id.toString(),
