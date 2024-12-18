@@ -33,6 +33,7 @@ const Meetings = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
           }
         );
@@ -91,6 +92,12 @@ const Meetings = () => {
     if (selectedCard) {
       try {
         const [date, time] = selectedCard.dateTime.split(" ");
+        const slot = time;
+
+        console.log("Stored email:", sessionStorage.getItem("email"));
+
+        console.log({ userId: id, email: sessionStorage.getItem("email") });
+
         const response = await fetch(
           `http://localhost:3007/meeting/unbook/${selectedCard.id}`, // Need to be fixed by Jiaju
           {
@@ -99,11 +106,12 @@ const Meetings = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
+
             body: JSON.stringify({
               userId: id,
-              email: sessionStorage.getItem("email"),
-              date,
-              time,
+              email: sessionStorage.getItem("email"), // bug here, goto LogIn.tsx the variable data
+              date: date,
+              slot: slot,
             }),
           }
         );

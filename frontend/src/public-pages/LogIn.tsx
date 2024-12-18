@@ -21,7 +21,10 @@ const LogIn = () => {
     try {
       const response = await fetch("http://localhost:3007/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -29,6 +32,8 @@ const LogIn = () => {
       });
       // Parse the response
       const data = await response.json();
+
+      console.log("Raw API response:", data); // Log the full response for debugging
       if (response.ok) {
         // *** store the token in sessionStorage
         sessionStorage.setItem("token", data.token); //storing the token
