@@ -6,7 +6,7 @@ import { getCollection } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { mcgillEmailRegex } from "../utils/regex";
 import { RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, VerifyRequest, VerifyResponse, LogoutRequest, LogoutResponse } from "./types/auth";
-import { UserRole } from "../utils/statusEnum";
+import { AlarmInterval, UserRole } from "../utils/statusEnum";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -54,7 +54,7 @@ const register = async (req: RegisterRequest, res: RegisterResponse): Promise<vo
       notifications: {
         email: true,
         sms: false,
-        alarm: 0,
+        alarm: AlarmInterval.MINUTE_30,
       },
       upcomingMeetings: [],
       hostedMeetings: [],
