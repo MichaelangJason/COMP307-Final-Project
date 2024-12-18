@@ -32,6 +32,11 @@ const LogIn = () => {
       if (response.ok) {
         // *** store the token in sessionStorage
         sessionStorage.setItem("token", data.token); //storing the token
+        sessionStorage.setItem("userId", data.userId);
+        sessionStorage.setItem("role", data.role);
+        sessionStorage.setItem("email", data.email);
+        sessionStorage.setItem("firstName", data.firstName);
+        sessionStorage.setItem("lastName", data.lastName);
 
         // Navigate base on role
         if (data.role === 0) {

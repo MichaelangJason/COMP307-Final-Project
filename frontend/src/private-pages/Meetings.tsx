@@ -90,13 +90,21 @@ const Meetings = () => {
   const handleDelete = async () => {
     if (selectedCard) {
       try {
+        const [date, time] = selectedCard.dateTime.split(" ");
         const response = await fetch(
-          `http://localhost:3007/meeting/cancel/${selectedCard.id}`, // Need to be fixed by Jiaju
+          `http://localhost:3007/meeting/unbook/${selectedCard.id}`, // Need to be fixed by Jiaju
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
+            body: JSON.stringify({
+              userId: id,
+              email: sessionStorage.getItem("email"),
+              date,
+              time,
+            }),
           }
         );
 
