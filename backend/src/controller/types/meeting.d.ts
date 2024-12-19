@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 
 
 type MessageResponse = {
-  message: string;
+  message?: string;
 }
 
 // get info

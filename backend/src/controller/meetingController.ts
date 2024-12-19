@@ -261,11 +261,11 @@ const deleteMeeting = async (req: MeetingDeleteRequest, res: MeetingDeleteRespon
     }
   }
 
-  // first make sure meeting can be deleted by the host
   for (const item of toBeCanceled) {
     const { date, slot, userIds } = item;
     if (!await cancelMeetingSlot(meetingId, date, slot, userIds)) {
       console.log("Modified count does not match userIds length");
+      // first make sure meeting can be deleted by the host
       // res.status(500).json({ message: "Failed to cancel meeting slot for users" });
       // return;
     }
@@ -284,7 +284,7 @@ const deleteMeeting = async (req: MeetingDeleteRequest, res: MeetingDeleteRespon
     }
   }
 
-  res.status(200).json({ message: "Meeting deleted successfully" });
+  res.status(204).send();
 };
 
 // update info
