@@ -62,7 +62,7 @@ const Meetings = () => {
             status = "Closed";
           }
           return {
-            id: meeting.id,
+            id: meeting.meetingId,
             title: meeting.title,
             status: status,
             dateTime: `${meeting.date} ${meeting.time}`,
@@ -114,7 +114,7 @@ const Meetings = () => {
         console.log("Request payload:", {
           firstName: Name.firstName,
           lastName: Name.lastName,
-          userId: userId,
+          // userId: userId,
           email: sessionStorage.getItem("email"),
           date: date,
           slot: slot,
