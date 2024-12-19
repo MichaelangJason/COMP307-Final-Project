@@ -16,6 +16,8 @@ const NavBarContent = () => {
   const [buttonText, setButtonText] = useState<string>("Login");
   const [buttonPageTo, setButtonPageTo] = useState<string>("/login");
 
+  const [showMeetingsLink, setShowMeetingsLink] = useState<boolean>(false);
+
   useEffect(() => {
     // Check login status using sessionStorage
     const token = sessionStorage.getItem("token");
@@ -36,6 +38,9 @@ const NavBarContent = () => {
         matchPath(pattern, location.pathname)
       )
     );
+
+    // Set showMeetingsLink based on whether we're on the landing page
+    setShowMeetingsLink(location.pathname === "/" && !!token);
   }, [location.pathname]);
 
   // Handle login/logout actions
@@ -50,55 +55,83 @@ const NavBarContent = () => {
     }
   };
 
-  // fetching the user firstName and lastName
   useEffect(() => {
-    const privatePagePatterns = ["/user/:id", "/admin/members"];
+    fetchUserData();
+  }, [location.pathname]);
 
-    const isUserPage = privatePagePatterns.some((pattern) =>
+  const privatePagePatterns = ["/user/:id", "/admin/members", "/"];
+
+  // fetching the user firstName and lastName
+  const fetchUserData = async () => {
+    const isPrivatePage = privatePagePatterns.some((pattern) =>
       matchPath(pattern, location.pathname)
     );
 
-    const fetchUserData = async () => {
-      if (!id || !isUserPage) return; // if not user page or no id, do not fetch
-      try {
-        const response = await fetch(
-          `http://localhost:3007/user/profile/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+    // console.log("Fetch user data:", {
+    //   isPrivatePage,
+    //   token: !!sessionStorage.getItem("token"),
+    //   userId: sessionStorage.getItem("userId"),
+    // });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data1");
+    if (!isPrivatePage || !sessionStorage.getItem("token")) return;
+
+    try {
+      const userId = sessionStorage.getItem("userId");
+
+      const response = await fetch(
+        `http://localhost:3007/user/profile/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         }
+      );
 
-        const data = await response.json(); //API returns { firstName, lastName }
-        // console.log(data.firstName);
-        // console.log(data.lastName);
-
-        setFirstName(data.firstName);
-        setLastName(data.lastName);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data1");
       }
-    };
-    fetchUserData();
-  }, [id, location.pathname]);
+
+      const data = await response.json(); //API returns { firstName, lastName }
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const renderWelcomeMessage = () => {
+    // console.log("Rendering welcome message:", {
+    //   firstName,
+    //   lastName,
+    //   showMeetingsLink,
+    // });
+    if (!firstName || !lastName) return null;
+
+    if (showMeetingsLink) {
+      return (
+        <span>
+          Welcome {firstName} {lastName}!
+          <Link to={`/user/${sessionStorage.getItem("userId")}`}> CHECK</Link>{" "}
+          your meetings
+        </span>
+      );
+    }
+    return (
+      <span>
+        Welcome {firstName} {lastName}!
+      </span>
+    );
+  };
 
   return (
     <div id="navbar">
       <Link to="/">
         <img id="logo" src={logo} alt="Logo" />
       </Link>
-      {firstName && lastName && (
-        <span>
-          Welcome {firstName} {lastName}!
-        </span>
-      )}
+
+      {renderWelcomeMessage()}
       <RedButtonLink
         pageTo={buttonPageTo}
         text={buttonText}
