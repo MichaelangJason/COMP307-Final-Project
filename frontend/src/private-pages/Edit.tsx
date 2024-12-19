@@ -94,8 +94,8 @@ const Edit = () => {
         return res.json();
       })
       .then(() => {
-        //navigate(-1);
         alert("Submitted!");
+        navigate(-1);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
@@ -117,11 +117,11 @@ const Edit = () => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
-        return res.json();
+        return res.status === 204 ? null : res.json();
       })
       .then(() => {
-        //navigate(-1);
         alert("Deleted!");
+        navigate(-1);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
