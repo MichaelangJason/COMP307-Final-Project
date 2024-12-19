@@ -40,8 +40,8 @@ const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
                 role: user.role,
                 notifications: user.notifications,
                 upcomingMeetings: user.upcomingMeetings,
-                hostedMeetings: user.hostedMeetings,
-                requests: user.requests
+                hostedMeetings: user.hostedMeetings.map((meeting) => meeting.toString()),
+                requests: user.requests.map((request) => request.toString())
                 // filter out fields only used for backend
             });
             return;
