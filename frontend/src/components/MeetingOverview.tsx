@@ -4,13 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import "../styles/MeetingOverview.scss";
 
 interface Props {
-  meetingId?: Meeting["_id"] | null;
-  title?: Meeting["title"];
-  description?: Meeting["description"];
-  endDate?: Meeting["repeat"]["endDate"];
+  meetingId?: Meeting["_id"] | string | null;
+  isModify?: boolean;
 }
 
-const MeetingOverview = ({ meetingId = null }: Props) => {
+const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
   const [meetingInfo, setMeetingInfo] = useState<Meeting | null>(null);
 
   const fetchMeetingInfo = useCallback(async () => {
@@ -42,8 +40,12 @@ const MeetingOverview = ({ meetingId = null }: Props) => {
       <div>
         <label>Title:</label>
         <input
-          readOnly={meetingId !== null}
-          className={meetingId !== null ? "grayInput textInput" : "textInput"}
+          readOnly={meetingId !== null && !isModify}
+          className={
+            meetingId !== null && !isModify
+              ? "grayInput textInput"
+              : "textInput"
+          }
           type="text"
           name="title"
           defaultValue={meetingInfo?.title}
@@ -52,8 +54,12 @@ const MeetingOverview = ({ meetingId = null }: Props) => {
       <div>
         <label>Description:</label>
         <textarea
-          readOnly={meetingId !== null}
-          className={meetingId !== null ? "grayInput textInput" : "textInput"}
+          readOnly={meetingId !== null && !isModify}
+          className={
+            meetingId !== null && !isModify
+              ? "grayInput textInput"
+              : "textInput"
+          }
           name="description"
           defaultValue={meetingInfo?.description}
         />
@@ -62,30 +68,42 @@ const MeetingOverview = ({ meetingId = null }: Props) => {
         <div>
           <label>Once</label>
           <input
-            checked={meetingInfo?.repeat.type === 0}
-            disabled={meetingId !== null}
+            key={
+              meetingInfo?.repeat.type === 0 ? "once-checked" : "once-unchecked"
+            }
+            defaultChecked={meetingInfo?.repeat.type === 0}
+            disabled={meetingId !== null && !isModify}
             className="radioInput"
             type="radio"
             name="frequency"
-            value="once"
+            value={0}
           />
         </div>
         <div>
           <label>Every week</label>
           <input
-            checked={meetingInfo?.repeat.type === 1}
-            disabled={meetingId !== null}
+            key={
+              meetingInfo?.repeat.type === 1
+                ? "weekly-checked"
+                : "weekly-unchecked"
+            }
+            defaultChecked={meetingInfo?.repeat.type === 1}
+            disabled={meetingId !== null && !isModify}
             className="radioInput"
             type="radio"
             name="frequency"
-            value="weekly"
+            value={1}
           />
         </div>
         <div>
           <label>Ends at:</label>
           <input
-            readOnly={meetingId !== null}
-            className="grayInput textInput"
+            readOnly={meetingId !== null && !isModify}
+            className={
+              meetingId !== null && !isModify
+                ? "grayInput textInput"
+                : "textInput"
+            }
             type="text"
             name="end"
             defaultValue={meetingInfo?.repeat.endDate}

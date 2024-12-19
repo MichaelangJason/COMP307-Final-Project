@@ -8,10 +8,20 @@ interface Props {
   toChoose?: boolean;
 }
 
-const Poll = ({ pollContent, toChoose = false }: Props) => {
+const Poll = ({pollContent, toChoose = false }: Props) => {
+  const pollWinners = pollContent?.map((option) => {
+    const [maxSlot] = Object.entries(option.slots).reduce(
+      ([currentSlot, currentVotes], [slot, votes]) =>
+        votes > currentVotes ? [slot, votes] : [currentSlot, currentVotes],
+      ["", -Infinity]
+    );
+
+    return { date: option.date, winningSlot: maxSlot };
+  });
+
   return (
     <div className="poll roundShadowBorder">
-      {pollContent.map((datetime) => (
+      {pollContent?.map((datetime) => (
         <>
           <h2>
             {new Intl.DateTimeFormat("en-US", {
@@ -26,7 +36,10 @@ const Poll = ({ pollContent, toChoose = false }: Props) => {
               id={`poll${datetime.date}${index}`}
               date={datetime.date}
               toChoose={toChoose}
-              isRed={false && !toChoose}
+              isRed={
+                pollWinners.find((poll) => poll.date === datetime.date)
+                  ?.winningSlot === time
+              }
             />
           ))}
         </>

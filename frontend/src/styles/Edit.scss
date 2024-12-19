@@ -23,9 +23,22 @@
     border: 1px solid colors.$mediumGray;
   }
 
-  .submitButton {
-    align-self: flex-end;
-    border: none;
+  .buttons {
+    display: flex;
+    justify-content: right;
+    gap: 20px;
+
+    .delete {
+      input {
+        background-color: colors.$mediumGray;
+      }
+    }
+
+    .submitButton {
+      input {
+        border: none;
+      }
+    }
   }
 
   @media (max-width: 800px) {

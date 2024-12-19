@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 import { Request } from "@shared/types/db/request";
-import { RequestStatus } from "../../src/statusEnum";
+import { RequestStatus } from "../statusEnum";
 import RequestStatusLabel from "./RequestStatusLabel";
 import "../styles/RequestAccordion.scss";
 import SubmitButton from "./SubmitButton";
