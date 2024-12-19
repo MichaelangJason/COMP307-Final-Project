@@ -1,53 +1,61 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import "../styles/profileCard.scss";
 import profilepic from "../images/profilepic.png";
-import email from "../private-pages/Profile";
 
 const ProfileBox: React.FC = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [userId, setUserId] = useState("");
+  const { id } = useParams<{ id: string }>();
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>("");
 
   useEffect(() => {
-  
-    const fetchData = async () => {
-      // fetching data for backend
-      const fetchfirstName = "John";
-      const fetchlastName = "Doe";
-      const fetchuserId = "1234567"; 
+    const fetchUserData = async () => {
+      if (!id) return;
+      try {
+        const response = await fetch(`http://localhost:3007/user/profile/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      setFirstName(fetchfirstName);
-      setLastName(fetchlastName);
-      setUserId(fetchuserId);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        setFirstName(data.firstName);
+        setLastName(data.lastName);
+        setUserId(id);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
 
-    fetchData();
-  }, []);
+    fetchUserData();
+  }, [id]);
 
   return (
     <div className="box">
       <div className="box-container">
-        <img
-          className="box-image"
-          src={profilepic}
-          alt="Profile"
-        />
+        <img className="box-image" src={profilepic} alt="Profile" />
         <div className="box-id">
           ID: {userId}
         </div>
       </div>
       <div className="inside">
-        <p className="name">First name</p>
-        <input type="text" className="card-input read-only" value={firstName} readOnly />
-        <p className="name">Last name</p>
-        <input type="text" className="card-input read-only" value={lastName} readOnly />
-        
+        <p className="name">First Name</p>
+        <input type="text" className="card-input read-only" value={firstName || ''} readOnly />
+        <p className="name">Last Name</p>
+        <input type="text" className="card-input read-only" value={lastName || ''} readOnly />
       </div>
     </div>
   );
 };
 
 export default ProfileBox;
+
 
 
 
