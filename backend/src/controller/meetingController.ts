@@ -20,8 +20,9 @@ import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
 import { MeetingInfoWithHost } from "@shared/types/api/meeting";
 import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
-import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions, cancelMeetingSlot, createUpcomingMeetings } from "./utils/meeting";
+import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions, cancelMeetingSlot, createUpcomingMeetings, pushFutureAvailabilities } from "./utils/meeting";
 import { isAllowed } from "./utils/user";
+import { getResults, prepareAvailabilities } from "./utils/poll";
 
 const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   const { meetingId } = req.params;
@@ -74,7 +75,20 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     }
     if (poll.timeout < new Date()) {
       meeting.status = MeetingStatus.UPCOMING;
-      await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
+      const selectedOptions = getResults(poll);
+      let availabilities = prepareAvailabilities(selectedOptions);
+      availabilities.forEach((availability) => {
+        availability.max = meeting.availabilities.find((a) => a.date === availability.date)?.max || 1;
+      });
+      meeting.availabilities = availabilities;
+
+      // actually this is passing the reference, should not need to do this
+      if (meeting.repeat.type === MeetingRepeat.WEEKLY) {
+        meeting.availabilities = await pushFutureAvailabilities(meeting.availabilities, meeting.repeat.endDate);
+      }
+
+      // update meeting, remove other availabilities
+      await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, availabilities, updatedAt: new Date() } });
       
       const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
       await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
@@ -106,7 +120,7 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
 const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => {
   const { hostId } = req.params;
   const { title, description, location, availabilities, repeat, pollInfo } = req.body;
-  
+
   if (!isAllowed(req.user?.role, hostId, req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to create a meeting" });
     return;
@@ -159,20 +173,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   }
 
   // push future availabilities
-  if (repeat.type === MeetingRepeat.WEEKLY) {
-    const futureAvailabilities: MeetingAvailability[] = [];
-    // add 3 future availabilities
-    for (let i = 1; i < 4; i++) {
-      availabilities.forEach((availability) => {
-        const next = nextAvailability(availability, i, repeat.endDate);
-        if (next) {
-          futureAvailabilities.push(next);
-        }
-      });
-    }
-    newMeeting.availabilities.push(...futureAvailabilities);
-    // sort availabilities by date
-    newMeeting.availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  if (!pollInfo && repeat.type === MeetingRepeat.WEEKLY) {
+    newMeeting.availabilities = await pushFutureAvailabilities(newMeeting.availabilities, repeat.endDate);
   }
 
   let pollId: ObjectId | null = null;

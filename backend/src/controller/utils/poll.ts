@@ -1,44 +1,67 @@
-import { Poll, PollOption } from "@shared/types/db";
+import { MeetingAvailability, Participant, Poll } from "@shared/types/db";
 
 
-const getResults = (poll: Poll) => {
+export const getResults = (poll: Poll) => {
     const { options, results } = poll;
+    const voteGroups = new Map<number, { date: string, slot: string}[]>();
     
-    // Group options by total votes across all slots
-    const voteGroups = new Map<number, PollOption[]>();
-    
-    // Calculate total votes for each option and group them
+    // group options by votes
     options.forEach((option) => {
-        const totalVotes = Object.values(option.slots).reduce((sum, votes) => sum + votes, 0);
-        if (!voteGroups.has(totalVotes)) {
-            voteGroups.set(totalVotes, []);
+      Object.entries(option.slots).forEach(([slot, votes]) => {
+        if (!voteGroups.has(votes)) {
+            voteGroups.set(votes, []);
         }
-        voteGroups.get(totalVotes)!.push(option);
+        voteGroups.get(votes)!.push({ date: option.date, slot });
+      });
     });
     
-    // Sort vote counts in descending order
+    // sort vote counts in descending order
     const sortedVoteCounts = Array.from(voteGroups.keys()).sort((a, b) => b - a);
     
-    const selectedOptions: PollOption[] = [];
+    const selectedOptions: { date: string, slot: string }[] = [];
     let remainingCount = results;
-    
-    // Iterate through groups starting with highest votes
+
+    // iterate through groups with highest votes
     for (const voteCount of sortedVoteCounts) {
         const groupOptions = voteGroups.get(voteCount)!;
-        
-        if (groupOptions.length >= remainingCount) {
-            // If this group has enough options, take what we need
-            selectedOptions.push(...groupOptions.slice(0, remainingCount));
-            break;
-        } else {
-            // Take all options from this group and continue to next
+
+        if (groupOptions.length <= remainingCount) {
             selectedOptions.push(...groupOptions);
             remainingCount -= groupOptions.length;
+        } else {
+            selectedOptions.push(...groupOptions.slice(0, remainingCount));
+            break;
         }
-        
+
         if (remainingCount <= 0) break;
     }
-    
+
+    selectedOptions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     return selectedOptions;
 };
+
+export const prepareAvailabilities = (selectedOptions: { date: string, slot: string }[]) => {
+  const availabilities: MeetingAvailability[] = [];
+  const dateGroup = new Map<string, string[]>();
+
+  selectedOptions.forEach((option) => {
+    if (!dateGroup.has(option.date)) {
+      dateGroup.set(option.date, []);
+    }
+    dateGroup.get(option.date)!.push(option.slot);
+  });
+
+  dateGroup.forEach((slots, date) => {
+    availabilities.push({
+      date,
+      slots: slots.reduce((acc, slot) => {
+        acc[slot] = [];
+        return acc;
+      }, {} as Record<string, Participant[]>),
+      max: 0
+    });
+  });
+  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return availabilities;
+}
     

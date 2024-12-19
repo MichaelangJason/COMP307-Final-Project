@@ -181,7 +181,14 @@ export const cancelMeetingSlot = async (meetingId: string, date: string, slot: s
     }
   );
   // if (result.modifiedCount !== userIds.length) throw new Error("Modified count does not match userIds length");
-  return result.modifiedCount === userIds.length;
+  // Clear the slot using the same pattern as booking
+  const isSlotCleared = await updateMeeting(meetingId, {
+    $set: { [`availabilities.$[elem].slots.${slot}`]: [] }
+  } as any, {
+    arrayFilters: [{ "elem.date": date }]
+  } as any);
+
+  return result.modifiedCount === userIds.length && isSlotCleared;
 }
 
 export const createUpcomingMeetings = (availabilities: MeetingAvailability[], meeting: Meeting, host: User) => {
@@ -204,4 +211,21 @@ export const createUpcomingMeetings = (availabilities: MeetingAvailability[], me
   }
   
   return upcomingMeetings;
+}
+
+export const pushFutureAvailabilities = async (availabilities: MeetingAvailability[], endDate: string) => {
+  const futureAvailabilities: MeetingAvailability[] = [];
+    // add 3 future availabilities
+    for (let i = 1; i < 4; i++) {
+      availabilities.forEach((availability) => {
+        const next = nextAvailability(availability, i, endDate);
+        if (next) {
+          futureAvailabilities.push(next);
+        }
+      });
+  }
+  availabilities.push(...futureAvailabilities);
+  // sort availabilities by date
+  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return availabilities;
 }
