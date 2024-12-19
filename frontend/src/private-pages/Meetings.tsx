@@ -24,6 +24,9 @@ const Meetings = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
   useEffect(() => {
+    //only fetch if userId is available
+    if (!userId) return;
+
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -78,7 +81,7 @@ const Meetings = () => {
     };
 
     fetchData();
-  }, []);
+  }, [userId]);
 
   // Filter
   const filteredCards = cards.filter((card) => {
