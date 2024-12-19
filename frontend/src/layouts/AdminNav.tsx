@@ -9,27 +9,38 @@ import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 const AdminNav = () => {
   const [isNavVisible, setIsNavVisible] = useState(false);
-  const { id } = useParams(); // get the id from the URL
+  const { id } = useParams<{ id: string }>();
+  console.log(id);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Display user email on the Navbar
   useEffect(() => {
     if (id) {
-      // TODO - backend : Fetch the member's email using the id
       const fetchEmail = async () => {
-        // dummy data example
-        const data = [
-          { id: ":id", email: "user_example@mcgill.ca" },
-          { id: "001", email: "user1@mcgill.ca" },
-          { id: "002", email: "user2@mail.mcgill.ca" },
-          { id: "003", email: "user3@mcgill.ca" },
-          { id: "004", email: "user4@mail.mcgill.ca" },
-          // More members...
-        ];
+        try {
+          const response = await fetch(
+            `http://localhost:3007/user/profile/${id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`, // Include token if necessary
+              },
+            }
+          );
 
-        const member = data.find((member) => member.id === id);
-        if (member) {
-          setUserEmail(member.email);
+          if (!response.ok) {
+            throw new Error("Failed to fetch user data");
+          }
+
+          const data = await response.json();
+
+          // Extract email from the response data and set it in state
+          if (data.email) {
+            setUserEmail(data.email);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
       };
 
@@ -61,31 +72,31 @@ const AdminNav = () => {
           {/* Show email and other links only when `id` is available */}
           {id && userEmail && (
             <>
-              <Link to="/admin/members/:id/" className="info">
+              <Link to={`/admin/members/${id}/`} className="info">
                 <FontAwesomeIcon icon={faCaretRight} />
               </Link>
 
-              <Link to="/admin/members/:id/" className="info userEmail">
+              <Link to={`/admin/members/${id}`} className="info userEmail">
                 {userEmail?.toUpperCase()}
               </Link>
-              <Link to="/admin/members/:id/" className="info">
+              <Link to={`/admin/members/${id}`} className="info">
                 |
               </Link>
 
               {/* TODO backend : to link to specific id. ~~~ Example: <Link to="/admin/members/$(id}/" onClick={toggleNavBar}></Link> */}
-              <Link to="/admin/members/:id/" onClick={toggleNavBar}>
+              <Link to={`/admin/members/${id}`} onClick={toggleNavBar}>
                 MEETINGS
               </Link>
-              <Link to="/admin/members/:id/create" onClick={toggleNavBar}>
+              <Link to={`/admin/members/${id}/create`} onClick={toggleNavBar}>
                 CREATE
               </Link>
-              <Link to="/admin/members/:id/manage" onClick={toggleNavBar}>
+              <Link to={`/admin/members/${id}/manage`} onClick={toggleNavBar}>
                 MANAGE
               </Link>
-              <Link to="/admin/members/:id/request" onClick={toggleNavBar}>
+              <Link to={`/admin/members/${id}/request`} onClick={toggleNavBar}>
                 REQUEST
               </Link>
-              <Link to="/admin/members/:id/profile" onClick={toggleNavBar}>
+              <Link to={`/admin/members/${id}/profile`} onClick={toggleNavBar}>
                 PROFILE
               </Link>
             </>

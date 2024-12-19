@@ -28,43 +28,25 @@ const Members = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      //const response = await fetch("http://localhost:5000/api/cards"); //is the URL the frontend sends the request; it refers to an API route on the backend server that provides data about meeting cards
-      // const data = await response.json();
+      try {
+        const response = await fetch("http://localhost:3007/admin/members", {
+          method: "GET",
+        });
+        const data = await response.json();
 
-      // TODO backend : dummy example
-      const data: Card[] = [
-        {
-          id: "001",
-          lastName: "Last Name1",
-          firstName: "First Name1",
-          email: "user1@mcgill.ca",
-          memberSince: "yyyy-mm-dd",
-        },
-        {
-          id: "002",
-          lastName: "Last Name2",
-          firstName: "First Name2",
-          email: "user2@mail.mcgill.ca",
-          memberSince: "yyyy-mm-dd",
-        },
-        {
-          id: "003",
-          lastName: "Last Name3",
-          firstName: "First Name3",
-          email: "user3@mcgill.ca",
-          memberSince: "yyyy-mm-dd",
-        },
-        {
-          id: "004",
-          lastName: "Last Name4",
-          firstName: "First Name4",
-          email: "user4@mail.mcgill.ca",
-          memberSince: "yyyy-mm-dd",
-        },
-      ];
-      setCards(data);
+        setCards(
+          data.users.map((user: any) => ({
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            memberSince: "yyyy-mm-dd", //Not found in the backend
+          }))
+        );
+      } catch (error) {
+        console.error("Failed to fetch members:", error);
+      }
     };
-
     fetchData();
   }, []);
 
@@ -99,14 +81,27 @@ const Members = () => {
 
   const handleDelete = async () => {
     if (selectedCard) {
-      // TODO backend : Deleting a member
-      console.error("Failed to delete Member!");
+      try {
+        const response = await fetch(
+          `http://localhost:3007/admin/members/${selectedCard.id}`,
+          { method: "DELETE" }
+        );
+        if (response.ok) {
+          // success deletion
+          setCards(cards.filter((card) => card.id !== selectedCard.id));
+          handleClosePopup();
+        } else {
+          console.error("Failed to delete member!");
+        }
+      } catch (error) {
+        console.error("Error delting member:", error);
+      }
     }
   };
 
-  // TODO backend : navigate to the specific id
+  // TODO : navigate to the specific id
   const handleCardClick = (card: Card) => {
-    const newPath = `${location.pathname}/:id`;
+    const newPath = `${location.pathname}/${card.id}`;
     navigate(newPath);
   };
 

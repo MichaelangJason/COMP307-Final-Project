@@ -13,6 +13,7 @@ interface Card {
   location: string;
   person: string;
 }
+const userId = sessionStorage.getItem("userId");
 
 const Meetings = () => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -22,13 +23,14 @@ const Meetings = () => {
   const [showPopup, setShowPopup] = useState(false); // Control popup visibility
   const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
-  const { id } = useParams<{ id: string }>();
-
   useEffect(() => {
+    //only fetch if userId is available
+    if (!userId) return;
+
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3007/user/profile/${id}`,
+          `http://localhost:3007/user/profile/${userId}`,
           {
             method: "GET",
             headers: {
@@ -63,7 +65,7 @@ const Meetings = () => {
             status = "Closed";
           }
           return {
-            id: meeting.id,
+            id: meeting.meetingId,
             title: meeting.title,
             status: status,
             dateTime: `${meeting.date} ${meeting.time}`,
@@ -79,7 +81,7 @@ const Meetings = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [userId]);
 
   // Filter
   const filteredCards = cards.filter((card) => {
@@ -94,12 +96,35 @@ const Meetings = () => {
         const [date, time] = selectedCard.dateTime.split(" ");
         const slot = time;
 
-        console.log("Stored email:", sessionStorage.getItem("email"));
+        const responseName = await fetch(
+          `http://localhost:3007/user/profile/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          }
+        );
 
-        console.log({ userId: id, email: sessionStorage.getItem("email") });
+        if (!responseName.ok) {
+          throw new Error("Failed to fetch user data1");
+        }
+
+        const Name = await responseName.json(); //API returns { firstName, lastName }
+
+        // Log the request payload for debugging
+        console.log("Request payload:", {
+          firstName: Name.firstName,
+          lastName: Name.lastName,
+          // userId: userId,
+          email: sessionStorage.getItem("email"),
+          date: date,
+          slot: slot,
+        });
 
         const response = await fetch(
-          `http://localhost:3007/meeting/unbook/${selectedCard.id}`, // Need to be fixed by Jiaju
+          `http://localhost:3007/meeting/unbook/${selectedCard.id}`,
           {
             method: "PUT",
             headers: {
@@ -108,8 +133,10 @@ const Meetings = () => {
             },
 
             body: JSON.stringify({
-              userId: id,
-              email: sessionStorage.getItem("email"), // bug here, goto LogIn.tsx the variable data
+              firstName: Name.firstName,
+              lastName: Name.lastName,
+              userId: userId,
+              email: sessionStorage.getItem("email"),
               date: date,
               slot: slot,
             }),

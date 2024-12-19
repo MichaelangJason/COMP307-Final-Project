@@ -10,9 +10,10 @@ import { UserGetResponse, UserProfileUpdateBody } from "@shared/types/api/user";
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>(); 
   const [email, setEmail] = useState("");
-  const [editPassw, setPasswordEdit] = useState(false);
+  const [password, setPassword] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [newPass, setNewPassword] = useState("");
+  const [checkStrings, setcheckStrings] = useState("");
   const [notification, setNotification] = useState("deactivate");
   const [Alarm, setAlarm] = useState(AlarmInterval.MINUTE_1); 
   const [pencilEdit, setPencilEdit] = useState(false);
@@ -54,24 +55,35 @@ const Profile: React.FC = () => {
     () => setPencilEdit(false)
   );
 
-  const clickIcon = () => editMode ? (setPasswordEdit(true), setPencilEdit(true)) : null;
-
   const newPasswordEdit = (e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value);
 
+  const validatePassword = (password: string) => {
+    const oneUppercase = /[A-Z]/.test(password);
+    const oneLowercase = /[a-z]/.test(password);
+    const specialchar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const oneNumber = /[0-9]/.test(password);
+    const stringLength = password.length >= 8 && password.length <= 16;
+
+    if (!stringLength || !oneUppercase || !oneLowercase || !specialchar || !oneNumber) {
+      setcheckStrings("Password must contain at least one uppercase letter, one lowercase letter, one special character, one number,\n" + " and be between 8-16 characters long.");
+      return false;
+    }
+    setcheckStrings(""); 
+    return true;
+  };
+
   const submitButtonClick = async () => {
+    if (!validatePassword(newPass)) {
+      return; 
+    }
+
     try {
-      const updatedPassword = newPass;
+      const updatedPassword = newPass ? newPass : "";
 
-      const updateBody: UserProfileUpdateBody = {}
-
-      // this can be commented out since they must exist
-      if (!updatedPassword && !notification) {
-        window.alert("No changes to save");
-        return;
-      }
+      const updateBody: UserProfileUpdateBody = {};
 
       if (updatedPassword) {
-        updateBody.password = updatedPassword;
+        updateBody.password = updatedPassword; 
       }
 
       if (notification) {
@@ -94,11 +106,13 @@ const Profile: React.FC = () => {
       if (response.ok) {
         console.log('Changes are saved');
         setEditMode(false);
-        setPasswordEdit(false);
-        // no need to fetch again if success
+        setNewPassword("");
 
-        // why navigate back? stay on the same page
-        // navigate(-1)
+        const data = await fetch(`http://localhost:3007/user/profile/${id}`).then(res => res.json());
+        setEmail(data.email);
+        setPassword(data.password);
+        setNotification(data.notifications.method);
+        setAlarm(data.notifications.alarm);
       } else {
         throw new Error('Failed to save info');
       }
@@ -106,6 +120,7 @@ const Profile: React.FC = () => {
       console.error('Error:', error);
     }
   };
+
   return (
     <>
       <h1 style={{ marginBottom: "2px" }}>Profile & Settings</h1>
@@ -119,23 +134,17 @@ const Profile: React.FC = () => {
             <FontAwesomeIcon 
               icon={faPen} 
               className={`icon ${editMode && pencilEdit && 'editable'}`} 
-              onClick={clickIcon} 
+              onClick={clickEditSect} 
             />
             <input
               type="password"
-              className="input-box-with-icon read-only"
-              value={"***********"}
+              className={`input-box-with-icon ${editMode ? '' : 'read-only'}`}
+              value={newPass || password}
+              onChange={newPasswordEdit}
               placeholder="***********"
-              readOnly />
-            {editPassw && (
-              <input
-                type="password"
-                className="input-box-with-icon newpassedit"
-                placeholder="Enter"
-                value={newPass}
-                onChange={newPasswordEdit} />
-            )}
+            />
           </div>
+          {checkStrings && <div className="popup-message">{checkStrings}</div>}
           <p className="sub-label">Notification Method</p>
           <select
             className={['input-box', editMode ? 'editable' : 'non-editable'].join(' ')}
@@ -175,3 +184,4 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+
