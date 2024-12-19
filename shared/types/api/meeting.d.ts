@@ -13,12 +13,14 @@ export interface MeetingRequestParams {
 }
 export interface MeetingInfo extends MeetingRequestParams {
   hostId: string;
-  hostFirstName: string;
-  hostLastName: string;
   title: string;
   description: string;
   location: string;
   availabilities: MeetingAvailability[];
+  repeat: {
+    type: MeetingRepeat;
+    endDate: string;
+  };
   pollInfo: PollInfo | null;
   status: MeetingStatus;
 }
@@ -32,7 +34,13 @@ export interface MeetingInfoWithHost extends MeetingInfo {
 export interface MeetingCreateParams {
   hostId: string; // this means POST /meeting/:hostId
 }
-export interface MeetingCreateBody extends MeetingInfo {
+export interface MeetingCreateBody {
+  hostId: string;
+  title: string;
+  description: string;
+  location: string;
+  availabilities: MeetingAvailability[];
+  pollInfo?: PollInfo;
   repeat: {
     type: MeetingRepeat;
     endDate: string;

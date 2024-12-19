@@ -1,17 +1,16 @@
+import { PollOption as PollOptionType } from "@shared/types/db/poll";
 import "../styles/PollOption.scss";
 
 interface Props {
-  start: string;
-  end: string;
-  date: string;
+  time: string;
+  date: PollOptionType["date"];
   id: string;
   toChoose?: boolean;
   isRed?: boolean;
 }
 
 const PollOption = ({
-  start,
-  end,
+  time,
   date,
   id,
   toChoose = false,
@@ -19,17 +18,14 @@ const PollOption = ({
 }: Props) => {
   return (
     <label
-      className={isRed ? "pollOption red" : toChoose ? "pollOption choice" : "pollOption"}
+      className={
+        isRed ? "pollOption red" : toChoose ? "pollOption choice" : "pollOption"
+      }
       htmlFor={`poll${id}`}
     >
-      {start} - {end}
+      {time}
       {toChoose && (
-        <input
-          type="radio"
-          id={`poll${id}`}
-          value={`${start} - ${end}`}
-          name={date}
-        />
+        <input type="radio" id={`poll${id}`} value={`${time}`} name={date} />
       )}
     </label>
   );

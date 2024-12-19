@@ -286,11 +286,15 @@ const requestSchema = {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["_id", "proposerInfo", "proposedSlot", "status", "reason", "createdAt", "updatedAt"],
+      required: ["_id", "hostId", "proposerInfo", "proposedSlot", "status", "reason", "createdAt", "updatedAt"],
       properties: {
         _id: {
           bsonType: "objectId",
           description: "Request ID as ObjectId reference"
+        },
+        hostId: {
+          bsonType: "objectId",
+          description: "Host ID as ObjectId reference"
         },
         proposerInfo: {
           bsonType: "object",
