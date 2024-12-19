@@ -9,6 +9,7 @@ import "../styles/RequestAccordion.scss";
 import SubmitButton from "./SubmitButton";
 
 interface Props {
+  onDecision: () => void;
   status: RequestStatus;
   name: string;
   email: Request["proposerInfo"]["email"];
@@ -20,6 +21,7 @@ interface Props {
 }
 
 const RequestAccordion = ({
+  onDecision,
   status,
   name,
   email,
@@ -49,6 +51,7 @@ const RequestAccordion = ({
         return res.json();
       })
       .then(() => {
+        onDecision();
         alert("Submitted!");
       })
       .catch((err) => {
@@ -75,6 +78,7 @@ const RequestAccordion = ({
         return res.json();
       })
       .then(() => {
+        onDecision();
         alert("Submitted!");
       })
       .catch((err) => {

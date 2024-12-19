@@ -1,5 +1,5 @@
 import { Meeting } from "@shared/types/db/meeting";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import "../styles/MeetingOverview.scss";
 
@@ -13,7 +13,7 @@ interface Props {
 const MeetingOverview = ({ meetingId = null }: Props) => {
   const [meetingInfo, setMeetingInfo] = useState<Meeting | null>(null);
 
-  const fetchMeetingInfo = async () => {
+  const fetchMeetingInfo = useCallback(async () => {
     const url = `http://localhost:3007/meeting/${meetingId}`;
 
     await fetch(url, {
@@ -31,11 +31,11 @@ const MeetingOverview = ({ meetingId = null }: Props) => {
       .catch((err) => {
         console.error("Error occurred:", err.message);
       });
-  };
+  }, [meetingId]);
 
   useEffect(() => {
     fetchMeetingInfo();
-  }, [meetingId]);
+  }, [meetingId, fetchMeetingInfo]);
 
   return (
     <div className="meetingOverview roundShadowBorder">

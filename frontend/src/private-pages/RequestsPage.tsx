@@ -64,6 +64,7 @@ const RequestsPage = () => {
                   reason={data.reason}
                   requestId={data._id}
                   token={token}
+                  onDecision={fetchRequests}
                 />
               );
             })}

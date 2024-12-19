@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Calendar from "react-calendar";
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import "react-calendar/dist/Calendar.css";
 
@@ -35,7 +35,7 @@ const BookMeeting = () => {
 
   const token = sessionStorage.getItem("token");
 
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = useCallback(async () => {
     const url = `http://localhost:3007/login`;
 
     await fetch(url, {
@@ -57,9 +57,9 @@ const BookMeeting = () => {
       .catch((err) => {
         console.error("Error occurred:", err.message);
       });
-  };
+  }, [token]);
 
-  const fetchHostId = async () => {
+  const fetchHostId = useCallback(async () => {
     const url = `http://localhost:3007/meeting/${id}`;
 
     await fetch(url, {
@@ -77,9 +77,9 @@ const BookMeeting = () => {
       .catch((err) => {
         console.error("Error occurred:", err.message);
       });
-  };
+  }, [id]);
 
-  const fetchAvailabilities = async () => {
+  const fetchAvailabilities = useCallback(async () => {
     const url = `http://localhost:3007/meeting/${id}`;
 
     await fetch(url, {
@@ -97,7 +97,7 @@ const BookMeeting = () => {
       .catch((err) => {
         console.error("Error occurred:", err.message);
       });
-  };
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -174,7 +174,6 @@ const BookMeeting = () => {
         slot,
         date: selectedDate.toLocaleDateString("en-CA"),
       };
-      console.log(finalData);
 
       const url = `http://localhost:3007/meeting/book/${id}`;
 
@@ -225,7 +224,7 @@ const BookMeeting = () => {
 
     return availabilities
       ?.map((a) => a.date)
-      .filter((date) => date != selectedDate.toLocaleDateString("en-CA"))
+      .filter((date) => date !== selectedDate.toLocaleDateString("en-CA"))
       .includes(formattedDate);
   };
 
@@ -242,7 +241,7 @@ const BookMeeting = () => {
     fetchUserInfo();
     fetchAvailabilities();
     fetchHostId();
-  }, []);
+  }, [fetchAvailabilities, fetchHostId, fetchUserInfo]);
 
   return (
     <div id="bookMeeting">

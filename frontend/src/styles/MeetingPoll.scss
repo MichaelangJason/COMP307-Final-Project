@@ -32,7 +32,10 @@
     }
     .submitButton {
       align-self: flex-end;
-      border: none;
+
+      input {
+        border: none;
+      }
     }
   }
 
