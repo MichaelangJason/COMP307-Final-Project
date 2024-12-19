@@ -11,6 +11,8 @@ meetingRouter.get('/:meetingId', meetingController.getInfo);
 meetingRouter.post('/:hostId', privateMiddleware<MeetingCreateParams>, meetingController.create);
 // update meeting
 meetingRouter.put('/:meetingId', privateMiddleware<MeetingRequestParams>, meetingController.update);
+// delete meeting
+meetingRouter.delete('/:meetingId', privateMiddleware<MeetingRequestParams>, meetingController.deleteMeeting);
 // book a meeting
 meetingRouter.put('/book/:meetingId', meetingController.book);
 // unbook from a meeting

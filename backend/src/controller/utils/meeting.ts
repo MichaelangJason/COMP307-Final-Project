@@ -1,7 +1,7 @@
-import { getDocument, insertDocument, updateOneDocument, MeetingRepeat } from "../../utils";
+import { getDocument, insertDocument, updateOneDocument, MeetingRepeat, getCollection } from "../../utils";
 import { CollectionNames } from "../constants";
 import { ObjectId, UpdateFilter } from "mongodb";
-import { Meeting, MeetingAvailability } from "@shared/types/db";
+import { Meeting, MeetingAvailability, User } from "@shared/types/db";
 
 export const getMeeting = async (meetingId: string): Promise<Meeting | null> => {
   try {
@@ -161,4 +161,25 @@ export const createPollOptions = (availabilities: MeetingAvailability[]) => {
     date: availability.date,
     slots: Object.fromEntries(Object.entries(availability.slots).map(([time, _]) => [time, 0])),
   }));
+}
+
+export const cancelMeetingSlot = async (meetingId: string, date: string, slot: string, userIds: ObjectId[]) => {
+  const userCollection = await getCollection<User>(CollectionNames.USER);
+  const result = await userCollection.updateMany(
+    {
+      _id: { $in: userIds },
+      upcomingMeetings: {
+        $elemMatch: {
+          meetingId: new ObjectId(meetingId),
+          date: date,
+          time: slot
+        }
+      }
+    },
+    {
+      $set: { "upcomingMeetings.$.isCancelled": true }
+    }
+  );
+  // if (result.modifiedCount !== userIds.length) throw new Error("Modified count does not match userIds length");
+  return result.modifiedCount === userIds.length;
 }
