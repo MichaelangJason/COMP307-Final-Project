@@ -26,7 +26,20 @@
   text-decoration: underline;
   margin-top: 10px;
   margin-left: -215px;
+
+  @media (max-width: 1080px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 800px) {
+    font-size: 12px;
+  }
+
+  @media (max-width: 400px) {
+   font-size: 13px;
+  }
 }
+
 
 .box .inside {
   margin-left: -140px;
@@ -214,7 +227,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  background-color: colors.$lightGray;
+  background-color: colors.$brightRed;
   color: #fff;
 
   @media (max-width: 1080px) {
@@ -243,7 +256,7 @@
 }
 
 .edit-button {
-  background-color: colors.$brightRed;
+  background-color: colors.$silverGray;
 }
 
 .non-editable {
