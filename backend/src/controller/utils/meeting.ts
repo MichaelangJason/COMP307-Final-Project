@@ -1,7 +1,7 @@
 import { getDocument, insertDocument, updateOneDocument, MeetingRepeat, getCollection } from "../../utils";
 import { CollectionNames } from "../constants";
 import { ObjectId, UpdateFilter } from "mongodb";
-import { Meeting, MeetingAvailability, User } from "@shared/types/db";
+import { Meeting, MeetingAvailability, UpcomingMeeting, User } from "@shared/types/db";
 
 export const getMeeting = async (meetingId: string): Promise<Meeting | null> => {
   try {
@@ -182,4 +182,26 @@ export const cancelMeetingSlot = async (meetingId: string, date: string, slot: s
   );
   // if (result.modifiedCount !== userIds.length) throw new Error("Modified count does not match userIds length");
   return result.modifiedCount === userIds.length;
+}
+
+export const createUpcomingMeetings = (availabilities: MeetingAvailability[], meeting: Meeting, host: User) => {
+  const upcomingMeetings: UpcomingMeeting[] = [];
+
+  for (const availability of availabilities) {
+    const date = availability.date;
+    for (const slot in availability.slots) {
+      upcomingMeetings.push({
+        meetingId: meeting._id,
+        title: meeting.title,
+        hostFirstName: host.firstName,
+        hostLastName: host.lastName,
+        location: meeting.location,
+        time: slot,
+        date,
+        isCancelled: false,
+      });
+    }
+  }
+  
+  return upcomingMeetings;
 }

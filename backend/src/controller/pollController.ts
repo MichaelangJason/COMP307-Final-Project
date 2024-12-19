@@ -126,11 +126,6 @@ const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Pro
                 res.status(404).json({ message: "Meeting not found, poll deleted" });
                 return;
             }
-            if (meeting.status === MeetingStatus.VOTING) {
-                // update meeting status to Upcoming
-                await updateMeeting(meeting._id.toString(), { $set: { status: MeetingStatus.UPCOMING } });
-            }
-
             res.status(400).json({ message: "Poll has expired" });
             return;
         }

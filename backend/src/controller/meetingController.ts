@@ -20,7 +20,7 @@ import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
 import { MeetingInfoWithHost } from "@shared/types/api/meeting";
 import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
-import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions, cancelMeetingSlot } from "./utils/meeting";
+import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions, cancelMeetingSlot, createUpcomingMeetings } from "./utils/meeting";
 import { isAllowed } from "./utils/user";
 
 const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
@@ -29,6 +29,13 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   const meeting: Meeting | null = await getMeeting(meetingId);
   if (!meeting) {
     res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  let host: User | null = null;
+  if (!(host = await getDocument<User>(CollectionNames.USER, meeting.hostId))) {
+    await deleteDocument<Meeting>(CollectionNames.MEETING, meeting._id);
+    res.status(404).json({ message: "Host not found, delete meeting" });
     return;
   }
 
@@ -58,11 +65,20 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
   }
 
-  let host: User | null = null;
-  if (!(host = await getDocument<User>(CollectionNames.USER, meeting.hostId))) {
-    await deleteDocument<Meeting>(CollectionNames.MEETING, meeting._id);
-    res.status(404).json({ message: "Host not found, delete meeting" });
-    return;
+  // check if meeting is voting and if poll has ended
+  if (meeting.status === MeetingStatus.VOTING) {
+    const poll = await getDocument<Poll>(CollectionNames.POLL, meeting.pollId!);
+    if (!poll) {
+      res.status(500).json({ message: "Poll not found" });
+      return;
+    }
+    if (poll.timeout < new Date()) {
+      meeting.status = MeetingStatus.UPCOMING;
+      await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
+      
+      const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
+      await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
+    }
   }
 
   // parse meeting to meeting info
@@ -90,7 +106,7 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
 const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => {
   const { hostId } = req.params;
   const { title, description, location, availabilities, repeat, pollInfo } = req.body;
-
+  
   if (!isAllowed(req.user?.role, hostId, req.user?.userId)) {
     res.status(403).json({ message: "You are not authorized to create a meeting" });
     return;
@@ -213,23 +229,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   };
 
   if (!pollId) {
-    const upcomingMeetings: UpcomingMeeting[] = [];
-    for (const availability of newMeeting.availabilities) {
-      const date = availability.date;
-      for (const slot in availability.slots) {
-        upcomingMeetings.push({
-          meetingId: newMeeting._id,
-          title: newMeeting.title,
-          hostFirstName: host.firstName,
-          hostLastName: host.lastName,
-          location: newMeeting.location,
-          time: slot,
-          date,
-          isCancelled: false,
-        });
-      }
-    }
-    console.log(upcomingMeetings);
+    const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(newMeeting.availabilities, newMeeting, host);
     updateBody = {
       $push: {
         hostedMeetings: newMeeting._id,
