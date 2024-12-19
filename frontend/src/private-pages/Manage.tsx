@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { MeetingInfoWithHost } from "@shared/types/api/meeting";
 
 interface Card {
   title: string;
@@ -10,6 +11,7 @@ interface Card {
   location: string;
   person: string;
 }
+const userId = sessionStorage.getItem("userId");
 
 const Manage = () => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -18,13 +20,12 @@ const Manage = () => {
   //Edit
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3007/user/profile/${id}`,
+          `http://localhost:3007/user/profile/${userId}`,
           {
             method: "GET",
             headers: {
@@ -38,43 +39,80 @@ const Manage = () => {
           throw new Error("Failed to fetch data");
         }
         const userData = await response.json();
+        console.log(`userData : ${userData}`);
 
-        const meetings = userData.hostedMeetings.map((meeting: any) => {
-          // create start and end time Date
-          const currentTime = new Date();
-          const startTime = new Date(
-            `${meeting.date} ${meeting.time.split("-")[0]}`
-          );
-          const endTime = new Date(
-            `${meeting.date} ${meeting.time.split("-")[1]}`
-          );
-          // Determine the status based on the current time
-          let status = "Upcoming";
-          if (meeting.isCancelled) {
-            status = "Canceled";
-          } else if (currentTime >= startTime && currentTime <= endTime) {
-            status = "Live";
-          } else if (currentTime > endTime) {
-            status = "Closed";
-          }
-          return {
-            id: meeting.id,
-            title: meeting.title,
-            status: status,
-            dateTime: `${meeting.date} ${meeting.time}`,
-            location: meeting.location,
-            person: `${meeting.hostFirstName} ${meeting.hostLastName}`,
-          };
-        });
+        // For each hostedMeeting Id call GET `http://localhost:3007/meeting/${meetingId}` to get meeting info
+        const meetings = await Promise.all(
+          userData.hostedMeetings.map(async (meetingId: string) => {
+            console.log(meetingId);
 
-        setCards(meetings);
+            const meetingResponse = await fetch(
+              `http://localhost:3007/meeting/${meetingId}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+              }
+            );
+            if (!meetingResponse.ok) {
+              throw new Error("Failed to fetch meeting details");
+            }
+
+            const meeting: MeetingInfoWithHost = await meetingResponse.json();
+            console.log(`meeting : ${meeting.availabilities[0]["date"]}`);
+
+            // NOw need to fetch host firstName, lastName
+            const hostResponse = await fetch(
+              `http://localhost:3007/user/profile/${meeting.hostId}`,
+              {
+                method: "GET", // Assuming POST is used to fetch host details
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+              }
+            );
+            if (!hostResponse.ok) {
+              throw new Error("Failed to fetch host details");
+            }
+
+            const hostDetails = await hostResponse.json();
+            console.log(`hostDetails: ${hostDetails}`);
+
+            // Combine meeting details with host details
+            return {
+              title: meeting.title,
+              status: meeting.status,
+              dateTime: meeting["availabilities"][0]["date"] || "N/A", // Example, pick the startDate from availabilities
+              location: meeting.location,
+              person: `${hostDetails.firstName} ${hostDetails.lastName}`, // Concatenate host first and last name
+            };
+          })
+        );
+
+        meetings.forEach((m) => console.log("dateTime" + m.dateTime));
+
+        // Assuming the response for each meeting contains a card-like structure
+        const mappedCards = meetings.map((meeting: any) => ({
+          title: meeting.title,
+          status: meeting.status,
+          dateTime: meeting.dateTime || "N/A",
+          location: meeting.location,
+          person: meeting.hostd,
+        }));
+
+        mappedCards.forEach((e) => e.dateTime);
+
+        setCards(mappedCards);
       } catch (error) {
         console.error("Error fetching meetings:", error);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, [userId]);
 
   // Filter
   const filteredCards = cards.filter((card) => {
@@ -99,8 +137,8 @@ const Manage = () => {
             <MeetingCard
               key={index}
               title={card.title}
-              status={card.status}
-              dateTime={card.dateTime}
+              status={"Upcoming"} //card.status
+              dateTime={"N/A"} //card.dateTime
               location={card.location}
               person={card.person}
               canEdit={true} //Added
