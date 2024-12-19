@@ -35,7 +35,7 @@ export interface MeetingCreateParams {
   hostId: string; // this means POST /meeting/:hostId
 }
 export interface MeetingCreateBody {
-  hostId: string;
+  // hostId: string; // will be removed
   title: string;
   description: string;
   location: string;

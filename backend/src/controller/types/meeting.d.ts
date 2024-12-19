@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 
 
 type MessageResponse = {
-  message: string;
+  message?: string;
 }
 
 // get info
@@ -18,6 +18,10 @@ export type MeetingCreateResponse = Response<MeetingInfo | MessageResponse>;
 // update meeting
 export type MeetingUpdateRequest = Request<MeetingRequestParams, MessageResponse, MeetingUpdateBody>; // no query, no locals
 export type MeetingUpdateResponse = Response<MessageResponse>;
+
+// delete meeting
+export type MeetingDeleteRequest = Request<MeetingRequestParams, MessageResponse>; // no body, no query, no locals
+export type MeetingDeleteResponse = Response<MessageResponse>;
 
 // book meeting
 export type MeetingBookRequest = Request<MeetingRequestParams, MessageResponse, MeetingBookingBody>; // no query, no locals

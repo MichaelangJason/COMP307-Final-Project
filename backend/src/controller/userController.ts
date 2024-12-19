@@ -7,7 +7,7 @@ import { UserBasicInfo } from "@shared/types/api/admin";
 import { UserGetRequest, UserGetRequestsRequest, UserGetRequestsResponse, UserGetResponse, UserUpdateRequest, UserUpdateResponse } from "./types/user";
 import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetResponse, AdminLoginAsUserRequest, AdminLoginAsUserResponse, AdminSearchRequest, AdminSearchResponse } from "./types/admin";
 import { validatePassword } from "./authController";
-import { isAllowed } from "./utils/user";
+import { isAllowed, updateUpcomingMeetings } from "./utils/user";
 import { RequestGetMultipleResponse } from "@shared/types/api/request";
 import { updateIfExpired } from "./utils/request";
 import { Request } from "@shared/types/db";
@@ -26,12 +26,12 @@ const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
     }
 
     const userId = new ObjectId(req.params.userId);
-    console.log("userId", userId);
 
     try {
         const user = await getUserById(userId);
-        console.log("user", user);
+
         if (user) {
+            if (!await updateUpcomingMeetings(user)) throw new Error('Failed to update upcoming meetings');
             res.status(200).json({
                 id: user._id.toString(),
                 email: user.email,

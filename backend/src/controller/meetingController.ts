@@ -6,6 +6,8 @@ import {
   MeetingCancelResponse,
   MeetingCreateRequest,
   MeetingCreateResponse,
+  MeetingDeleteRequest,
+  MeetingDeleteResponse,
   MeetingRequest,
   MeetingResponse,
   MeetingUnbookRequest,
@@ -18,8 +20,9 @@ import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
 import { MeetingInfoWithHost } from "@shared/types/api/meeting";
 import { MeetingRepeat, MeetingStatus, dateRegex } from "../utils";
-import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions } from "./utils/meeting";
+import { getMeeting, formatDate, isValidAvailabilities, insertMeeting, updateMeeting, isClosed, isValidUserId, nextAvailability, updateFutureAvailabilities, createPollOptions, cancelMeetingSlot, createUpcomingMeetings, pushFutureAvailabilities } from "./utils/meeting";
 import { isAllowed } from "./utils/user";
+import { getResults, prepareAvailabilities } from "./utils/poll";
 
 const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   const { meetingId } = req.params;
@@ -30,11 +33,18 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     return;
   }
 
+  let host: User | null = null;
+  if (!(host = await getDocument<User>(CollectionNames.USER, meeting.hostId))) {
+    await deleteDocument<Meeting>(CollectionNames.MEETING, meeting._id);
+    res.status(404).json({ message: "Host not found, delete meeting" });
+    return;
+  }
+
   let poll: Poll | null = null;
   if (meeting.pollId) {
     console.log(meeting.pollId);
     try {
-      poll = await getDocument<Poll>(CollectionNames.POLL, new ObjectId(meeting.pollId));
+      poll = await getDocument<Poll>(CollectionNames.POLL, meeting.pollId);
     } catch (error) {
       console.log("error getting poll: ", meeting.pollId);
       console.error(error);
@@ -56,10 +66,33 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
     await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
   }
 
-  let host: User | null = null;
-  if (!(host = await getDocument<User>(CollectionNames.USER, meeting.hostId))) {
-    res.status(404).json({ message: "Host not found" });
-    return;
+  // check if meeting is voting and if poll has ended
+  if (meeting.status === MeetingStatus.VOTING) {
+    const poll = await getDocument<Poll>(CollectionNames.POLL, meeting.pollId!);
+    if (!poll) {
+      res.status(500).json({ message: "Poll not found" });
+      return;
+    }
+    if (poll.timeout < new Date()) {
+      meeting.status = MeetingStatus.UPCOMING;
+      const selectedOptions = getResults(poll);
+      let availabilities = prepareAvailabilities(selectedOptions);
+      availabilities.forEach((availability) => {
+        availability.max = meeting.availabilities.find((a) => a.date === availability.date)?.max || 1;
+      });
+      meeting.availabilities = availabilities;
+
+      // actually this is passing the reference, should not need to do this
+      if (meeting.repeat.type === MeetingRepeat.WEEKLY) {
+        meeting.availabilities = await pushFutureAvailabilities(meeting.availabilities, meeting.repeat.endDate);
+      }
+
+      // update meeting, remove other availabilities
+      await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, availabilities, updatedAt: new Date() } });
+      
+      const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
+      await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
+    }
   }
 
   // parse meeting to meeting info
@@ -115,10 +148,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   }
 
   // check if host exists
-  try {
-    await getDocument<User>(CollectionNames.USER, new ObjectId(hostId));
-  } catch (error) {
-    console.error(error);
+  let host: User | null = null;
+  if (!(host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId)))) {
     res.status(404).json({ message: "Host not found" });
     return;
   }
@@ -142,19 +173,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   }
 
   // push future availabilities
-  if (repeat.type === MeetingRepeat.WEEKLY) {
-    const futureAvailabilities: MeetingAvailability[] = [];
-    for (let i = 1; i < 4; i++) {
-      availabilities.forEach((availability) => {
-        const next = nextAvailability(availability, i, repeat.endDate);
-        if (next) {
-          futureAvailabilities.push(next);
-        }
-      });
-    }
-    newMeeting.availabilities.push(...futureAvailabilities);
-    // sort availabilities by date
-    newMeeting.availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  if (!pollInfo && repeat.type === MeetingRepeat.WEEKLY) {
+    newMeeting.availabilities = await pushFutureAvailabilities(newMeeting.availabilities, repeat.endDate);
   }
 
   let pollId: ObjectId | null = null;
@@ -204,17 +224,100 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     return;
   }
 
-  if (!await updateOneDocument<User>(CollectionNames.USER, new ObjectId(hostId), { $push: { hostedMeetings: newMeeting._id } } as any)) {
+  let updateBody = {
+    $push: {
+      hostedMeetings: newMeeting._id
+    }
+  };
+
+  if (!pollId) {
+    const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(newMeeting.availabilities, newMeeting, host);
+    updateBody = {
+      $push: {
+        hostedMeetings: newMeeting._id,
+        upcomingMeetings: { $each: upcomingMeetings }
+      }
+    } as any;
+  }
+
+  if (!await updateOneDocument<User>(CollectionNames.USER, new ObjectId(hostId), updateBody as any)) {
     // rollback
     await deleteDocument<Meeting>(CollectionNames.MEETING, newMeeting._id);
     if (pollId) {
       await deleteDocument<Poll>(CollectionNames.POLL, pollId);
     }
-    res.status(500).json({ message: "Failed to update host" });
+    res.status(500).json({ message: "Failed to add meeting to host" });
     return;
   }
 
   res.status(200).json({ message: "Meeting created" });
+};
+
+const deleteMeeting = async (req: MeetingDeleteRequest, res: MeetingDeleteResponse) => {
+  const { meetingId } = req.params;
+
+  const meeting: Meeting | null = await getMeeting(meetingId);
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  if (!isAllowed(req.user?.role, meeting.hostId.toString(), req.user?.userId)) {
+    res.status(403).json({ message: "You are not authorized to delete this meeting" });
+    return;
+  }
+
+  // remove meeting from host's hostedMeetings
+  try {
+    await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $pull: { hostedMeetings: new ObjectId(meetingId) } } as any);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to remove meeting reference from host" });
+    return;
+  }
+
+  // cancel for every participant
+  const { availabilities } = meeting;
+
+  const toBeCanceled = [];
+
+  for (const availability of availabilities) {
+    const date = availability.date;
+    for (const slot in availability.slots) {
+      const userIds = availability.slots[slot]
+        .map(p => p.userId)
+        .filter(id => !!id)
+
+      if (userIds.length > 0) {
+        toBeCanceled.push({ date, slot, userIds });
+      }
+    }
+  }
+
+  for (const item of toBeCanceled) {
+    const { date, slot, userIds } = item;
+    if (!await cancelMeetingSlot(meetingId, date, slot, userIds)) {
+      console.log("Modified count does not match userIds length");
+      // first make sure meeting can be deleted by the host
+      // res.status(500).json({ message: "Failed to cancel meeting slot for users" });
+      // return;
+    }
+  }
+
+  // Delete meeting, if somehow fails, will be handled by getInfo
+  const deleteResult = await deleteDocument<Meeting>(CollectionNames.MEETING, new ObjectId(meetingId));
+  if (!deleteResult) {
+    console.log("Failed to delete meeting", meetingId);
+  }
+  
+  // Delete poll, if somehow fails, will be handled by get poll
+  if (meeting.pollId) {
+    if (!await deleteDocument<Poll>(CollectionNames.POLL, meeting.pollId)){
+      console.log("Failed to remove poll", meeting.pollId);
+    }
+  }
+
+  res.status(204).send();
 };
 
 // update info
@@ -280,6 +383,24 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
   if (time === undefined) {
     res.status(400).json({ message: "Invalid slot" });
     return;
+  }
+
+  if (userId && !isValidUserId(userId)) {
+    res.status(400).json({ message: "Invalid user id" });
+    return;
+  }
+
+  let user: User | null = null;
+  if (userId) {
+    user = await getDocument<User>(CollectionNames.USER, new ObjectId(userId));
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    if (user.email !== participantInfo.email) {
+      res.status(400).json({ message: "Member email does not match" });
+      return;
+    }
   }
 
   console.log(time);
@@ -450,33 +571,13 @@ const cancel = async (req: MeetingCancelRequest, res: MeetingCancelResponse) => 
   
   let userIds = time.map((p) => p.userId).filter((id) => !!id); // filter out undefined userIds
 
-  try {
-    userIds = userIds.map((id) => new ObjectId(id));
-  } catch(error) {
-    res.status(400).json({ message: "Invalid userIds" });
+  if (userIds.length === 0) {
+    res.status(200).json({ message: "Meeting slot cancelled successfully" });
     return;
   }
 
-  try {
-    const userCollection = await getCollection<User>(CollectionNames.USER);
-    const result = await userCollection.updateMany(
-      {
-        _id: { $in: userIds },
-        upcomingMeetings: {
-          $elemMatch: {
-            meetingId: meeting._id,
-            date: date,
-            time: slot
-          }
-        }
-      },
-      {
-        $set: { "upcomingMeetings.$.isCancelled": true }
-      }
-    );
-    if (result.modifiedCount !== userIds.length) throw new Error("Modified count does not match userIds length");
-  } catch(error) {
-    console.error(error);
+  if (!await cancelMeetingSlot(meetingId, date, slot, userIds)) {
+    console.log("Modified count does not match userIds length");
     res.status(500).json({ message: "Failed to cancel meeting slot for users" });
     return;
   }
@@ -488,6 +589,7 @@ export default {
   getInfo,
   create,
   update,
+  deleteMeeting,
   book,
   unbook,
   cancel

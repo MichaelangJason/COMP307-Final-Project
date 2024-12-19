@@ -1,7 +1,7 @@
-import { getDocument, insertDocument, updateOneDocument, MeetingRepeat } from "../../utils";
+import { getDocument, insertDocument, updateOneDocument, MeetingRepeat, getCollection } from "../../utils";
 import { CollectionNames } from "../constants";
 import { ObjectId, UpdateFilter } from "mongodb";
-import { Meeting, MeetingAvailability } from "@shared/types/db";
+import { Meeting, MeetingAvailability, UpcomingMeeting, User } from "@shared/types/db";
 
 export const getMeeting = async (meetingId: string): Promise<Meeting | null> => {
   try {
@@ -161,4 +161,71 @@ export const createPollOptions = (availabilities: MeetingAvailability[]) => {
     date: availability.date,
     slots: Object.fromEntries(Object.entries(availability.slots).map(([time, _]) => [time, 0])),
   }));
+}
+
+export const cancelMeetingSlot = async (meetingId: string, date: string, slot: string, userIds: ObjectId[]) => {
+  const userCollection = await getCollection<User>(CollectionNames.USER);
+  const result = await userCollection.updateMany(
+    {
+      _id: { $in: userIds },
+      upcomingMeetings: {
+        $elemMatch: {
+          meetingId: new ObjectId(meetingId),
+          date: date,
+          time: slot
+        }
+      }
+    },
+    {
+      $set: { "upcomingMeetings.$.isCancelled": true }
+    }
+  );
+  // if (result.modifiedCount !== userIds.length) throw new Error("Modified count does not match userIds length");
+  // Clear the slot using the same pattern as booking
+  const isSlotCleared = await updateMeeting(meetingId, {
+    $set: { [`availabilities.$[elem].slots.${slot}`]: [] }
+  } as any, {
+    arrayFilters: [{ "elem.date": date }]
+  } as any);
+
+  return result.modifiedCount === userIds.length && isSlotCleared;
+}
+
+export const createUpcomingMeetings = (availabilities: MeetingAvailability[], meeting: Meeting, host: User) => {
+  const upcomingMeetings: UpcomingMeeting[] = [];
+
+  for (const availability of availabilities) {
+    const date = availability.date;
+    for (const slot in availability.slots) {
+      upcomingMeetings.push({
+        meetingId: meeting._id,
+        title: meeting.title,
+        hostFirstName: host.firstName,
+        hostLastName: host.lastName,
+        location: meeting.location,
+        time: slot,
+        date,
+        isCancelled: false,
+      });
+    }
+  }
+  
+  return upcomingMeetings;
+}
+
+export const pushFutureAvailabilities = async (availabilities: MeetingAvailability[], endDate: string) => {
+  const futureAvailabilities: MeetingAvailability[] = [];
+    // add 3 future availabilities
+    for (let i = 1; i < 4; i++) {
+      availabilities.forEach((availability) => {
+        const next = nextAvailability(availability, i, endDate);
+        if (next) {
+          futureAvailabilities.push(next);
+        }
+      });
+  }
+  availabilities.push(...futureAvailabilities);
+  // sort availabilities by date
+  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return availabilities;
 }

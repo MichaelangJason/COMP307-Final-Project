@@ -7,6 +7,7 @@ import { CollectionNames } from "./constants";
 import { PollGetRequest, PollGetResponse, PollVoteRequest, PollVoteResponse } from "./types/poll";
 import { getMeeting, updateMeeting } from "./utils/meeting";
 import { MeetingStatus } from "../utils/statusEnum";
+import { getResults } from "./utils/poll";
 
 const createPoll = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -67,7 +68,9 @@ const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<
             res.status(404).json({ message: "Poll not found" });
             return;
         }
-
+        
+        const results = getResults(poll);
+        
         // Check if the poll has expired
         if (poll.timeout < new Date()) {
             let meeting = await getMeeting(poll.meetingId.toString());
@@ -126,11 +129,6 @@ const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Pro
                 res.status(404).json({ message: "Meeting not found, poll deleted" });
                 return;
             }
-            if (meeting.status === MeetingStatus.VOTING) {
-                // update meeting status to Upcoming
-                await updateMeeting(meeting._id.toString(), { $set: { status: MeetingStatus.UPCOMING } });
-            }
-
             res.status(400).json({ message: "Poll has expired" });
             return;
         }
