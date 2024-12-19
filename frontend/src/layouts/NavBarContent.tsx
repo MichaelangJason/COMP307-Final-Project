@@ -34,8 +34,10 @@ const NavBarContent = () => {
     // The pages where the buttons are gray
     const grayButtonPagesPatterns = ["/admin/members"];
     setIsGray(
-      grayButtonPagesPatterns.some((pattern) =>
-        matchPath(pattern, location.pathname)
+      grayButtonPagesPatterns.some(
+        (pattern) =>
+          matchPath(pattern, location.pathname) ||
+          sessionStorage.getItem("role") === "0"
       )
     );
 
@@ -47,6 +49,10 @@ const NavBarContent = () => {
   const handleLoginLogout = () => {
     if (isLoggedIn) {
       sessionStorage.removeItem("token"); // Remove the token
+      sessionStorage.removeItem("userId"); // Remove the userId
+      sessionStorage.removeItem("role"); // Remove the role
+      sessionStorage.removeItem("email"); // Remove the email
+      setIsGray(true);
       setButtonText("Login"); // Update button text
       setButtonPageTo("/login"); // Update button target page
     } else {
@@ -108,6 +114,18 @@ const NavBarContent = () => {
     //   showMeetingsLink,
     // });
     if (!firstName || !lastName) return null;
+
+    const role = sessionStorage.getItem("role");
+
+    // If the user is admin (role === "0"), navigate to admin page
+    if (role === "0" && showMeetingsLink) {
+      return (
+        <span>
+          Welcome {firstName} {lastName}!
+          <Link to="/admin/members"> CHECK your members</Link>
+        </span>
+      );
+    }
 
     if (showMeetingsLink) {
       return (
