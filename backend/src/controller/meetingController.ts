@@ -502,15 +502,14 @@ const unbook = async (req: MeetingUnbookRequest, res: MeetingUnbookResponse) => 
     return;
   }
 
-  const isSuccessfullyUnbooked = await updateMeeting(meetingId, {
+  const isRemovedFromMeeting = await updateMeeting(meetingId, {
     $pull: { [`availabilities.$[elem].slots.${slot}`]: { email } },
   } as any, {
     arrayFilters: [{ "elem.date": date }]
   } as any);
   
-  if (!isSuccessfullyUnbooked) {
-    res.status(500).json({ message: "Failed to unbook meeting" });
-    return;
+  if (!isRemovedFromMeeting) {
+    console.log("Failed to unbook meeting, meeting DNE", meetingId, date, slot, email);
   }
 
   if (userId) {

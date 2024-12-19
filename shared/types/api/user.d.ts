@@ -20,8 +20,8 @@ export interface UserGetResponse {
     alarm: AlarmInterval;
   }
   upcomingMeetings: UpcomingMeeting[];
-  hostedMeetings: ObjectId[];
-  requests: ObjectId[];
+  hostedMeetings: string[];
+  requests: string[];
 }
 
 // update user info

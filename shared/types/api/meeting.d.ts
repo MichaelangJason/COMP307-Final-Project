@@ -16,7 +16,7 @@ export interface MeetingInfo extends MeetingRequestParams {
   title: string;
   description: string;
   location: string;
-  availabilities: MeetingAvailability[];
+  availabilities: MeetingAvailability[]; // participant should be private only, but we don't have time for that
   repeat: {
     type: MeetingRepeat;
     endDate: string;
@@ -28,6 +28,11 @@ export interface MeetingInfoWithHost extends MeetingInfo {
   hostId: string;
   hostFirstName: string;
   hostLastName: string;
+}
+
+// get all hosted meetings response
+export interface MeetingGetMultipleResponse {
+  meetings: MeetingInfo[];
 }
 
 // create meeting
