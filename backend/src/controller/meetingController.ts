@@ -450,6 +450,11 @@ const cancel = async (req: MeetingCancelRequest, res: MeetingCancelResponse) => 
   
   let userIds = time.map((p) => p.userId).filter((id) => !!id); // filter out undefined userIds
 
+  if (userIds.length === 0) {
+    res.status(200).json({ message: "Meeting slot cancelled successfully" });
+    return;
+  }
+  
   try {
     userIds = userIds.map((id) => new ObjectId(id));
   } catch(error) {
