@@ -118,10 +118,8 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   }
 
   // check if host exists
-  try {
-    await getDocument<User>(CollectionNames.USER, new ObjectId(hostId));
-  } catch (error) {
-    console.error(error);
+  let host: User | null = null;
+  if (!(host = await getDocument<User>(CollectionNames.USER, new ObjectId(hostId)))) {
     res.status(404).json({ message: "Host not found" });
     return;
   }
@@ -147,6 +145,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   // push future availabilities
   if (repeat.type === MeetingRepeat.WEEKLY) {
     const futureAvailabilities: MeetingAvailability[] = [];
+    // add 3 future availabilities
     for (let i = 1; i < 4; i++) {
       availabilities.forEach((availability) => {
         const next = nextAvailability(availability, i, repeat.endDate);
@@ -207,13 +206,45 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     return;
   }
 
-  if (!await updateOneDocument<User>(CollectionNames.USER, new ObjectId(hostId), { $push: { hostedMeetings: newMeeting._id } } as any)) {
+  let updateBody = {
+    $push: {
+      hostedMeetings: newMeeting._id
+    }
+  };
+
+  if (!pollId) {
+    const upcomingMeetings: UpcomingMeeting[] = [];
+    for (const availability of newMeeting.availabilities) {
+      const date = availability.date;
+      for (const slot in availability.slots) {
+        upcomingMeetings.push({
+          meetingId: newMeeting._id,
+          title: newMeeting.title,
+          hostFirstName: host.firstName,
+          hostLastName: host.lastName,
+          location: newMeeting.location,
+          time: slot,
+          date,
+          isCancelled: false,
+        });
+      }
+    }
+    console.log(upcomingMeetings);
+    updateBody = {
+      $push: {
+        hostedMeetings: newMeeting._id,
+        upcomingMeetings: { $each: upcomingMeetings }
+      }
+    } as any;
+  }
+
+  if (!await updateOneDocument<User>(CollectionNames.USER, new ObjectId(hostId), updateBody as any)) {
     // rollback
     await deleteDocument<Meeting>(CollectionNames.MEETING, newMeeting._id);
     if (pollId) {
       await deleteDocument<Poll>(CollectionNames.POLL, pollId);
     }
-    res.status(500).json({ message: "Failed to update host" });
+    res.status(500).json({ message: "Failed to add meeting to host" });
     return;
   }
 
