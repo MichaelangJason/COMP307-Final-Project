@@ -19,36 +19,9 @@ const Edit = () => {
         </div>
         <div>
           <h1>Poll Results</h1>
-          <Poll
-            pollContent={[
-              {
-                date: "February 3, 2024 (Monday)",
-                times: [
-                  ["12:00", "12:30", false, true],
-                  ["12:00", "12:30", false, false],
-                ],
-              },
-              {
-                date: "February 6, 2024 (Tuesday)",
-                times: [
-                  ["12:00", "12:30", false, true],
-                  ["12:00", "12:30", false, false],
-                  ["12:00", "12:30", false, false],
-                  ["12:00", "12:30", false, false],
-                  ["12:00", "12:30", false, false],
-                ],
-              },
-              {
-                date: "February 8, 2024 (Thursday)",
-                times: [["12:00", "12:30", false, false]],
-              },
-            ]}
-          />
+          <Poll pollContent={[]} />
         </div>
-        <SubmitButton
-          className="submitButton"
-          value="Submit"
-        />
+        <SubmitButton className="submitButton" value="Submit" />
       </form>
     </>
   );

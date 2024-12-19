@@ -34,6 +34,11 @@
   }
 }
 
+.pollOption:has(input:checked) {
+  color: colors.$white;
+  background-color: colors.$brightRed;
+}
+
 .red {
   color: colors.$white;
   background-color: colors.$brightRed;

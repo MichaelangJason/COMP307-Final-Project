@@ -26,14 +26,14 @@
   }
 }
 
-.expired {
+.Expired, .Declined {
   background-color: colors.$mediumGray;
 }
 
-.pending {
+.Pending {
   background-color: colors.$brightRed;
 }
 
-.accepted {
+.Accepted {
   background-color: colors.$green;
 }

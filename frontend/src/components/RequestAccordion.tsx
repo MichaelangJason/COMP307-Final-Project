@@ -2,18 +2,21 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
-import RequestStatus from "./RequestStatus";
+import { Request } from "@shared/types/db/request";
+import { RequestStatus } from "../../src/statusEnum";
+import RequestStatusLabel from "./RequestStatusLabel";
 import "../styles/RequestAccordion.scss";
 import SubmitButton from "./SubmitButton";
 
 interface Props {
-  status: "expired" | "pending" | "accepted";
+  status: RequestStatus;
   name: string;
-  email: string;
+  email: Request["proposerInfo"]["email"];
   date: string;
   time: string;
-  reason: string;
-  showButtons?: boolean;
+  reason: Request["reason"];
+  requestId: Request["_id"];
+  token: string | null;
 }
 
 const RequestAccordion = ({
@@ -23,9 +26,62 @@ const RequestAccordion = ({
   date,
   time,
   reason,
-  showButtons = false,
+  requestId,
+  token,
 }: Props) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const handleApprove = async () => {
+    const url = `http://localhost:3007/request/${requestId}`;
+
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: RequestStatus.ACCEPTED }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(() => {
+        alert("Submitted!");
+      })
+      .catch((err) => {
+        console.error("Error occurred:", err.message);
+        alert("An error occurred. Please try again.");
+      });
+  };
+
+  const handleDecline = async () => {
+    const url = `http://localhost:3007/request/${requestId}`;
+
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: RequestStatus.DECLINED }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(() => {
+        alert("Submitted!");
+      })
+      .catch((err) => {
+        console.error("Error occurred:", err.message);
+        alert("An error occurred. Please try again.");
+      });
+  };
 
   return (
     <div className="requestAccordion">
@@ -38,7 +94,7 @@ const RequestAccordion = ({
           )}
         </button>
         <div className="visibleInfo">
-          <RequestStatus status={status} />
+          <RequestStatusLabel status={status} />
           <label>{name}</label>
           <p>{email}</p>
           <p>
@@ -48,18 +104,15 @@ const RequestAccordion = ({
       </div>
       <div className={`hiddenContent ${isExpanded ? "show" : ""}`}>
         <label>Reason of Meeting:</label>
-        <p>
-          {reason}
-        </p>
-        {showButtons && (
+        <p>{reason}</p>
+        {status === RequestStatus.PENDING && (
           <div className="decisionButtons">
             <SubmitButton
               className="declineButton"
               value="Decline"
+              onClick={handleDecline}
             />
-            <SubmitButton
-              value="Approve"
-            />
+            <SubmitButton value="Approve" onClick={handleApprove} />
           </div>
         )}
       </div>
