@@ -52,7 +52,6 @@ const RequestAccordion = ({
       })
       .then(() => {
         onDecision();
-        alert("Submitted!");
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
@@ -79,7 +78,6 @@ const RequestAccordion = ({
       })
       .then(() => {
         onDecision();
-        alert("Submitted!");
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);

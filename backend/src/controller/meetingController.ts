@@ -483,34 +483,30 @@ const unbook = async (req: MeetingUnbookRequest, res: MeetingUnbookResponse) => 
   }
 
   const meeting: Meeting | null = await getMeeting(meetingId);
-  if (!meeting) {
-    res.status(404).json({ message: "Meeting not found" });
-    return;
-  }
+  if (meeting) {
+    const { availabilities } = meeting;
+    const availability = availabilities.find((a) => a.date === date);
 
-  const { availabilities } = meeting;
-  const availability = availabilities.find((a) => a.date === date);
+    if (!availability) {
+      res.status(400).json({ message: "Invalid date" });
+      return;
+    }
 
-  if (!availability) {
-    res.status(400).json({ message: "Invalid date" });
-    return;
-  }
+    const time = availability.slots[slot];
+    if (!time) {
+      res.status(400).json({ message: "Invalid slot" });
+      return;
+    }
 
-  const time = availability.slots[slot];
-  if (!time) {
-    res.status(400).json({ message: "Invalid slot" });
-    return;
-  }
-
-  const isSuccessfullyUnbooked = await updateMeeting(meetingId, {
-    $pull: { [`availabilities.$[elem].slots.${slot}`]: { email } },
-  } as any, {
-    arrayFilters: [{ "elem.date": date }]
-  } as any);
-  
-  if (!isSuccessfullyUnbooked) {
-    res.status(500).json({ message: "Failed to unbook meeting" });
-    return;
+    const isRemovedFromMeeting = await updateMeeting(meetingId, {
+      $pull: { [`availabilities.$[elem].slots.${slot}`]: { email } },
+    } as any, {
+      arrayFilters: [{ "elem.date": date }]
+    } as any);
+    
+    if (!isRemovedFromMeeting) {
+        console.log("Failed to unbook meeting, meeting DNE", meetingId, date, slot, email);
+      }
   }
 
   if (userId) {
@@ -518,7 +514,7 @@ const unbook = async (req: MeetingUnbookRequest, res: MeetingUnbookResponse) => 
       await updateOneDocument<User>(CollectionNames.USER, new ObjectId(userId), { 
         $pull: { 
           upcomingMeetings: { 
-            meetingId: meeting._id 
+            meetingId: new ObjectId(meetingId) 
           }
         } 
       } as any);

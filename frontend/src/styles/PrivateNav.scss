@@ -19,14 +19,16 @@ body.no-scroll {
 }
 
 #private-nav {
-  margin-top: -11px;
+  margin-top: -10px;
+  z-index: 1000;
 }
 #private-nav a {
+  height: 100%;
   color: colors.$white;
   text-decoration: none;
 
   //added as tile
-  padding: 15px 20px;
+  padding: 15px 20px 16px 20px;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 

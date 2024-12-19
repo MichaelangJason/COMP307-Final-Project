@@ -12,7 +12,6 @@ userRouter.put('/user/profile/:userId', privateMiddleware<UserParams>, userContr
 
 // Request
 userRouter.get('/user/requests/:userId', privateMiddleware<UserParams>, userController.getRequests);
-
 // Admin
 userRouter.get('/admin/members', adminMiddleware<{}>, userController.getAllUsers);
 userRouter.get('/admin/members/search', adminMiddleware, userController.getUsers as any);
