@@ -211,10 +211,10 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
         parseInt(mins) * 60 * 1000              // minutes to milliseconds
     );
 
-    // check if poll timeout is before the first meeting start date
+    // check if poll timeout is after the first meeting start date
     const firstMeetingStartTime = new Date(availabilities[0].date+"T00:00:00");
-    if (pollTimeout < firstMeetingStartTime) {
-      res.status(400).json({ message: "Poll timeout is before the first meeting start date" });
+    if (pollTimeout > firstMeetingStartTime) {
+      res.status(400).json({ message: "Poll timeout should be before the first meeting start date" });
       return;
     }
 
