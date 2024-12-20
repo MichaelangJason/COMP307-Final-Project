@@ -1,6 +1,6 @@
 import { Meeting } from "@shared/types/db/meeting";
 import { useCallback, useEffect, useState } from "react";
-
+import { MeetingRepeat } from "statusEnum";
 import "../styles/MeetingOverview.scss";
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 
 const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
   const [meetingInfo, setMeetingInfo] = useState<Meeting | null>(null);
+  const [frequency, setFrequency] = useState<MeetingRepeat>(0);
 
   const fetchMeetingInfo = useCallback(async () => {
     const url = `http://localhost:3007/meeting/${meetingId}`;
@@ -82,6 +83,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
             name="frequency"
             value={0}
             required
+            onClick={() => setFrequency(0)}
           />
         </div>
         <div>
@@ -98,21 +100,22 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
             type="radio"
             name="frequency"
             value={1}
+            onClick={() => setFrequency(1)}
           />
         </div>
         <div>
           <label>Ends at:</label>
           <input
-            readOnly={meetingId !== null && !isModify}
+            readOnly={(meetingId !== null && !isModify) || frequency === 0}
             className={
-              meetingId !== null && !isModify
+              (meetingId !== null && !isModify) || frequency === 0
                 ? "grayInput textInput"
                 : "textInput"
             }
             type="text"
             name="end"
             defaultValue={meetingInfo?.repeat.endDate}
-            required
+            required={frequency === 1}
           />
         </div>
       </div>

@@ -108,6 +108,10 @@ const Create: React.FC = () => {
       formObject[key] = value as string;
     });
 
+    if (repeatKeys["type"] === 0) {
+      delete repeatKeys["endDate"];
+    }
+
     const finalData = isPollRequired
       ? {
           ...formObject,

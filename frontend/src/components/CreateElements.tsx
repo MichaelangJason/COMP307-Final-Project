@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { PollInfo } from "@shared/types/api/meeting";
 import { MeetingRepeat } from "statusEnum";
 import "../styles/CreateSt.scss";
@@ -14,6 +14,8 @@ const CreateElements: React.FC<CreateElementsProps> = ({
   setIsPollRequired,
   setTimeoutInput,
 }) => {
+  const [frequency, setFrequency] = useState<MeetingRepeat>(0);
+
   const pollFormat = (e: React.ChangeEvent<HTMLInputElement>) => {
     const ismarked = e.target.checked;
     setIsPollRequired(ismarked);
@@ -33,11 +35,13 @@ const CreateElements: React.FC<CreateElementsProps> = ({
         <div>
           <label>Once</label>
           <input
+            defaultChecked={true}
             className="radioInput"
             type="radio"
             name="frequency"
             value={0}
             required
+            onClick={() => setFrequency(0)}
           />
         </div>
         <div>
@@ -47,16 +51,18 @@ const CreateElements: React.FC<CreateElementsProps> = ({
             type="radio"
             name="frequency"
             value={1}
+            onClick={() => setFrequency(1)}
           />
         </div>
         <div className="mn">
           <label>Ends at:</label>
           <input
-            className="textInput"
+            className={frequency === 0 ? "grayInput textInput" : "textInput"}
             type="text"
             name="end"
-            required
+            required={frequency === 1}
             placeholder="yyyy-mm-dd"
+            readOnly={frequency === 0}
           />
         </div>
 

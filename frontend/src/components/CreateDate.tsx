@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 
 import { Meeting } from "@shared/types/db/meeting";
-import { MeetingRepeat } from "@shared/types/api/common";
 import TimeStamp from "./TimeStamp";
 import "../styles/MeetingDate.scss";
 

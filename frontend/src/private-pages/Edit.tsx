@@ -79,6 +79,10 @@ const Edit = () => {
       formObject[key] = value as string;
     });
 
+    if (repeatKeys["type"] === 0) {
+      delete repeatKeys["endDate"];
+    }
+
     const finalData = { ...formObject, repeat: repeatKeys, availabilities };
 
     await fetch(url, {
