@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,6 +12,22 @@ interface Card {
   location: string;
   person: string;
 }
+
+// Helper function to convert enum value to string
+const getMeetingStatusString = (status: number): string => {
+  switch (status) {
+    case 0:
+      return "Upcoming";
+    case 1:
+      return "Closed";
+    case 2:
+      return "Canceled";
+    case 3:
+      return "Voting";
+    default:
+      return "Unknown";
+  }
+};
 
 const Manage = () => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -78,6 +94,10 @@ const Manage = () => {
             const meeting: MeetingInfoWithHost = await meetingResponse.json();
             console.log("Meeting Data:", meeting);
 
+            // Conver status into string
+            const statusString = getMeetingStatusString(meeting.status);
+            console.log("Meeting status converted:", statusString);
+
             // Fetch host details
             const url_fetch_host_info = `http://localhost:3007/user/profile/${meeting.hostId}`;
 
@@ -100,7 +120,7 @@ const Manage = () => {
             return {
               meetingId: meeting.meetingId,
               title: meeting.title,
-              status: meeting.status,
+              status: statusString,
               dateTime: meeting["availabilities"][0]["date"] || "N/A", // Example, pick the startDate from availabilities
               location: meeting.location,
               person: `${hostDetails.firstName} ${hostDetails.lastName}`, // Concatenate host first and last name
@@ -140,6 +160,20 @@ const Manage = () => {
     navigate(newPath);
   };
 
+  // Display Error Messages to user
+  const getNoMeetingsMessage = (filter: string) => {
+    switch (filter) {
+      case "Upcoming":
+        return "No upcoming meetings found. Create a new meeting on the CREATE page to start hosting meetings.";
+      case "Voting":
+        return "No meetings in voting phase. Your meetings will appear here when participants are voting on meeting times.";
+      case "Closed":
+        return "No closed meetings found. Meetings will be marked as closed after they conclude.";
+      default:
+        return "No meetings found. Please go to the CREATE page to host a meeting.";
+    }
+  };
+
   if (isLoading) return <div>Loading meetings...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -162,9 +196,7 @@ const Manage = () => {
               />
             ))
           ) : (
-            <div>
-              No meetings found. Please go to the CREAT page to host a meeting.
-            </div>
+            <div>{getNoMeetingsMessage(filter)} </div>
           )}
         </div>
         <div className="filter-options">

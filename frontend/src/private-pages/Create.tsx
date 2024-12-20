@@ -37,6 +37,14 @@ const Create: React.FC = () => {
 
     const formObject = { ...storedFormData };
 
+    const timeout = formObject.pollInfo?.timeout;
+    if (timeout && !timeout.match(/^\d+d\d+h\d+m$/)) {
+      setIsModalOpen(false);
+      alert("Invalid timeout format, should similar to 1d1h1m");
+      return;
+    }
+
+
     await fetch(url, {
       method: "POST",
       headers: {
@@ -62,6 +70,18 @@ const Create: React.FC = () => {
         setIsModalOpen(false);
         alert(`Error: ${err.message}`);
       });
+  };
+
+  const checkAndSet = (
+    setFn: React.Dispatch<React.SetStateAction<any>>, 
+    predicate: (value: any) => boolean, 
+    value: any, 
+    errorMessage: string) => {
+    if (!predicate(value)) {
+      window.alert(errorMessage);
+      return;
+    }
+    setFn(value);
   };
 
   const openModal = () => {

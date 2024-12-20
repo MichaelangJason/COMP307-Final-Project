@@ -58,20 +58,20 @@
     width: fit-content;
     color: colors.$white;
 
-    &.upcoming {
+    &.Upcoming {
       background-color: colors.$brightRed;
     }
 
-    &.live {
+    &.Live {
       background-color: colors.$green;
     }
 
-    &.closed {
+    &.Closed {
       background-color: colors.$mediumGray;
     }
 
-    &.canceled,
-    &.voting {
+    &.Canceled,
+    &.Voting {
       background-color: colors.$yellow;
     }
   }
