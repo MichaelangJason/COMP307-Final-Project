@@ -218,6 +218,13 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
       return;
     }
 
+    // check if poll result is larger than the number of slots
+    const numSlots = availabilities.reduce((acc, curr) => acc + Object.keys(curr.slots).length, 0);
+    if (pollInfo.results > numSlots) {
+      res.status(400).json({ message: "Poll result should be less than the number of slots" });
+      return;
+    }
+
     const newPoll: Poll = {
       _id: new ObjectId(),
       meetingId: newMeeting._id,
