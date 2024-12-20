@@ -4,7 +4,7 @@ import privateMiddleware from '../middleware/privateMiddleware';
 
 const pollRouter = express.Router();
 
-pollRouter.get('/:pollId', pollController.getPollVotes);
+pollRouter.get('/:meetingId', pollController.getPollVotes);
 // pollRouter.post('/', privateMiddleware, pollController.createPoll);
 pollRouter.put('/:pollId', pollController.updatePollVotes);
 
