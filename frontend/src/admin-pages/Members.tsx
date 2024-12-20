@@ -10,10 +10,15 @@ interface Card {
   email: string;
   memberSince: string;
 }
+
 const Members = () => {
   const [cards, setCards] = useState<Card[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Filter based on Domain : student or staff
   const [filter, setFilter] = useState("All");
+
   // Search Query
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTriggered, setSearchTriggered] = useState(false); // Track if search is triggered
@@ -28,23 +33,44 @@ const Members = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:3007/admin/members", {
-          method: "GET",
-        });
-        const data = await response.json();
+      setIsLoading(true);
+      setError(null);
 
-        setCards(
-          data.users.map((user: any) => ({
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            memberSince: "yyyy-mm-dd", //Not found in the backend
-          }))
-        );
+      try {
+        const url = "http://localhost:3007/admin/members";
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched data:", data); // Debug log
+
+        const formattedCards = data.users.map((user: any) => ({
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          memberSince: "yyyy-mm-dd", //Not found in the backend
+        }));
+
+        console.log("Formatted cards:", formattedCards); // Debug log
+        setCards(formattedCards);
       } catch (error) {
         console.error("Failed to fetch members:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to fetch members"
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -63,6 +89,8 @@ const Members = () => {
 
     return matchesFilter && (!searchTriggered || matchesSearch);
   });
+
+  console.log("Filtered cards:", filteredCards); // Debug log
 
   // Filter options
   const handleFilterChange = (domain: string) => {
@@ -116,6 +144,9 @@ const Members = () => {
     setSelectedCard(null);
   };
 
+  if (isLoading) return <div>Loading members...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <>
       <div className="header-n-search">
@@ -132,18 +163,21 @@ const Members = () => {
       </div>
       <div className="members-page">
         <div className="card-list">
-          {filteredCards.map((card, index) => (
-            <div key={index} onClick={() => handleCardClick(card)}>
-              <MemberCard
-                key={index}
-                lastName={card.lastName}
-                firstName={card.firstName}
-                email={card.email}
-                memberSince={card.memberSince}
-                onDelete={(e) => handleShowPopup(card, e)}
-              />
-            </div>
-          ))}
+          {filteredCards.length > 0 ? (
+            filteredCards.map((card) => (
+              <div key={card.id} onClick={() => handleCardClick(card)}>
+                <MemberCard
+                  lastName={card.lastName}
+                  firstName={card.firstName}
+                  email={card.email}
+                  memberSince={card.memberSince}
+                  onDelete={(e) => handleShowPopup(card, e)}
+                />
+              </div>
+            ))
+          ) : (
+            <div>No members found</div>
+          )}
         </div>
 
         <div className="filter-options">
