@@ -154,6 +154,13 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     res.status(400).json({ message });
     return;
   }
+  // sort availabilities by date
+  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (!repeat.endDate) {
+    const lastDate = availabilities.at(-1)!.date;
+    repeat.endDate = lastDate;
+  }
 
   if (pollInfo && (
     !pollInfo.timeout || !pollInfo.results || typeof pollInfo.results !== "number" ||
@@ -172,8 +179,6 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
 
   // create meeting
   let now = new Date();
-  // sort availabilities by date
-  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const newMeeting: Meeting = {
     _id: new ObjectId(),
@@ -183,7 +188,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     location,
     availabilities,
     status: MeetingStatus.UPCOMING,
-    repeat: repeat,
+    repeat: repeat as { type: MeetingRepeat; endDate: string },
     createdAt: now,
     updatedAt: now,
   }
