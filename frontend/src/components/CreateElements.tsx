@@ -14,9 +14,15 @@ const CreateElements: React.FC<CreateElementsProps> = ({
   setIsPollRequired,
   setTimeoutInput,
 }) => {
+  const [isRecurring, setIsRecurring] = React.useState(false);
+
   const pollFormat = (e: React.ChangeEvent<HTMLInputElement>) => {
     const ismarked = e.target.checked;
     setIsPollRequired(ismarked);
+  };
+
+  const handleFrequencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsRecurring(e.target.value === "1");
   };
 
   return (
@@ -38,6 +44,7 @@ const CreateElements: React.FC<CreateElementsProps> = ({
             name="frequency"
             value={0}
             required
+            onChange={handleFrequencyChange}
           />
         </div>
         <div>
@@ -47,15 +54,17 @@ const CreateElements: React.FC<CreateElementsProps> = ({
             type="radio"
             name="frequency"
             value={1}
+            onChange={handleFrequencyChange}
           />
         </div>
-        <div className="mn">
+        <div className={`mn ${!isRecurring ? "readOnly" : ""}`}>
           <label>Ends at:</label>
           <input
-            className="textInput"
+            className={!isRecurring ? "grayInput textInput" : "textInput"}
             type="text"
             name="end"
-            required
+            readOnly={!isRecurring}
+            required={isRecurring}
             placeholder="yyyy-mm-dd"
           />
         </div>

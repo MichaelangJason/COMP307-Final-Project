@@ -10,6 +10,7 @@ interface Props {
 
 const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
   const [meetingInfo, setMeetingInfo] = useState<Meeting | null>(null);
+  const [isRecurring, setIsRecurring] = useState(false);
 
   const fetchMeetingInfo = useCallback(async () => {
     const url = `http://localhost:3007/meeting/${meetingId}`;
@@ -36,6 +37,12 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
   useEffect(() => {
     fetchMeetingInfo();
   }, [meetingId, fetchMeetingInfo]);
+
+  useEffect(() => {
+    if (meetingInfo) {
+      setIsRecurring(meetingInfo.repeat.type === 1);
+    }
+  }, [meetingInfo]);
 
   return (
     <div className="meetingOverview roundShadowBorder">
@@ -72,9 +79,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
         <div>
           <label>Once</label>
           <input
-            key={
-              meetingInfo?.repeat.type === 0 ? "once-checked" : "once-unchecked"
-            }
+            key={meetingInfo?.repeat.type === 0 ? "once-checked" : "once-unchecked"}
             defaultChecked={meetingInfo?.repeat.type === 0}
             disabled={meetingId !== null && !isModify}
             className="radioInput"
@@ -82,37 +87,36 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
             name="frequency"
             value={0}
             required
+            onChange={(e) => setIsRecurring(e.target.value === "1")}
           />
         </div>
         <div>
           <label>Every week</label>
           <input
-            key={
-              meetingInfo?.repeat.type === 1
-                ? "weekly-checked"
-                : "weekly-unchecked"
-            }
+            key={meetingInfo?.repeat.type === 1 ? "weekly-checked" : "weekly-unchecked"}
             defaultChecked={meetingInfo?.repeat.type === 1}
             disabled={meetingId !== null && !isModify}
             className="radioInput"
             type="radio"
             name="frequency"
             value={1}
+            onChange={(e) => setIsRecurring(e.target.value === "1")}
           />
         </div>
-        <div>
+        <div className={`mn ${!isRecurring ? "readOnly" : ""}`}>
           <label>Ends at:</label>
           <input
-            readOnly={meetingId !== null && !isModify}
+            readOnly={!isRecurring || (meetingId !== null && !isModify)}
             className={
-              meetingId !== null && !isModify
+              !isRecurring || (meetingId !== null && !isModify)
                 ? "grayInput textInput"
                 : "textInput"
             }
             type="text"
             name="end"
             defaultValue={meetingInfo?.repeat.endDate}
-            required
+            required={isRecurring}
+            placeholder="yyyy-mm-dd"
           />
         </div>
       </div>

@@ -72,18 +72,6 @@ const Create: React.FC = () => {
       });
   };
 
-  const checkAndSet = (
-    setFn: React.Dispatch<React.SetStateAction<any>>, 
-    predicate: (value: any) => boolean, 
-    value: any, 
-    errorMessage: string) => {
-    if (!predicate(value)) {
-      window.alert(errorMessage);
-      return;
-    }
-    setFn(value);
-  };
-
   const openModal = () => {
     setIsModalOpen(true);
   };

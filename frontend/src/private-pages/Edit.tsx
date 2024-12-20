@@ -98,6 +98,7 @@ const Edit = () => {
         return data;
       })
       .then(() => {
+        window.alert("Meeting updated successfully");
         navigate(`/user/${hostId}/manage`);
       })
       .catch((err) => {
