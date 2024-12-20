@@ -154,6 +154,13 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     res.status(400).json({ message });
     return;
   }
+  // sort availabilities by date
+  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (!repeat.endDate) {
+    const lastDate = availabilities.at(-1)!.date;
+    repeat.endDate = lastDate;
+  }
 
   if (pollInfo && (
     !pollInfo.timeout || !pollInfo.results || typeof pollInfo.results !== "number" ||
@@ -172,8 +179,6 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
 
   // create meeting
   let now = new Date();
-  // sort availabilities by date
-  availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const newMeeting: Meeting = {
     _id: new ObjectId(),
@@ -183,7 +188,7 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     location,
     availabilities,
     status: MeetingStatus.UPCOMING,
-    repeat: repeat,
+    repeat: repeat as { type: MeetingRepeat; endDate: string },
     createdAt: now,
     updatedAt: now,
   }
@@ -211,10 +216,17 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
         parseInt(mins) * 60 * 1000              // minutes to milliseconds
     );
 
-    // check if poll timeout is before the first meeting start date
+    // check if poll timeout is after the first meeting start date
     const firstMeetingStartTime = new Date(availabilities[0].date+"T00:00:00");
-    if (pollTimeout < firstMeetingStartTime) {
-      res.status(400).json({ message: "Poll timeout is before the first meeting start date" });
+    if (pollTimeout > firstMeetingStartTime) {
+      res.status(400).json({ message: "Poll timeout should be before the first meeting start date" });
+      return;
+    }
+
+    // check if poll result is larger than the number of slots
+    const numSlots = availabilities.reduce((acc, curr) => acc + Object.keys(curr.slots).length, 0);
+    if (pollInfo.results > numSlots) {
+      res.status(400).json({ message: "Poll result should be less than the number of slots" });
       return;
     }
 
@@ -368,6 +380,10 @@ const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => 
   }};
 
   meeting = { ...meeting, ...update.$set };
+  
+  if (!meeting.repeat.endDate) {
+    meeting.repeat.endDate = meeting.availabilities.at(-1)!.date;
+  }
 
   if (meeting.status === MeetingStatus.UPCOMING && isClosed(meeting)) {
     update.$set = { ...update.$set, status: MeetingStatus.CLOSED };

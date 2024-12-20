@@ -48,7 +48,7 @@ export interface MeetingCreateBody {
   pollInfo?: PollInfo;
   repeat: {
     type: MeetingRepeat;
-    endDate: string;
+    endDate?: string;
   };
 }
 

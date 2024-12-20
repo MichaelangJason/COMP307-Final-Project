@@ -151,8 +151,8 @@ export const isValidAvailabilities = (availabilities: MeetingAvailability[]) => 
   // check if all dates are in the future
   const allFutureDates = availabilities.every((availability) => {
     if (Object.values(availability.slots).length === 0) return true; // is not this error
-    const latestStartTime = Object.keys(availability.slots).at(-1)!.split("-")[0];
-    return new Date(`${availability.date}T${latestStartTime}:00`) > new Date();
+    const firstStartTime = Object.keys(availability.slots).at(0)!.split("-")[0];
+    return new Date(`${availability.date}T${firstStartTime}:00`) > new Date();
   });
 
   let message = "";
@@ -160,7 +160,7 @@ export const isValidAvailabilities = (availabilities: MeetingAvailability[]) => 
   if (!noEmptyAvailabilities) message += "No empty availabilities allowed.\n";
   // if (!noEmptySlots) message += "No empty slots allowed.\n";
   if (!noDuplicates) message += "No duplicate dates allowed.\n";
-  if (!allFutureDates) message += "All dates must be in the future.\n";
+  if (!allFutureDates) message += "All dates and slotsmust be in the future.\n";
 
   return { isValid: atLeastOne && noEmptyAvailabilities && noDuplicates && allFutureDates, message };
 }
