@@ -15,7 +15,7 @@ import {
   MeetingUpdateRequest,
   MeetingUpdateResponse,
 } from "./types/meeting";
-import { deleteDocument, getCollection, getDocument, insertDocument, updateOneDocument } from "../utils/db";
+import { deleteDocument, getDocument, insertDocument, updateOneDocument } from "../utils/db";
 import { CollectionNames } from "./constants";
 import { Meeting, MeetingAvailability, Participant, Poll, UpcomingMeeting, User } from "@shared/types/db";
 import { MeetingInfoWithHost } from "@shared/types/api/meeting";
@@ -143,10 +143,15 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
     !location ||
     !availabilities ||
     !availabilities.length ||
-    !isValidAvailabilities(availabilities) ||
     !repeat
   ) {
     res.status(400).json({ message: "Missing required fields" });
+    return;
+  }
+
+  const { isValid, message } = isValidAvailabilities(availabilities);
+  if (!isValid) {
+    res.status(400).json({ message });
     return;
   }
 
@@ -346,8 +351,9 @@ const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => 
     return;
   }
 
-  if (req.body.availabilities && !isValidAvailabilities(req.body.availabilities)) {
-    res.status(400).json({ message: "Invalid availabilities" });
+  const { isValid, message } = isValidAvailabilities(req.body.availabilities);
+  if (req.body.availabilities && !isValid) {
+    res.status(400).json({ message });
     return;
   }
   
@@ -421,7 +427,7 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
 
   console.log(time);
   if (time.length >= availability.max) {
-    res.status(400).json({ message: "Meeting is full" });
+    res.status(400).json({ message: "Slot is full" });
     return;
   }
 
