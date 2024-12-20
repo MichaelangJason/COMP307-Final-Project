@@ -380,6 +380,10 @@ const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => 
   }};
 
   meeting = { ...meeting, ...update.$set };
+  
+  if (!meeting.repeat.endDate) {
+    meeting.repeat.endDate = meeting.availabilities.at(-1)!.date;
+  }
 
   if (meeting.status === MeetingStatus.UPCOMING && isClosed(meeting)) {
     update.$set = { ...update.$set, status: MeetingStatus.CLOSED };
