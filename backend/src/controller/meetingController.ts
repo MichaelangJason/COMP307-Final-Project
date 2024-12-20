@@ -90,8 +90,8 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
       // update meeting, remove other availabilities
       await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, availabilities, updatedAt: new Date() } });
       
-      const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
-      await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
+      // const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
+      // await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
     }
   }
 

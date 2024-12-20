@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import bin_icon from "../images/bin.png";
 import clock_icon from "../images/clock.png";
 import location_icon from "../images/location.png";

@@ -83,6 +83,7 @@ const Manage = () => {
 
             // Combine meeting details with host details
             return {
+              meetingId: meeting.meetingId,
               title: meeting.title,
               status: meeting.status,
               dateTime: meeting["availabilities"][0]["date"] || "N/A", // Example, pick the startDate from availabilities
@@ -96,6 +97,7 @@ const Manage = () => {
 
         // Assuming the response for each meeting contains a card-like structure
         const mappedCards = meetings.map((meeting: any) => ({
+          meetingId: meeting.meetingId,
           title: meeting.title,
           status: meeting.status,
           dateTime: meeting.dateTime || "N/A",
@@ -124,7 +126,7 @@ const Manage = () => {
   // TODO : frontend - follow up to transfer data to Private 6!!!
   // TODO : backend - meeting id
   const handleEdit = (card: Card) => {
-    const newPath = `${location.pathname}/:meetingid/edit`;
+    const newPath = `${location.pathname}/${(card as any).meetingId}/edit`;
     navigate(newPath);
   };
 
