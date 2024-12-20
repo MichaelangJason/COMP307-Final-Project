@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, matchPath, Link } from "react-router-dom";
-import { getAuthToken, getUserId, isAdmin, clearAuth } from "utils/auth";
+import { getAuthToken, isAdmin } from "utils/auth";
 import logo from "../images/logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/NavBarContent.scss";
@@ -84,7 +84,7 @@ const NavBarContent = () => {
       if (currentPath === "/") {
         return (
           <span>
-            Welcome {user.firstName} {user.lastName}!
+            Welcome {user.firstName} {user.lastName}!&nbsp;
             <Link to="/admin/members">CHECK your members</Link>
           </span>
         );
@@ -97,7 +97,7 @@ const NavBarContent = () => {
       sessionStorage.setItem("loginOrigin", "booking");
       return (
         <span>
-          Welcome {user.firstName} {user.lastName}!
+          Welcome {user.firstName} {user.lastName}!&nbsp;
           <Link to={`/user/${sessionStorage.getItem("userId")}`}>
             CHECK your meetings
           </Link>
@@ -110,7 +110,7 @@ const NavBarContent = () => {
       const meetingId = sessionStorage.getItem("meetingId");
       return (
         <span>
-          Welcome {user.firstName} {user.lastName}!
+          Welcome {user.firstName} {user.lastName}!&nbsp;
           <Link to={`/book/${meetingId}`}>Go back to booking</Link>
         </span>
       );
@@ -120,7 +120,7 @@ const NavBarContent = () => {
     if (currentPath === "/" && !loginOrigin) {
       return (
         <span>
-          Welcome {user.firstName} {user.lastName}!
+          Welcome {user.firstName} {user.lastName}!&nbsp;
           <Link to={`/user/${sessionStorage.getItem("userId")}`}>
             Check your meetings
           </Link>

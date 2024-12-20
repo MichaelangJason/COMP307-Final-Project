@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -77,6 +77,8 @@ const Manage = () => {
 
             const meeting: MeetingInfoWithHost = await meetingResponse.json();
             console.log("Meeting Data:", meeting);
+
+            console.log("Meeting status: ", meeting.status);
 
             // Fetch host details
             const url_fetch_host_info = `http://localhost:3007/user/profile/${meeting.hostId}`;
