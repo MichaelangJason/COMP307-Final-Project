@@ -5,25 +5,37 @@ import RedButtonLink from "../components/RedButtonLink";
 import "../styles/LogIn_n_SignUp.scss";
 
 const LogIn = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const successMessage = location.state?.successMessage; // To check if we are redirected from the sign up page after successful registration
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  // Use window.location.pathname if location.state does not exist
+  const state = location.state as { from?: string };
+  const currentPath = window.location.pathname; // Use window.location.pathname if location.state.from is not available
+  const from = state?.from || (currentPath === "/login" ? "/" : currentPath);
+
+  const isBookingPage = /^\/book\/[^/]+$/.test(from);
+  const meetingId = isBookingPage ? from.split("/").pop() : null;
+
+  console.log("Current path:", currentPath);
+  console.log("From path:", from);
+  console.log("Is booking page:", isBookingPage);
+  console.log("Meeting ID:", meetingId);
+
+  // Display success sign up message
+  const signupState = location.state as { successMessage?: string };
+  const successMessage = signupState?.successMessage;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3007/login", {
+      const url = "http://localhost:3007/login";
+
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           email: formData.email,
@@ -32,20 +44,30 @@ const LogIn = () => {
       });
       // Parse the response
       const data = await response.json();
+      console.log("Raw API response:", data); // for debugging
 
-      console.log("Raw API response:", data); // Log the full response for debugging
       if (response.ok) {
-        // *** store the token in sessionStorage
         sessionStorage.setItem("token", data.token); //storing the token
         sessionStorage.setItem("userId", data.userId);
         sessionStorage.setItem("role", data.role);
         sessionStorage.setItem("email", formData.email);
 
-        // Navigate base on role
-        if (data.role === 0) {
-          navigate(`/admin/members/`);
+        if (isBookingPage) {
+          // Store information for booking-related navigation
+          sessionStorage.setItem("loginOrigin", "booking");
+          sessionStorage.setItem("meetingId", from.split("/").pop() || "");
+
+          console.log(sessionStorage.getItem("loginOrigin"));
+          console.log(sessionStorage.getItem("meetingId"));
+
+          navigate(`/book/${sessionStorage.getItem("meetingId")}`);
+        }
+
+        // handle navigation based on user role and origin
+        if (data.role === "0") {
+          navigate("/admin/members");
         } else {
-          navigate(`/user/${data.userId}`);
+          navigate(from);
         }
       } else {
         setError(data.message || "Login failed");
@@ -53,6 +75,11 @@ const LogIn = () => {
     } catch (err) {
       setError("An error occurred during login");
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   return (

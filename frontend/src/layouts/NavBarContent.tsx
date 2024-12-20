@@ -1,147 +1,138 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation, matchPath, Link } from "react-router-dom";
+import { useLocation, matchPath, Link } from "react-router-dom";
+import { getAuthToken, getUserId, isAdmin, clearAuth } from "utils/auth";
 import logo from "../images/logo.png";
 import RedButtonLink from "../components/RedButtonLink";
 import "../styles/NavBarContent.scss";
 
+interface User {
+  firstName: string;
+  lastName: string;
+  userId: string;
+  role: string;
+}
+
 const NavBarContent = () => {
-  const { id } = useParams<{ id: string }>(); //Take the userid from the URL
   const location = useLocation(); //Accessing current URL path
-  const [firstName, setFirstName] = useState<string | null>(null);
-  const [lastName, setLastName] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // To make variables based on the login status
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [isGray, setIsGray] = useState<boolean>(false);
-  const [buttonText, setButtonText] = useState<string>("Login");
-  const [buttonPageTo, setButtonPageTo] = useState<string>("/login");
+  const isLoggedIn = !!getAuthToken();
 
-  const [showMeetingsLink, setShowMeetingsLink] = useState<boolean>(false);
+  const isGrayButton = Boolean(
+    isAdmin() || matchPath("/admin/members", location.pathname)
+  );
 
-  useEffect(() => {
-    // Check login status using sessionStorage
-    const token = sessionStorage.getItem("token");
-    setIsLoggedIn(!!token);
-
-    if (token) {
-      setButtonText("Logout");
-      setButtonPageTo("/");
-    } else {
-      setButtonText("Login");
-      setButtonPageTo("/login");
-    }
-
-    // The pages where the buttons are gray
-    const grayButtonPagesPatterns = ["/admin/members"];
-    setIsGray(
-      grayButtonPagesPatterns.some(
-        (pattern) =>
-          matchPath(pattern, location.pathname) ||
-          sessionStorage.getItem("role") === "0"
-      )
-    );
-
-    // Set showMeetingsLink based on whether we're on the landing page
-    setShowMeetingsLink(location.pathname === "/" && !!token);
-  }, [location.pathname]);
-
-  // Handle login/logout actions
-  const handleLoginLogout = () => {
-    if (isLoggedIn) {
-      sessionStorage.removeItem("token"); // Remove the token
-      sessionStorage.removeItem("userId"); // Remove the userId
-      sessionStorage.removeItem("role"); // Remove the role
-      sessionStorage.removeItem("email"); // Remove the email
-      setIsGray(true);
-      setButtonText("Login"); // Update button text
-      setButtonPageTo("/login"); // Update button target page
-    } else {
-      setButtonText("Logout"); // Set button text to Logout
-      setButtonPageTo("/"); // Set button target to home page
-    }
+  const buttonConfig = {
+    text: isLoggedIn ? "Logout" : "Login",
+    pageTo: isLoggedIn
+      ? "/"
+      : {
+          pathname: "/login",
+          state: {
+            from: location.pathname,
+          },
+        },
   };
 
+  // useEffect manage state on location or token changes
   useEffect(() => {
-    fetchUserData();
-  }, [location.pathname]);
-
-  const privatePagePatterns = ["/user/:id", "/admin/members", "/"];
-
-  // fetching the user firstName and lastName
-  const fetchUserData = async () => {
-    const isPrivatePage = privatePagePatterns.some((pattern) =>
-      matchPath(pattern, location.pathname)
-    );
-
-    // console.log("Fetch user data:", {
-    //   isPrivatePage,
-    //   token: !!sessionStorage.getItem("token"),
-    //   userId: sessionStorage.getItem("userId"),
-    // });
-
-    if (!isPrivatePage || !sessionStorage.getItem("token")) return;
-
-    try {
-      const userId = sessionStorage.getItem("userId");
-
-      const response = await fetch(
-        `http://localhost:3007/user/profile/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data1");
+    const fetchUser = async () => {
+      if (!isLoggedIn) {
+        setIsLoading(false);
+        return;
       }
 
-      const data = await response.json(); //API returns { firstName, lastName }
-      setFirstName(data.firstName);
-      setLastName(data.lastName);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
+      try {
+        const userId = sessionStorage.getItem("userId");
+        const url = `http://localhost:3007/user/profile/${userId}`;
+
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+      setIsLoading(false);
+    };
+
+    fetchUser();
+  }, [isLoggedIn]);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    setUser(null);
   };
 
   const renderWelcomeMessage = () => {
-    // console.log("Rendering welcome message:", {
-    //   firstName,
-    //   lastName,
-    //   showMeetingsLink,
-    // });
-    if (!firstName || !lastName) return null;
+    if (!user) return null;
 
-    const role = sessionStorage.getItem("role");
+    const isAdmin = sessionStorage.getItem("role") === "0";
+    const loginOrigin = sessionStorage.getItem("loginOrigin");
+    const currentPath = location.pathname;
 
-    // If the user is admin (role === "0"), navigate to admin page
-    if (role === "0" && showMeetingsLink) {
+    // Always show welcome message for admin
+    if (isAdmin) {
+      if (currentPath === "/") {
+        return (
+          <span>
+            Welcome {user.firstName} {user.lastName}!
+            <Link to="/admin/members">CHECK your members</Link>
+          </span>
+        );
+      }
+      return null;
+    }
+
+    // For book/:meetingId path
+    if (currentPath.startsWith("/book/")) {
+      sessionStorage.setItem("loginOrigin", "booking");
       return (
         <span>
-          Welcome {firstName} {lastName}!
-          <Link to="/admin/members"> CHECK your members</Link>
+          Welcome {user.firstName} {user.lastName}!
+          <Link to={`/user/${sessionStorage.getItem("userId")}`}>
+            CHECK your meetings
+          </Link>
         </span>
       );
     }
 
-    if (showMeetingsLink) {
+    // For user/:id path -- only show if came from booking
+    if (currentPath.startsWith("/user/") && loginOrigin === "booking") {
+      const meetingId = sessionStorage.getItem("meetingId");
       return (
         <span>
-          Welcome {firstName} {lastName}!
-          <Link to={`/user/${sessionStorage.getItem("userId")}`}> CHECK</Link>{" "}
-          your meetings
+          Welcome {user.firstName} {user.lastName}!
+          <Link to={`/book/${meetingId}`}>Go back to booking</Link>
         </span>
       );
     }
-    return (
-      <span>
-        Welcome {firstName} {lastName}!
-      </span>
-    );
+
+    // Show welcome page on home page only
+    if (currentPath === "/" && !loginOrigin) {
+      return (
+        <span>
+          Welcome {user.firstName} {user.lastName}!
+          <Link to={`/user/${sessionStorage.getItem("userId")}`}>
+            Check your meetings
+          </Link>
+        </span>
+      );
+    }
+
+    // otherwise, do not show any welcome messages
+    return null;
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div id="navbar">
@@ -151,13 +142,11 @@ const NavBarContent = () => {
 
       {renderWelcomeMessage()}
       <RedButtonLink
-        pageTo={buttonPageTo}
-        text={buttonText}
-        isGray={isGray}
+        pageTo={buttonConfig.pageTo}
+        text={buttonConfig.text}
+        isGray={isGrayButton}
         isLoggedIn={isLoggedIn}
-        onLogout={handleLoginLogout}
-        setButtonText={setButtonText}
-        setButtonPageTo={setButtonPageTo}
+        onLogout={handleLogout}
       />
     </div>
   );

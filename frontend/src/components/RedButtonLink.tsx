@@ -5,14 +5,18 @@ import { faCaretLeft } from "@fortawesome/free-solid-svg-icons";
 import "../styles/RedButtonLink.scss";
 
 interface Props {
-  pageTo?: string;
+  pageTo?:
+    | string
+    | { pathname: string; state: { from: string } | { referrer: string } };
   text: string;
   goBack?: boolean;
   isGray?: boolean;
   isLoggedIn?: boolean;
   onLogout?: () => void; //used to handle logout
   setButtonText?: React.Dispatch<React.SetStateAction<string>>;
-  setButtonPageTo?: React.Dispatch<React.SetStateAction<string>>;
+  setButtonPageTo?: React.Dispatch<
+    React.SetStateAction<string | { pathname: string; state: { from: string } }>
+  >;
 }
 
 const RedButtonLink = ({
@@ -28,31 +32,47 @@ const RedButtonLink = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // back navigation
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    navigate(-2); // Default to going back by one step in the history
-  };
+    if (goBack) {
+      navigate(-1);
+      return;
+    }
 
-  // login/logout
-  const handleLoginLogout = () => {
-    if (isLoggedIn) {
-      if (onLogout) onLogout();
-      sessionStorage.removeItem("token"); //removes the token
-      if (setButtonText) setButtonText("Login");
-      if (setButtonPageTo) setButtonPageTo("/login"); // Update state here
+    if (isLoggedIn !== undefined) {
+      if (isLoggedIn) {
+        // Handle logout
+        if (onLogout) {
+          onLogout();
+        }
+        navigate("/");
+        return;
+      }
 
-      navigate("/"); //redirect to login page
+      // Handle login navigation
+      const currentPath = location.pathname;
+      navigate("/login", {
+        state: {
+          from: currentPath,
+        },
+      });
+      return;
+    }
+
+    // Handle other navigation
+    if (typeof pageTo === "object") {
+      navigate(pageTo.pathname, { state: pageTo.state });
     } else {
-      navigate("/login");
+      navigate(pageTo);
     }
   };
+
   return (
     <Link
       className={`redButton ${isGray ? "isGray" : ""}`} //add condition
       to={pageTo}
-      onClick={goBack ? handleClick : handleLoginLogout}
+      onClick={handleClick}
     >
       {goBack && <FontAwesomeIcon icon={faCaretLeft} />}
       {text}
