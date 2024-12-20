@@ -1,4 +1,5 @@
 import { MeetingAvailability, Participant, Poll } from "@shared/types/db";
+import { nextAvailability } from "./meeting";
 
 
 export const getResults = (poll: Poll) => {
@@ -40,8 +41,8 @@ export const getResults = (poll: Poll) => {
     return selectedOptions;
 };
 
-export const prepareAvailabilities = (selectedOptions: { date: string, slot: string }[]) => {
-  const availabilities: MeetingAvailability[] = [];
+export const prepareAvailabilities = (selectedOptions: { date: string, slot: string }[], endDate: string) => {
+  let availabilities: MeetingAvailability[] = [];
   const dateGroup = new Map<string, string[]>();
 
   selectedOptions.forEach((option) => {
@@ -54,14 +55,25 @@ export const prepareAvailabilities = (selectedOptions: { date: string, slot: str
   dateGroup.forEach((slots, date) => {
     availabilities.push({
       date,
-      slots: slots.reduce((acc, slot) => {
+      slots: slots.reduce((acc, slot) => { // empty slots
         acc[slot] = [];
         return acc;
       }, {} as Record<string, Participant[]>),
       max: 0
     });
   });
+
+  // check if date is in the past, update to next avaialability, if not, will be filtered out later
+  availabilities.forEach((availability) => {
+    if (new Date(availability.date) < new Date()) {
+      const next = nextAvailability(availability, 1, endDate);
+      if (next) availability.date = next.date;
+    }
+  });
+  // filter out availabilities in the past
+  availabilities = availabilities.filter((availability) => new Date(availability.date) >= new Date());
   availabilities.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
   return availabilities;
 }
     

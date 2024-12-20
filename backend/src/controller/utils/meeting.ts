@@ -56,7 +56,7 @@ export const nextAvailability = (availability: MeetingAvailability, mult: number
   let nextDate = new Date(`${date}T00:00:00`);
   nextDate.setDate(nextDate.getDate() + mult * 7);
 
-  // check if nextDate is still in the past
+  // check if nextDate is still in the past, then find on in future
   if (nextDate < new Date()) {
     const dayOfWeek = nextDate.getDay(); // get day of week (0-6)
     nextDate = new Date();
@@ -133,23 +133,36 @@ export const updateFutureAvailabilities = async (meeting: Meeting) => {
 }
 
 export const isValidAvailabilities = (availabilities: MeetingAvailability[]) => {
-  // Check for empty slots
-  const emptySlots = availabilities.every((availability) => 
-    Object.values(availability.slots).every((slots) => slots.length === 0)
-  );
+  if (!availabilities) return { isValid: false, message: "No availabilities provided" };
+  // check for empty availabilities
+  const atLeastOne = availabilities.length > 0;
+  // check for availabilities with no slots
+  const noEmptyAvailabilities = availabilities.every((availability) => Object.values(availability.slots).length > 0);
+  // check for empty slots, will not allow if update, so commented out
+  // const noEmptySlots = availabilities.every((availability) => 
+  //   Object.values(availability.slots).every((slots) => slots.length === 0)
+  // );
 
-  // Check for duplicate dates
+  // check for duplicate dates
   const dates = availabilities.map(a => a.date);
   const uniqueDates = new Set(dates);
   const noDuplicates = dates.length === uniqueDates.size;
 
   // check if all dates are in the future
   const allFutureDates = availabilities.every((availability) => {
+    if (Object.values(availability.slots).length === 0) return true; // is not this error
     const latestStartTime = Object.keys(availability.slots).at(-1)!.split("-")[0];
     return new Date(`${availability.date}T${latestStartTime}:00`) > new Date();
   });
 
-  return emptySlots && noDuplicates && allFutureDates;
+  let message = "";
+  if (!atLeastOne) message += "At least one availability is required.\n";
+  if (!noEmptyAvailabilities) message += "No empty availabilities allowed.\n";
+  // if (!noEmptySlots) message += "No empty slots allowed.\n";
+  if (!noDuplicates) message += "No duplicate dates allowed.\n";
+  if (!allFutureDates) message += "All dates must be in the future.\n";
+
+  return { isValid: atLeastOne && noEmptyAvailabilities && noDuplicates && allFutureDates, message };
 }
 
 export const isValidUserId = (userId: string | undefined) => {
