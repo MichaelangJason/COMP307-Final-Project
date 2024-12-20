@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 
@@ -13,39 +12,58 @@ interface Card {
   location: string;
   person: string;
 }
-const userId = sessionStorage.getItem("userId");
 
 const Meetings = () => {
   const [cards, setCards] = useState<Card[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Filter
   const [filter, setFilter] = useState("All");
   // Pop up
   const [showPopup, setShowPopup] = useState(false); // Control popup visibility
   const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
+  const userId = sessionStorage.getItem("userId");
+
   useEffect(() => {
     //only fetch if userId is available
-    if (!userId) return;
+    if (!userId) {
+      setError("No user ID found");
+      setIsLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       try {
-        const response = await fetch(
-          `http://localhost:3007/user/profile/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-          }
-        );
+        console.log("Fetching data for userId:", userId);
+        const url = `http://localhost:3007/user/profile/${userId}`;
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
+
         const userData = await response.json();
+        console.log("Received user data:", userData);
+
+        if (!userData.upcomingMeetings) {
+          throw new Error("No meetings data found");
+        }
 
         const meetings = userData.upcomingMeetings.map((meeting: any) => {
+          console.log("Processing meeting:", meeting);
+
           // create start and end time Date
           const currentTime = new Date();
           const startTime = new Date(
@@ -74,9 +92,15 @@ const Meetings = () => {
           };
         });
 
+        console.log("Processed meetings:", meetings);
         setCards(meetings);
       } catch (error) {
         console.error("Error fetching meetings:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to fetch meetings"
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -89,74 +113,64 @@ const Meetings = () => {
     return card.status === filter;
   });
 
+  console.log("Filtered cards:", filteredCards);
+
   // handle meeting deletion
   const handleDelete = async () => {
-    if (selectedCard) {
-      try {
-        const [date, time] = selectedCard.dateTime.split(" ");
-        const slot = time;
+    if (!selectedCard) return;
 
-        const responseName = await fetch(
-          `http://localhost:3007/user/profile/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-          }
-        );
+    try {
+      const [date, time] = selectedCard.dateTime.split(" ");
 
-        if (!responseName.ok) {
-          throw new Error("Failed to fetch user data1");
-        }
+      const url_to_load_userData = `http://localhost:3007/user/profile/${userId}`;
 
-        const Name = await responseName.json(); //API returns { firstName, lastName }
+      const responseName = await fetch(url_to_load_userData, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
 
-        // Log the request payload for debugging
-        console.log("Request payload:", {
-          firstName: Name.firstName,
-          lastName: Name.lastName,
-          // userId: userId,
+      if (!responseName.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+
+      const userData = await responseName.json(); //API returns { firstName, lastName }
+
+      const url_to_delete_card = `http://localhost:3007/meeting/unbook/${selectedCard.id}`;
+
+      const response = await fetch(url_to_delete_card, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+
+        body: JSON.stringify({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          userId: userId,
           email: sessionStorage.getItem("email"),
           date: date,
-          slot: slot,
-        });
+          slot: time,
+        }),
+      });
 
-        const response = await fetch(
-          `http://localhost:3007/meeting/unbook/${selectedCard.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-
-            body: JSON.stringify({
-              firstName: Name.firstName,
-              lastName: Name.lastName,
-              userId: userId,
-              email: sessionStorage.getItem("email"),
-              date: date,
-              slot: slot,
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error("Failed to delete meeting");
-        }
-
-        // Remove the meeting from the Array
-        setCards((prevCards) =>
-          prevCards.filter((card) => card.id !== selectedCard.id)
-        );
-        setShowPopup(false);
-        setSelectedCard(null);
-      } catch (error) {
-        console.error("Error deleting meeting:", error);
+      if (!response.ok) {
+        throw new Error("Failed to delete meeting");
       }
+
+      // Remove the meeting from the Array
+      setCards((prevCards) =>
+        prevCards.filter((card) => card.id !== selectedCard.id)
+      );
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to delete meeting"
+      );
     }
   };
 
@@ -170,75 +184,44 @@ const Meetings = () => {
     setSelectedCard(null);
   };
 
+  if (isLoading) return <div>Loading meetings...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <>
       <h1>Meetings to Participate</h1>
       <div className="meetings-page">
         <div className="card-list">
-          {filteredCards.map((card, index) => (
-            <MeetingCard
-              key={index}
-              title={card.title}
-              status={card.status}
-              dateTime={card.dateTime}
-              location={card.location}
-              person={card.person}
-              canEdit={false} //Added
-              onDelete={() => handleShowPopup(card)}
-            />
-          ))}
+          {filteredCards.length > 0 ? (
+            filteredCards.map((card) => (
+              <MeetingCard
+                key={card.id}
+                title={card.title}
+                status={card.status}
+                dateTime={card.dateTime}
+                location={card.location}
+                person={card.person}
+                canEdit={false}
+                onDelete={() => handleShowPopup(card)}
+              />
+            ))
+          ) : (
+            <div>No meetings found</div>
+          )}
         </div>
         <div className="filter-options">
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="All"
-              checked={filter === "All"}
-              onChange={() => setFilter("All")}
-            />
-            All
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="Upcoming"
-              checked={filter === "Upcoming"}
-              onChange={() => setFilter("Upcoming")}
-            />
-            Upcoming
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="Live"
-              checked={filter === "Live"}
-              onChange={() => setFilter("Live")}
-            />
-            Live
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="Closed"
-              checked={filter === "Closed"}
-              onChange={() => setFilter("Closed")}
-            />
-            Closed
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="Canceled"
-              checked={filter === "Canceled"}
-              onChange={() => setFilter("Canceled")}
-            />
-            Canceled
-          </label>
+          {["All", "Upcoming", "Live", "Closed", "Canceled"].map((option) => (
+            <label key={option}>
+              <input
+                type="radio"
+                name="filter"
+                value={option}
+                checked={filter === option}
+                onChange={() => setFilter(option)}
+              />
+              {option}
+            </label>
+          ))}
         </div>
       </div>
 
