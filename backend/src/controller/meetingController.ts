@@ -196,6 +196,11 @@ const create = async (req: MeetingCreateRequest, res: MeetingCreateResponse) => 
   let pollId: ObjectId | null = null;
   if (pollInfo) {
     const [_, days, hours, mins] = pollInfo.timeout.match(/(\d+)d(\d+)h(\d+)m/) || [];
+    
+    if (!days || !hours || !mins) {
+      res.status(400).json({ message: "Invalid poll timeout" });
+      return;
+    }
     now = new Date();
 
     const pollTimeout = new Date();
