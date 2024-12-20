@@ -109,12 +109,12 @@ const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<
 
 const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Promise<void> => {
     try {
-        if (!ObjectId.isValid(req.params.pollId)) {
-            res.status(400).json({ message: "Invalid pollId" });
+        console.log("Updating poll votes for: ", req.params.meetingId);
+        if (!ObjectId.isValid(req.params.meetingId)) {
+            res.status(400).json({ message: "Invalid meetingId" });
             return;
         }
 
-        const pollId = new ObjectId(req.params.pollId);
         const { date, slot } = req.body;
 
         if (!date || !slot) {
@@ -122,6 +122,14 @@ const updatePollVotes = async (req: PollVoteRequest, res: PollVoteResponse): Pro
             return;
         }
 
+        const meetingCollection = await getCollection<Meeting>(CollectionNames.MEETING);
+        const meeting = await meetingCollection.findOne({ _id: new ObjectId(req.params.meetingId) } as any);
+        if (!meeting) {
+            res.status(404).json({ message: "Corresponding meeting not found" });
+            return;
+        }
+
+        const pollId = meeting.pollId;
         const pollsCollection = await getCollection<Poll>(CollectionNames.POLL);
         const poll = await pollsCollection.findOne({ _id: pollId });
         if (!poll) {

@@ -5,9 +5,6 @@ import { PollOption } from "../db/poll";
 export interface PollParams {
   meetingId: string;
 }
-export interface PollVoteParams {
-  pollId: string;
-}
 
 // get poll
 export interface PollGetResponse {

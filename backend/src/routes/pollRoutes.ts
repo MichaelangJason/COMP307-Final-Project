@@ -6,6 +6,6 @@ const pollRouter = express.Router();
 
 pollRouter.get('/:meetingId', pollController.getPollVotes);
 // pollRouter.post('/', privateMiddleware, pollController.createPoll);
-pollRouter.put('/:pollId', pollController.updatePollVotes);
+pollRouter.put('/:meetingId', pollController.updatePollVotes);
 
 export default pollRouter;
