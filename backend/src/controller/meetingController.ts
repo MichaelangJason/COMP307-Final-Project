@@ -61,7 +61,7 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   }
 
   // does not check if meeting has ended/voting, only checks if it is upcoming
-  if (meeting.status === MeetingStatus.UPCOMING && isClosed(meeting)) {
+  if (meeting.status !== MeetingStatus.CLOSED && isClosed(meeting)) {
     meeting.status = MeetingStatus.CLOSED;
     await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
   }
@@ -69,29 +69,40 @@ const getInfo = async (req: MeetingRequest, res: MeetingResponse) => {
   // check if meeting is voting and if poll has ended
   if (meeting.status === MeetingStatus.VOTING) {
     const poll = await getDocument<Poll>(CollectionNames.POLL, meeting.pollId!);
+
     if (!poll) {
       res.status(500).json({ message: "Poll not found" });
       return;
     }
+
     if (poll.timeout < new Date()) {
       meeting.status = MeetingStatus.UPCOMING;
       const selectedOptions = getResults(poll);
-      let availabilities = prepareAvailabilities(selectedOptions);
-      availabilities.forEach((availability) => {
-        availability.max = meeting.availabilities.find((a) => a.date === availability.date)?.max || 1;
-      });
-      meeting.availabilities = availabilities;
+      let availabilities = prepareAvailabilities(selectedOptions, meeting.repeat.endDate);
 
-      // actually this is passing the reference, should not need to do this
-      if (meeting.repeat.type === MeetingRepeat.WEEKLY) {
-        meeting.availabilities = await pushFutureAvailabilities(meeting.availabilities, meeting.repeat.endDate);
+      if (availabilities.length === 0) { // WEEKLY meeting, no future availabilities possible
+        meeting.status = MeetingStatus.CLOSED;
+        await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, updatedAt: new Date() } });
+
+      } else {
+        // update max number of participants for each availability slot
+        availabilities.forEach((availability) => {
+          availability.max = meeting.availabilities.find((a) => a.date === availability.date)?.max || 1;
+        });
+        meeting.availabilities = availabilities;
+
+        // actually this is passing the reference, should not need to do this
+        if (meeting.repeat.type === MeetingRepeat.WEEKLY) {
+          meeting.availabilities = await pushFutureAvailabilities(meeting.availabilities, meeting.repeat.endDate);
+        }
+
+        // update meeting, remove other availabilities
+        await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, availabilities: meeting.availabilities, updatedAt: new Date() } });
+        
+        const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
+        console.log(upcomingMeetings);
+        await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
       }
-
-      // update meeting, remove other availabilities
-      await updateMeeting(meeting._id.toString(), { $set: { status: meeting.status, availabilities, updatedAt: new Date() } });
-      
-      const upcomingMeetings: UpcomingMeeting[] = createUpcomingMeetings(meeting.availabilities, meeting, host);
-      await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { $push: { upcomingMeetings: { $each: upcomingMeetings } } } as any);
     }
   }
 

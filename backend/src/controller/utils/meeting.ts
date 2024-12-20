@@ -56,7 +56,7 @@ export const nextAvailability = (availability: MeetingAvailability, mult: number
   let nextDate = new Date(`${date}T00:00:00`);
   nextDate.setDate(nextDate.getDate() + mult * 7);
 
-  // check if nextDate is still in the past
+  // check if nextDate is still in the past, then find on in future
   if (nextDate < new Date()) {
     const dayOfWeek = nextDate.getDay(); // get day of week (0-6)
     nextDate = new Date();
