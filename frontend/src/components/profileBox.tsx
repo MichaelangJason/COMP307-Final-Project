@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../styles/profileCard.scss";
 import profilepic from "../images/profilepic.png";
+import { UserGetResponse } from "@shared/types/api/user";
 
 const ProfileBox: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ const ProfileBox: React.FC = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`
           },
         });
 
@@ -24,7 +26,7 @@ const ProfileBox: React.FC = () => {
           throw new Error("Failed to fetch user data");
         }
 
-        const data = await response.json();
+        const data: UserGetResponse = await response.json();
         setFirstName(data.firstName);
         setLastName(data.lastName);
         setUserId(id);
@@ -55,6 +57,7 @@ const ProfileBox: React.FC = () => {
 };
 
 export default ProfileBox;
+
 
 
 
