@@ -32,6 +32,7 @@ const BookMeeting = () => {
   const [isRequestAlt, setIsRequestAlt] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<VerifyResponse | null>(null);
   const [hostId, setHostId] = useState<VerifyResponse | null>(null);
+  const [meetingTitle, setMeetingTitle] = useState<string>("");
 
   const token = sessionStorage.getItem("token");
 
@@ -78,6 +79,7 @@ const BookMeeting = () => {
       .then((data) => {
         setHostId(data.hostId);
         setAvailabilities(data.availabilities);
+        setMeetingTitle(data.title);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
@@ -234,7 +236,7 @@ const BookMeeting = () => {
   return (
     <div id="bookMeeting">
       <div className="bookContent">
-        <h1>Booking for COMP307 - office hour</h1>
+        <h1>Booking for {meetingTitle}</h1>
         <div className="formContainer">
           <div className="calendarForm">
             <Calendar
