@@ -206,7 +206,10 @@ const Meetings = () => {
               />
             ))
           ) : (
-            <div>No meetings found</div>
+            <div>
+              No meetings found. Please host a meeting on the CREAT page or book
+              a meeting with a booking link provided by the host.
+            </div>
           )}
         </div>
         <div className="filter-options">
