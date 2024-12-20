@@ -250,8 +250,8 @@ const Meetings = () => {
               <p>
                 {selectedCard.status === "Upcoming" && (
                   <p>
-                    Warning: Deleting self-hosting upcoming meetings will cancel
-                    the meeting for all the registered participants.
+                    Warning: Deleting upcoming meetings will cancel the meeting
+                    for all the registered participants.
                   </p>
                 )}
               </p>
