@@ -345,6 +345,11 @@ const update = async (req: MeetingUpdateRequest, res: MeetingUpdateResponse) => 
     res.status(403).json({ message: "You are not authorized to update this meeting" });
     return;
   }
+
+  if (req.body.availabilities && !isValidAvailabilities(req.body.availabilities)) {
+    res.status(400).json({ message: "Invalid availabilities" });
+    return;
+  }
   
   const update: UpdateFilter<Meeting> = { $set: { 
     ...req.body,
