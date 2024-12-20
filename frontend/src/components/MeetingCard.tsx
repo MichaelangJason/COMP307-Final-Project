@@ -1,9 +1,9 @@
-import React, { useState } from "react";
 import bin_icon from "../images/bin.png";
 import clock_icon from "../images/clock.png";
 import location_icon from "../images/location.png";
 import person_icon from "../images/person.png";
 import edit_icon from "../images/edit.png";
+import clipboard_icon from "../images/clipboard.png";
 import "../styles/MeetingCard.scss";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
   person: string;
   canEdit?: boolean;
   onDelete?: () => void; //Callback fct
+  onCopy?: () => void;
 }
 
 const MeetingCard = ({
@@ -24,19 +25,36 @@ const MeetingCard = ({
   person,
   canEdit = false,
   onDelete,
+  onCopy,
 }: Props) => {
   return (
     <div className="meetingCard">
       <div className="card-title">
         <h2>{title}</h2>
-        <button onClick={onDelete}>
-          {" "}
-          {/* This triggers the delete action */}
-          <img
-            src={canEdit ? edit_icon : bin_icon} // Change the icon based on canEdit
-            alt={canEdit ? "Edit Icon" : "Bin Icon"}
-          ></img>
-        </button>
+        <div className="card-actions">
+          {canEdit ? (
+            <>
+              <button
+                onClick={onCopy}
+                className="action-button"
+                title="Copy booking link"
+              >
+                <img src={clipboard_icon} alt="Copy booking link" />
+              </button>
+              <button
+                onClick={onDelete}
+                className="action-button"
+                title="Edit meeting"
+              >
+                <img src={edit_icon} alt="Edit Meeting" />
+              </button>
+            </>
+          ) : (
+            <button onClick={onDelete} className="action-button">
+              <img src={bin_icon} alt="Delete" />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className={`card-status ${status}`}>{status}</div>

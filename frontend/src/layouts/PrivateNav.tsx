@@ -6,8 +6,6 @@ import { useState } from "react";
 
 const PrivateNav = () => {
   const [isNavVisible, setIsNavVisible] = useState(false);
-  // Welcome message
-  const [userName, setUserName] = useState<string | null>(null);
 
   // Extract /user/:id from the URL
   const { id } = useParams<{ id: string }>();

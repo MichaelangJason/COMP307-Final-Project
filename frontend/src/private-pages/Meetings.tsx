@@ -182,7 +182,7 @@ const Meetings = () => {
     setSelectedCard(null);
   };
 
-  // Clear Error Message Display to user
+  // Display Error Messages to user
   const getNoMeetingsMessage = (filter: string) => {
     switch (filter) {
       case "Upcoming":

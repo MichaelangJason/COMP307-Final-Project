@@ -174,6 +174,19 @@ const Manage = () => {
     }
   };
 
+  const handleCopy = (card: Card) => {
+    const bookingLink = `http://localhost:3000/book/${card.meetingId}`;
+    navigator.clipboard
+      .writeText(bookingLink)
+      .then(() => {
+        alert("Booking link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+        alert("Failed to copy booking link");
+      });
+  };
+
   if (isLoading) return <div>Loading meetings...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -193,6 +206,7 @@ const Manage = () => {
                 person={card.person}
                 canEdit={true}
                 onDelete={() => handleEdit(card)}
+                onCopy={() => handleCopy(card)}
               />
             ))
           ) : (
