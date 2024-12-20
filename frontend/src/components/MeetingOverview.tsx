@@ -1,6 +1,6 @@
 import { Meeting } from "@shared/types/db/meeting";
 import { useCallback, useEffect, useState } from "react";
-
+import { MeetingRepeat } from "statusEnum";
 import "../styles/MeetingOverview.scss";
 
 interface Props {

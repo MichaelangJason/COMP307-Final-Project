@@ -32,16 +32,26 @@
     display: flex;
     justify-content: space-between;
     padding-top: 4px;
+    align-items: center;
 
     h2 {
       margin: 0;
       font-size: 1.25rem;
       font-weight: bold;
     }
-    button {
+    .action-button {
       background: none;
       border: none;
       cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
 
       img {
         width: 20px;
@@ -58,20 +68,20 @@
     width: fit-content;
     color: colors.$white;
 
-    &.upcoming {
+    &.Upcoming {
       background-color: colors.$brightRed;
     }
 
-    &.live {
+    &.Live {
       background-color: colors.$green;
     }
 
-    &.closed {
+    &.Closed {
       background-color: colors.$mediumGray;
     }
 
-    &.canceled,
-    &.voting {
+    &.Canceled,
+    &.Voting {
       background-color: colors.$yellow;
     }
   }

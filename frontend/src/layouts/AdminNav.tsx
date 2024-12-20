@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import NavBarContent from "./NavBarContent";
 import "../styles/AdminNav.scss";

@@ -36,7 +36,7 @@ const Profile: React.FC = () => {
         const data: UserGetResponse = await response.json();
         const { email, notifications } = data;
 
-        // setup state
+      
         setEmail(email);
         setNotification(notifications.email ? "email" : notifications.sms ? "sms" : "deactivate");
         setAlarm(notifications.alarm || AlarmInterval.MINUTE_30);

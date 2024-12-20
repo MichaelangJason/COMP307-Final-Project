@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { PollInfo } from "@shared/types/api/meeting";
 import { MeetingRepeat } from "statusEnum";
 import "../styles/CreateSt.scss";
@@ -39,6 +39,7 @@ const CreateElements: React.FC<CreateElementsProps> = ({
         <div>
           <label>Once</label>
           <input
+            defaultChecked={true}
             className="radioInput"
             type="radio"
             name="frequency"
