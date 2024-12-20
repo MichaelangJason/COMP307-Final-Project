@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
 
-import { MeetingStatus } from "../statusEnum";
-
 interface Card {
   id: string;
   title: string;
