@@ -67,13 +67,9 @@ const MeetingPoll = () => {
         }
         return res.json();
       })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          const errorMessage = data.message || "Something went wrong";
-          throw new Error(errorMessage);
-        }
-        return data;
+      .then((data) => {
+        setMeetingId(data.meetingId);
+        setPollOptions(data.options);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);

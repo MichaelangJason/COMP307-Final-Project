@@ -8,7 +8,7 @@ interface Props {
   toChoose?: boolean;
 }
 
-const Poll = ({pollContent, toChoose = false }: Props) => {
+const Poll = ({ pollContent, toChoose = false }: Props) => {
   const pollWinners = pollContent?.map((option) => {
     const [maxSlot] = Object.entries(option.slots).reduce(
       ([currentSlot, currentVotes], [slot, votes]) =>
@@ -37,6 +37,7 @@ const Poll = ({pollContent, toChoose = false }: Props) => {
               date={datetime.date}
               toChoose={toChoose}
               isRed={
+                !toChoose &&
                 pollWinners.find((poll) => poll.date === datetime.date)
                   ?.winningSlot === time
               }
