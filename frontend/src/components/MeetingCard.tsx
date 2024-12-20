@@ -39,7 +39,7 @@ const MeetingCard = ({
         </button>
       </div>
 
-      <div className={`card-status ${status.toLowerCase()}`}>{status}</div>
+      <div className={`card-status ${status}`}>{status}</div>
 
       <div className="card-description">
         <div className="card-info">
