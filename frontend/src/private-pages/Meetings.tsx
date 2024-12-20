@@ -182,6 +182,22 @@ const Meetings = () => {
     setSelectedCard(null);
   };
 
+  // Clear Error Message Display to user
+  const getNoMeetingsMessage = (filter: string) => {
+    switch (filter) {
+      case "Upcoming":
+        return "No upcoming meetings. You can book a meeting with a booking link provided by the host.";
+      case "Live":
+        return "No live meetings at the moment. Check back during your scheduled meeting time.";
+      case "Closed":
+        return "No closed meetings found in your history.";
+      case "Canceled":
+        return "No canceled meetings found in your history.";
+      default:
+        return "No meetings found. Please host a meeting on the CREATE page or book a meeting with a booking link provided by the host.";
+    }
+  };
+
   if (isLoading) return <div>Loading meetings...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -204,10 +220,7 @@ const Meetings = () => {
               />
             ))
           ) : (
-            <div>
-              No meetings found. Please host a meeting on the CREAT page or book
-              a meeting with a booking link provided by the host.
-            </div>
+            <div>{getNoMeetingsMessage(filter)}</div>
           )}
         </div>
         <div className="filter-options">
