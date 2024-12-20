@@ -5,10 +5,10 @@ import "../styles/TimeStamp.scss";
 interface Props {
   time: string;
   onDelete: () => void;
-  readOnly: boolean;
+  readOnly?: boolean;
 }
 
-const TimeStamp = ({ time, onDelete, readOnly }: Props) => {
+const TimeStamp = ({ time, onDelete, readOnly = false }: Props) => {
   return (
     <div className="timeStamp">
       {time}

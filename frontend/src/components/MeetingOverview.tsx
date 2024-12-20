@@ -17,11 +17,13 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
     await fetch(url, {
       method: "GET",
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then((data) => {
         setMeetingInfo(data);
@@ -49,6 +51,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
           type="text"
           name="title"
           defaultValue={meetingInfo?.title}
+          required
         />
       </div>
       <div>
@@ -62,6 +65,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
           }
           name="description"
           defaultValue={meetingInfo?.description}
+          required
         />
       </div>
       <div className="frequency">
@@ -77,6 +81,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
             type="radio"
             name="frequency"
             value={0}
+            required
           />
         </div>
         <div>
@@ -107,6 +112,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
             type="text"
             name="end"
             defaultValue={meetingInfo?.repeat.endDate}
+            required
           />
         </div>
       </div>

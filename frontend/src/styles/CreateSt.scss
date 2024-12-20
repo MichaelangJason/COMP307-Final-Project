@@ -41,12 +41,11 @@
       height: 30px;
     }
     .result input {
-      background-color: colors.$white; 
+      background-color: colors.$white;
     }
     .mn input {
-      background-color: colors.$white; 
+      background-color: colors.$white;
     }
-
   }
 
   @media (max-width: 1000px) {
@@ -56,15 +55,7 @@
   .timeSlotsContainer {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px; 
+    gap: 10px;
     justify-content: flex-start;
   }
-
-  
-  
-
-
- 
-
-  
 }

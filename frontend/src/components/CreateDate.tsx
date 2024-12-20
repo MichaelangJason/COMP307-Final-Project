@@ -1,10 +1,22 @@
+import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
-import 'react-calendar/dist/Calendar.css'; // Import default calendar styles
-import "../styles/CreateDates.scss";
-import { useState, useEffect } from "react";
-import TimeSlot from "./TimeSlot";
+
+import { Meeting } from "@shared/types/db/meeting";
+import { MeetingRepeat } from "@shared/types/api/common";
+import TimeStamp from "./TimeStamp";
+import "../styles/MeetingDate.scss";
+
+interface Props {
+  availabilities: Meeting["availabilities"] | null;
+  setAvailabilities: React.Dispatch<
+    React.SetStateAction<Meeting["availabilities"] | null>
+  >;
+  selectedDate: Date;
+  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+}
 
 const predefinedTimeSlots: Array<string> = [];
 for (let hour = 0; hour < 24; hour++) {
@@ -15,125 +27,165 @@ for (let hour = 0; hour < 24; hour++) {
   }
 }
 
-const CreateDate = () => {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+const CreateDate = ({
+  availabilities,
+  setAvailabilities,
+  selectedDate,
+  setSelectedDate,
+}: Props) => {
   const [startTimeIndex, setStartTimeIndex] = useState<number>(0);
   const [endTimeIndex, setEndTimeIndex] = useState<number>(1);
-  const [selectedTimes, setSelectedTimes] = useState<[number, number][]>([]);
-  const [selectedDateTimes, setSelectedDateTimes] = useState<
-    {
-      date: string;
-      times: [number, number][];
-    }[]
-  >([]);
-
-  useEffect(() => {
-    if (endTimeIndex <= startTimeIndex) {
-      setEndTimeIndex(startTimeIndex + 1);
-    }
-  }, [startTimeIndex]);
-
-  useEffect(() => {
-    if (selectedDate) {
-      const foundDateTimes = selectedDateTimes.find(dt => dt.date === selectedDate);
-      if (foundDateTimes) {
-        setSelectedTimes(foundDateTimes.times);
-      } else {
-        setSelectedTimes([]);
-      }
-    }
-  }, [selectedDate, selectedDateTimes]);
+  const [maxParticipants, setMaxParticipants] = useState<string>("");
 
   const handleDateChange = (date: Date) => {
-    setSelectedDate(date.toISOString().split("T")[0]);
+    setSelectedDate(date);
   };
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStartTimeIndex = Number(e.target.value);
-    setStartTimeIndex(newStartTimeIndex);
-
-    if (endTimeIndex <= newStartTimeIndex) {
-      setEndTimeIndex(newStartTimeIndex + 1);
-    }
+    setStartTimeIndex(Number(e.target.value));
   };
 
   const handleEndTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setEndTimeIndex(Number(e.target.value));
   };
 
-  const handleAddTimeStamp = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    newTimeIndices: [number, number]
+  const handleAddTimeStamp = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    time: string
   ) => {
     e.preventDefault();
-  
-    if (!selectedDate || newTimeIndices[0] >= newTimeIndices[1]) return;
-  
-    setSelectedDateTimes((prevDateTimes) => {
-      const updatedDateTimes = prevDateTimes.map((dt) =>
-        dt.date === selectedDate
-          ? { ...dt, times: [...dt.times, newTimeIndices] }
-          : dt
-      );
-  
-      if (!updatedDateTimes.some((dt) => dt.date === selectedDate)) {
-        updatedDateTimes.push({
-          date: selectedDate,
-          times: [newTimeIndices],
-        });
-      }
-  
-      return updatedDateTimes;
-    });
-  
-    setSelectedTimes((prevTimes) => [...prevTimes, newTimeIndices]);
-  };
-  
 
-  const handleDeleteTimeStamp = (index: number) => {
-    setSelectedTimes((prevTimes) => {
-      const updatedTimes = prevTimes.filter((_, i) => i !== index);
-  
-      setSelectedDateTimes((prevDateTimes) =>
-        prevDateTimes
-          .map((dt) =>
-            dt.date === selectedDate
-              ? { ...dt, times: dt.times.filter((_, i) => i !== index) }
-              : dt
-          )
-          .filter((dt) => dt.times.length > 0)
-      );
-  
-      return updatedTimes;
-    });
-  };
-  
-
-  const tileClassName = ({ date, view }: { date: Date, view: string }) => {
-    if (view === 'month' && selectedDateTimes.some(dt => dt.date === date.toISOString().split("T")[0])) {
-      return 'highlight';
+    if (!selectedDate) {
+      return;
     }
-    return null;
+
+    const selectedAvailability = availabilities?.find(
+      (a) => a.date === selectedDate.toLocaleDateString("en-CA")
+    );
+
+    if (selectedAvailability !== undefined) {
+      const updatedSlots = { ...selectedAvailability.slots, [time]: [] };
+
+      setAvailabilities((prevAvailabilities) =>
+        (prevAvailabilities || []).map((availability) =>
+          availability.date === selectedAvailability.date
+            ? { ...availability, slots: updatedSlots }
+            : availability
+        )
+      );
+    } else {
+      setAvailabilities((prevAvailabilities) => [
+        ...(prevAvailabilities || []),
+        {
+          date: selectedDate.toLocaleDateString("en-CA"),
+          slots: { [time]: [] },
+          max: Number(maxParticipants),
+        },
+      ]);
+    }
   };
+
+  const confirmDeleteTimeStamp = async (time?: string) => {
+    const selectedAvailability = availabilities?.find(
+      (a) => a.date === selectedDate.toLocaleDateString("en-CA")
+    );
+
+    if (selectedAvailability !== undefined) {
+      const updatedSlots = Object.fromEntries(
+        Object.entries(selectedAvailability.slots).filter(
+          ([key]) => key !== time
+        )
+      );
+
+      if (Object.keys(updatedSlots).length === 0) {
+        setAvailabilities((prevAvailabilities) =>
+          (prevAvailabilities || []).filter(
+            (availability) => availability.date !== selectedAvailability.date
+          )
+        );
+      }
+
+      setAvailabilities((prevAvailabilities) =>
+        (prevAvailabilities || []).map((availability) =>
+          availability.date === selectedAvailability.date
+            ? { ...availability, slots: updatedSlots }
+            : availability
+        )
+      );
+    }
+  };
+
+  const handleParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+
+    setMaxParticipants(val);
+
+    if (val.trim() === "") return;
+
+    let numericVal = parseInt(val, 10);
+
+    if (isNaN(numericVal)) {
+      return;
+    }
+
+    if (numericVal < 1) {
+      setMaxParticipants("1");
+      numericVal = 1;
+      return;
+    }
+
+    if (!isNaN(numericVal)) {
+      const selectedAvailability = availabilities?.find(
+        (a) => a.date === selectedDate.toLocaleDateString("en-CA")
+      );
+
+      if (selectedAvailability) {
+        setAvailabilities((prevAvailabilities) =>
+          (prevAvailabilities || []).map((availability) =>
+            availability.date === selectedAvailability.date
+              ? { ...availability, max: numericVal }
+              : availability
+          )
+        );
+      }
+    }
+  };
+
+  const isGreenDate = (date: Date) => {
+    const formattedDate = date.toLocaleDateString("en-CA").split("T")[0];
+
+    return availabilities
+      ?.map((a) => a.date)
+      .filter((date) => date !== selectedDate.toLocaleDateString("en-CA"))
+      .includes(formattedDate);
+  };
+
+  useEffect(() => {
+    const selectedAvailability = availabilities?.find(
+      (data) => data.date === selectedDate.toLocaleDateString("en-CA")
+    );
+    if (selectedAvailability) {
+      setMaxParticipants(selectedAvailability.max.toString());
+    } else {
+      setMaxParticipants("1");
+    }
+  }, [availabilities, selectedDate]);
 
   return (
     <div className="meetingDate roundShadowBorder">
       <div className="col1">
         <label>Select a Date</label>
         <Calendar
+          value={selectedDate}
           calendarType="gregory"
           onChange={(value, _) => handleDateChange(value as Date)}
-          tileClassName={tileClassName}
+          tileClassName={({ date }) => (isGreenDate(date) ? "green-tile" : "")}
         />
       </div>
       <div className="col2">
         <div>
           <label>Location:</label>
-          <input
-            className="textInput"
-            type="text"
-            name="location"
-          />
+          <input className="textInput" name="location" required />
         </div>
         <div className="startEndTime">
           <div className="timeSelectContainer">
@@ -144,7 +196,7 @@ const CreateDate = () => {
               onChange={handleStartTimeChange}
             >
               {predefinedTimeSlots.map((timeSlot, index) => (
-                <option key={index} value={index}>{timeSlot}</option>
+                <option value={index}>{timeSlot}</option>
               ))}
             </select>
           </div>
@@ -157,7 +209,7 @@ const CreateDate = () => {
             >
               {predefinedTimeSlots.map((timeSlot, index) => {
                 if (index > startTimeIndex) {
-                  return <option key={index} value={index}>{timeSlot}</option>;
+                  return <option value={index}>{timeSlot}</option>;
                 } else {
                   return null;
                 }
@@ -167,29 +219,39 @@ const CreateDate = () => {
           <button
             className={selectedDate ? "icon" : "icon readOnly"}
             onClick={(e) =>
-              handleAddTimeStamp(e, [startTimeIndex, endTimeIndex])
+              handleAddTimeStamp(
+                e,
+                `${predefinedTimeSlots[startTimeIndex]}-${
+                  predefinedTimeSlots[
+                    Math.max(endTimeIndex, startTimeIndex + 1)
+                  ]
+                }`
+              )
             }
           >
             <FontAwesomeIcon icon={faCirclePlus} />
           </button>
         </div>
-        <div className="timeSlotsContainer">
-          {selectedTimes.map((timeIndices, index) => (
-            <TimeSlot
-              key={index}
-              start={predefinedTimeSlots[timeIndices[0]]}
-              end={predefinedTimeSlots[timeIndices[1]]}
-              onDelete={() => handleDeleteTimeStamp(index)}
+        <div className="timeStampsContainer">
+          {Object.keys(
+            availabilities?.find(
+              (data) => data.date === selectedDate.toLocaleDateString("en-CA")
+            )?.slots ?? {}
+          ).map((slot) => (
+            <TimeStamp
+              key={slot}
+              time={slot}
+              onDelete={() => confirmDeleteTimeStamp(slot)}
             />
           ))}
         </div>
-        <div className="participantsNumber">
-          <label>Max Participants Number per Time Slot:</label>
+        <div className="participantsNumberInput">
+          <label>Max Participants Number:</label>
           <input
-            type="number"
-            min={0}
+            value={maxParticipants}
+            type="text"
             className="textInput"
-            name="participants"
+            onChange={handleParticipantsChange}
           />
         </div>
       </div>
@@ -198,21 +260,3 @@ const CreateDate = () => {
 };
 
 export default CreateDate;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

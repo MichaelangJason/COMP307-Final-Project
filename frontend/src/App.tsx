@@ -16,6 +16,9 @@ import Edit from "private-pages/Edit";
 import AdminNav from "layouts/AdminNav";
 import Members from "admin-pages/Members";
 import MeetingPoll from "private-pages/MeetingPoll";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 const App = () => {
   return (

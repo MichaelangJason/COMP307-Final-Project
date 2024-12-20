@@ -1,61 +1,157 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { useNavigate, useParams } from "react-router-dom";
 import CreateDate from "../components/CreateDate";
 import CreateElements from "../components/CreateElements";
 import "../styles/CreateSt.scss";
-import CreateButton from "../components/CreateButton";
 import Modal from "react-modal";
+import { PollInfo } from "@shared/types/api/meeting";
+import { Meeting } from "@shared/types/db/meeting";
+import { MeetingRepeat } from "statusEnum";
+import SubmitButton from "components/SubmitButton";
 
-const Create = () => {
+const Create: React.FC = () => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const hostId = params.id;
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [createMsg, msg] = useState<string>("");
-  const [isPollRequired, ppoll] = useState<boolean>(false);
-  const [timeoutInput, setTimeoutInput] = useState<string>("");
+  const [isPollRequired, setIsPollRequired] = useState<boolean>(false);
+  const [timeoutInput, setTimeoutInput] = useState<PollInfo["timeout"]>("");
+  const [availabilities, setAvailabilities] = useState<
+    Meeting["availabilities"] | null
+  >(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const navigate = useNavigate();  
+  const token = sessionStorage.getItem("token");
 
- 
-  const openModal = () => {
-    msg("Are you sure that you want to create the meeting?");
-    setIsModalOpen(true);
+  const [storedFormData, setStoredFormData] = useState<Record<string, any>>({});
+
+  const handleSubmit = async () => {
+    if (!availabilities || availabilities.length === 0) {
+      setIsModalOpen(false);
+      alert("No availabilities selected");
+      return;
+    }
+
+    const url = `http://localhost:3007/meeting/${hostId}`;
+
+    const formObject = { ...storedFormData };
+
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formObject),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
+        }
+        return data;
+      })
+      .then(() => {
+        setIsModalOpen(false);
+        navigate(`/user/${hostId}/manage`);
+      })
+      .catch((err) => {
+        console.error("Error occurred:", err.message);
+        setIsModalOpen(false);
+        alert(`Error: ${err.message}`);
+      });
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
- 
-  const clickCreate = (event: React.FormEvent) => {
-    event.preventDefault();
-    openModal();
-  };
+  const clickCreate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  
-  const previousPage = () => {
-    navigate(-1);
+    const formData = new FormData(e.currentTarget);
+
+    const formObject: Record<string, string> = {};
+    const repeatKeys: Record<string, string | MeetingRepeat> = {};
+    const pollInfoKeys: Record<string, string | number> = {};
+
+    formData.forEach((value, key) => {
+      if (key === "frequency") {
+        repeatKeys["type"] = Number(value);
+        return;
+      }
+      if (key === "end") {
+        repeatKeys["endDate"] = value as string;
+        return;
+      }
+      if (key === "rs") {
+        if (isPollRequired) {
+          pollInfoKeys["results"] = Number(value);
+          return;
+        } else {
+          return;
+        }
+      } else if (key === "tm") {
+        if (isPollRequired) {
+          pollInfoKeys["timeout"] = value as string;
+          return;
+        } else {
+          return;
+        }
+      }
+      formObject[key] = value as string;
+    });
+
+    const finalData = isPollRequired
+      ? {
+          ...formObject,
+          repeat: repeatKeys,
+          pollInfo: pollInfoKeys,
+          availabilities,
+        }
+      : {
+          ...formObject,
+          repeat: repeatKeys,
+          availabilities,
+        };
+
+    console.log(finalData, availabilities);
+
+    setStoredFormData(finalData);
+    openModal();
   };
 
   return (
     <>
       <h1 style={{ marginBottom: "5px" }}>Create Meeting</h1>
-      <form id="edit" onSubmit={clickCreate}>
+      <form id="edit-create" onSubmit={clickCreate}>
         <CreateElements
-        ppoll={ppoll}  
-          setTimeoutInput={setTimeoutInput} 
+          isPollRequired={isPollRequired}
+          setIsPollRequired={setIsPollRequired}
+          setTimeoutInput={setTimeoutInput}
         />
-        <CreateDate />
-        <CreateButton
-          className="submitButton"
-          value="Create"
-          onSubmit={clickCreate}
+        <CreateDate
+          availabilities={availabilities}
+          setAvailabilities={setAvailabilities}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
         />
+        <div className="buttons">
+          <SubmitButton value="Create" className="submitButton" />
+        </div>
       </form>
 
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
-        contentLabel="Form"
+        contentLabel="Confirm Delete"
+        className="deleteModal"
         style={{
           overlay: {
             display: "flex",
@@ -66,69 +162,28 @@ const Create = () => {
           content: {
             textAlign: "center",
             maxWidth: "488px",
-            maxHeight: "215px",
             margin: "auto",
             padding: "20px",
           },
         }}
       >
-        <p
-          style={{
-            fontFamily: "Helvetica, sans-serif",
-            fontWeight: "500px",
-            marginTop: "9px",
-            fontSize: "18px",
-          }}
-        >
-          {createMsg}
-        </p>
-
-        {/* extra info */}
+        <h2>Confirm Creation</h2>
         {isPollRequired ? (
-          <p>This will create a poll that ends in {timeoutInput}</p>
+          <p>This will create a poll that ends in {timeoutInput}.</p>
         ) : (
           <p>This will be created directly without a poll.</p>
         )}
-
-        <button
-          onClick={closeModal}
-          className="cancelButton"
-          style={{
-            marginRight: "185px",
-            marginTop: "74px",
-            backgroundColor: "#d9d9d9",
-            borderRadius: "5px",
-            fontFamily: '"Roboto", Helvetica, Arial, sans-serif',
-            border: "none",
-            color: "#ffffff",
-            fontWeight: "bold",
-            padding: "10px 20px",
-          }}
-        >
-          Cancel
-        </button>
-
-        <button
-          onClick={previousPage}  
-          className="createButton"
-          style={{
-            backgroundColor: "#ed1b2f",
-            borderRadius: "5px",
-            fontFamily: '"Roboto", Helvetica, Arial, sans-serif',
-            border: "none",
-            color: "#ffffff",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            marginLeft: "-25px",
-          }}
-        >
-          Create
-        </button>
+        <div className="modalButtons">
+          <SubmitButton
+            className="cancel"
+            value="Cancel"
+            onClick={closeModal}
+          />
+          <SubmitButton value="Create" onClick={handleSubmit} />
+        </div>
       </Modal>
     </>
   );
 };
 
 export default Create;
-
-

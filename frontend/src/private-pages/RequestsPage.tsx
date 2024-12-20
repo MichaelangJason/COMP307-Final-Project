@@ -24,11 +24,13 @@ const RequestsPage = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then((data) => {
         setRequests(data.requests);

@@ -38,11 +38,12 @@ const MeetingPoll = () => {
           body: JSON.stringify({ date, slot: time }),
         });
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
+        const data = await res.json();
 
-        await res.json();
+        if (!res.ok) {
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
+        }
       } catch (err) {
         const error = err as Error;
         console.error("Error occurred:", error.message);
@@ -66,9 +67,13 @@ const MeetingPoll = () => {
         }
         return res.json();
       })
-      .then((data) => {
-        setMeetingId(data.meetingId);
-        setPollOptions(data.options);
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
+        }
+        return data;
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);

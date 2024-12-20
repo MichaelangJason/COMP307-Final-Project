@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { MeetingUpdateBody } from "@shared/types/api/meeting";
 import { Meeting, Participant } from "@shared/types/db/meeting";
 import { MeetingRepeat, MeetingStatus } from "../statusEnum";
 import MeetingOverview from "components/MeetingOverview";
@@ -16,6 +15,7 @@ const Edit = () => {
   const navigate = useNavigate();
   const params = useParams();
   const meetingId = params.meetingid;
+  const hostId = params.id;
 
   const [availabilities, setAvailabilities] = useState<
     Meeting["availabilities"] | null
@@ -35,11 +35,13 @@ const Edit = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then((data) => {
         setAvailabilities(data.availabilities);
@@ -53,7 +55,7 @@ const Edit = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (availabilities?.length === 0) {
+    if (!availabilities || availabilities?.length === 0) {
       alert("No availabilities selected");
       return;
     }
@@ -87,19 +89,20 @@ const Edit = () => {
       },
       body: JSON.stringify(finalData),
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then(() => {
-        alert("Submitted!");
-        navigate(-1);
+        navigate(`/user/${hostId}/manage`);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
-        alert("An error occurred. Please try again.");
+        alert(`Error: ${err.message}`);
       });
   };
 
@@ -120,12 +123,11 @@ const Edit = () => {
         return res.status === 204 ? null : res.json();
       })
       .then(() => {
-        alert("Deleted!");
-        navigate(-1);
+        navigate(`/user/${hostId}/manage`);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
-        alert("An error occurred. Please try again.");
+        alert(`Error: ${err.message}`);
       });
   };
 
@@ -152,7 +154,7 @@ const Edit = () => {
   return (
     <>
       <h1 style={{ marginBottom: "5px" }}>Edit Meeting</h1>
-      <form id="edit" onSubmit={handleSubmit}>
+      <form id="edit-create" onSubmit={handleSubmit}>
         <MeetingOverview
           isModify={meetingInfo?.status !== MeetingStatus.VOTING}
           meetingId={meetingId}

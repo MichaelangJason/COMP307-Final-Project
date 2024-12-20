@@ -140,15 +140,17 @@ const MeetingDate = ({
         },
         body: JSON.stringify(formObject),
       })
-        .then((res) => {
+        .then(async (res) => {
+          const data = await res.json();
           if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
+            const errorMessage = data.message || "Something went wrong";
+            throw new Error(errorMessage);
           }
-          return res.json();
+          return data;
         })
         .catch((err) => {
           console.error("Error occurred:", err.message);
-          alert("An error occurred. Please try again.");
+          alert(`Error: ${err.message}`);
         });
     }
     setIsModalOpen(false);
@@ -162,7 +164,18 @@ const MeetingDate = ({
 
     if (val.trim() === "") return;
 
-    const numericVal = parseInt(val, 10);
+    let numericVal = parseInt(val, 10);
+
+    if (isNaN(numericVal)) {
+      return;
+    }
+
+    if (numericVal < 1) {
+      setMaxParticipants("1");
+      numericVal = 1;
+      return;
+    }
+
     if (!isNaN(numericVal)) {
       const selectedAvailability = availabilities?.find(
         (a) => a.date === selectedDate.toLocaleDateString("en-CA")
@@ -206,7 +219,7 @@ const MeetingDate = ({
     if (selectedAvailability) {
       setMaxParticipants(selectedAvailability.max.toString());
     } else {
-      setMaxParticipants("");
+      setMaxParticipants("1");
     }
   }, [availabilities, selectedDate]);
 
@@ -229,6 +242,7 @@ const MeetingDate = ({
             className={readOnly ? "grayInput textInput" : "textInput"}
             name="location"
             defaultValue={meetingInfo?.location}
+            required
           />
         </div>
         <div className="startEndTime">

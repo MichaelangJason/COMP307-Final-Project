@@ -44,18 +44,20 @@ const RequestAccordion = ({
       },
       body: JSON.stringify({ status: RequestStatus.ACCEPTED }),
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then(() => {
         onDecision();
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
-        alert("An error occurred. Please try again.");
+        alert(`Error: ${err.message}`);
       });
   };
 
@@ -70,18 +72,20 @@ const RequestAccordion = ({
       },
       body: JSON.stringify({ status: RequestStatus.DECLINED }),
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then(() => {
         onDecision();
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
-        alert("An error occurred. Please try again.");
+        alert(`Error: ${err.message}`);
       });
   };
 

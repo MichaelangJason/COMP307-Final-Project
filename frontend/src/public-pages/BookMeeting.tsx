@@ -45,11 +45,13 @@ const BookMeeting = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then((data) => {
         setUserInfo(data);
@@ -59,39 +61,22 @@ const BookMeeting = () => {
       });
   }, [token]);
 
-  const fetchHostId = useCallback(async () => {
+  const fetchMeetinInfo = useCallback(async () => {
     const url = `http://localhost:3007/meeting/${id}`;
 
     await fetch(url, {
       method: "GET",
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
+          const errorMessage = data.message || "Something went wrong";
+          throw new Error(errorMessage);
         }
-        return res.json();
+        return data;
       })
       .then((data) => {
         setHostId(data.hostId);
-      })
-      .catch((err) => {
-        console.error("Error occurred:", err.message);
-      });
-  }, [id]);
-
-  const fetchAvailabilities = useCallback(async () => {
-    const url = `http://localhost:3007/meeting/${id}`;
-
-    await fetch(url, {
-      method: "GET",
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
         setAvailabilities(data.availabilities);
       })
       .catch((err) => {
@@ -142,18 +127,20 @@ const BookMeeting = () => {
         },
         body: JSON.stringify(finalData),
       })
-        .then((res) => {
+        .then(async (res) => {
+          const data = await res.json();
           if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
+            const errorMessage = data.message || "Something went wrong";
+            throw new Error(errorMessage);
           }
-          return res.json();
+          return data;
         })
         .then(() => {
           alert("Submitted!");
         })
         .catch((err) => {
           console.error("Error occurred:", err.message);
-          alert("An error occurred. Please try again.");
+          alert(`Error: ${err.message}`);
         });
     } else {
       const participantInfo: Record<string, string> = {};
@@ -184,18 +171,20 @@ const BookMeeting = () => {
         },
         body: JSON.stringify(finalData),
       })
-        .then((res) => {
+        .then(async (res) => {
+          const data = await res.json();
           if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
+            const errorMessage = data.message || "Something went wrong";
+            throw new Error(errorMessage);
           }
-          return res.json();
+          return data;
         })
         .then(() => {
           alert("Submitted!");
         })
         .catch((err) => {
           console.error("Error occurred:", err.message);
-          alert("An error occurred. Please try again.");
+          alert(`Error: ${err.message}`);
         });
     }
   };
@@ -239,9 +228,8 @@ const BookMeeting = () => {
 
   useEffect(() => {
     fetchUserInfo();
-    fetchAvailabilities();
-    fetchHostId();
-  }, [fetchAvailabilities, fetchHostId, fetchUserInfo]);
+    fetchMeetinInfo();
+  }, [fetchMeetinInfo, fetchUserInfo]);
 
   return (
     <div id="bookMeeting">
