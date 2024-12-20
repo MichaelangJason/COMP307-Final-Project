@@ -7,7 +7,6 @@ import { CollectionNames } from "./constants";
 import { PollGetRequest, PollGetResponse, PollVoteRequest, PollVoteResponse } from "./types/poll";
 import { getMeeting, updateMeeting } from "./utils/meeting";
 import { MeetingStatus } from "../utils/statusEnum";
-import { getResults } from "./utils/poll";
 
 const createPoll = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -59,23 +58,33 @@ const createPoll = async (req: Request, res: Response): Promise<void> => {
 
 const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<void> => {
     try {
-        const pollId = new ObjectId(req.params.pollId);
+        if (!ObjectId.isValid(req.params.meetingId)) {
+            res.status(400).json({ message: "Invalid meetingId" });
+            return;
+        }
+        
+        const meetingId = new ObjectId(req.params.meetingId);
+
+        const meetingCollection = await getCollection<Meeting>(CollectionNames.MEETING);
+        const meeting = await meetingCollection.findOne({ _id: meetingId } as any);
+        if (!meeting) {
+            res.status(404).json({ message: "Corresponding meeting not found" });
+            return;
+        }
 
         const pollsCollection = await getCollection<Poll>(CollectionNames.POLL);
-        const poll = await pollsCollection.findOne({ _id: pollId } as any);
+        const poll = await pollsCollection.findOne({ _id: meeting.pollId } as any);
 
         if (!poll) {
             res.status(404).json({ message: "Poll not found" });
             return;
         }
         
-        const results = getResults(poll);
-        
         // Check if the poll has expired
         if (poll.timeout < new Date()) {
             let meeting = await getMeeting(poll.meetingId.toString());
             if (!meeting) {
-                await pollsCollection.deleteOne({ _id: pollId });
+                await pollsCollection.deleteOne({ _id: meetingId });
                 res.status(404).json({ message: "Meeting not found, poll deleted" });
                 return;
             }
