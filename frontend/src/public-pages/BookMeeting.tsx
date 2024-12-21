@@ -37,7 +37,7 @@ const BookMeeting = () => {
   const token = sessionStorage.getItem("token");
 
   const fetchUserInfo = useCallback(async () => {
-    const url = `http://localhost:3007/login`;
+    const url = `${(window as any).backendURL}login`;
 
     await fetch(url, {
       method: "GET",
@@ -63,7 +63,7 @@ const BookMeeting = () => {
   }, [token]);
 
   const fetchMeetinInfo = useCallback(async () => {
-    const url = `http://localhost:3007/meeting/${id}`;
+    const url = `${(window as any).backendURL}meeting/${id}`;
 
     await fetch(url, {
       method: "GET",
@@ -120,7 +120,7 @@ const BookMeeting = () => {
         },
       };
 
-      const url = `http://localhost:3007/request/${hostId}`;
+      const url = `${(window as any).backendURL}request/${hostId}`;
 
       await fetch(url, {
         method: "POST",
@@ -157,6 +157,7 @@ const BookMeeting = () => {
         }
       });
 
+
       const finalData = {
         ...formObject,
         participantInfo,
@@ -164,7 +165,11 @@ const BookMeeting = () => {
         date: selectedDate.toLocaleDateString("en-CA"),
       };
 
-      const url = `http://localhost:3007/meeting/book/${id}`;
+      if (userInfo && userInfo.userId) {
+        (finalData as any).userId = userInfo.userId;
+      }
+
+      const url = `${(window as any).backendURL}meeting/book/${id}`;
 
       await fetch(url, {
         method: "PUT",

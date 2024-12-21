@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { PollInfo } from "@shared/types/api/meeting";
-import { MeetingRepeat } from "statusEnum";
 import "../styles/CreateSt.scss";
 
 interface CreateElementsProps {

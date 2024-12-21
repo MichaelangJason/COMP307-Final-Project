@@ -30,7 +30,7 @@ const LogIn = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const url = "http://localhost:3007/login";
+      const url = `${(window as any).backendURL}login`;
 
       const response = await fetch(url, {
         method: "POST",

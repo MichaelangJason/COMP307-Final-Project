@@ -19,7 +19,7 @@ const AdminNav = () => {
       const fetchEmail = async () => {
         try {
           const response = await fetch(
-            `http://localhost:3007/user/profile/${id}`,
+            `${(window as any).backendURL}user/profile/${id}`,
             {
               method: "GET",
               headers: {

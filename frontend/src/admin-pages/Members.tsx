@@ -37,7 +37,7 @@ const Members = () => {
       setError(null);
 
       try {
-        const url = "http://localhost:3007/admin/members";
+        const url = `${(window as any).backendURL}admin/members`;
 
         const response = await fetch(url, {
           method: "GET",
@@ -111,7 +111,7 @@ const Members = () => {
     if (selectedCard) {
       try {
         const response = await fetch(
-          `http://localhost:3007/admin/members/${selectedCard.id}`,
+          `${(window as any).backendURL}admin/members/${selectedCard.id}`,
           { method: "DELETE" }
         );
         if (response.ok) {

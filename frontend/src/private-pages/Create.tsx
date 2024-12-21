@@ -33,7 +33,7 @@ const Create: React.FC = () => {
       return;
     }
 
-    const url = `http://localhost:3007/meeting/${hostId}`;
+    const url = `${(window as any).backendURL}meeting/${hostId}`;
 
     const formObject = { ...storedFormData };
 

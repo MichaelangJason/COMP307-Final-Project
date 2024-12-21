@@ -26,7 +26,7 @@ const Edit = () => {
   const token = sessionStorage.getItem("token");
 
   const fetchMeetingInfo = useCallback(async () => {
-    const url = `http://localhost:3007/meeting/${meetingId}`;
+    const url = `${(window as any).backendURL}meeting/${meetingId}`;
 
     await fetch(url, {
       method: "GET",
@@ -60,7 +60,7 @@ const Edit = () => {
       return;
     }
 
-    const url = `http://localhost:3007/meeting/${meetingId}`;
+    const url = `${(window as any).backendURL}meeting/${meetingId}`;
 
     const formData = new FormData(e.currentTarget);
 
@@ -112,7 +112,7 @@ const Edit = () => {
   };
 
   const handleDelete = async () => {
-    const url = `http://localhost:3007/meeting/${meetingId}`;
+    const url = `${(window as any).backendURL}meeting/${meetingId}`;
 
     await fetch(url, {
       method: "DELETE",
@@ -128,6 +128,7 @@ const Edit = () => {
         return res.status === 204 ? null : res.json();
       })
       .then(() => {
+        alert("Meeting deleted successfully");
         navigate(`/user/${hostId}/manage`);
       })
       .catch((err) => {

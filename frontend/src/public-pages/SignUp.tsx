@@ -27,7 +27,7 @@ const SignUp = () => {
 
     // POST request
     try {
-      const response = await fetch("http://localhost:3007/register", {
+      const response = await fetch(`${(window as any).backendURL}register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

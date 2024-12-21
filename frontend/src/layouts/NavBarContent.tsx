@@ -45,7 +45,7 @@ const NavBarContent = () => {
 
       try {
         const userId = sessionStorage.getItem("userId");
-        const url = `http://localhost:3007/user/profile/${userId}`;
+        const url = `${(window as any).backendURL}user/profile/${userId}`;
 
         const response = await fetch(url, {
           headers: {

@@ -34,7 +34,7 @@ const RequestAccordion = ({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const handleApprove = async () => {
-    const url = `http://localhost:3007/request/${requestId}`;
+    const url = `${(window as any).backendURL}request/${requestId}`;
 
     await fetch(url, {
       method: "PUT",
@@ -62,7 +62,7 @@ const RequestAccordion = ({
   };
 
   const handleDecline = async () => {
-    const url = `http://localhost:3007/request/${requestId}`;
+    const url = `${(window as any).backendURL}request/${requestId}`;
 
     await fetch(url, {
       method: "PUT",

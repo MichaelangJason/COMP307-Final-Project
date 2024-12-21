@@ -1,6 +1,5 @@
 import { Meeting } from "@shared/types/db/meeting";
 import { useCallback, useEffect, useState } from "react";
-import { MeetingRepeat } from "statusEnum";
 import "../styles/MeetingOverview.scss";
 
 interface Props {
@@ -13,7 +12,7 @@ const MeetingOverview = ({ meetingId = null, isModify = false }: Props) => {
   const [isRecurring, setIsRecurring] = useState(false);
 
   const fetchMeetingInfo = useCallback(async () => {
-    const url = `http://localhost:3007/meeting/${meetingId}`;
+    const url = `${(window as any).backendURL}meeting/${meetingId}`;
 
     await fetch(url, {
       method: "GET",

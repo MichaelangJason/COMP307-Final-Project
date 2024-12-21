@@ -38,7 +38,7 @@ const Meetings = () => {
 
       try {
         console.log("Fetching data for userId:", userId);
-        const url = `http://localhost:3007/user/profile/${userId}`;
+        const url = `${(window as any).backendURL}user/profile/${userId}`;
 
         const response = await fetch(url, {
           method: "GET",
@@ -120,7 +120,7 @@ const Meetings = () => {
     try {
       const [date, time] = selectedCard.dateTime.split(" ");
 
-      const url_to_load_userData = `http://localhost:3007/user/profile/${userId}`;
+      const url_to_load_userData = `${(window as any).backendURL}user/profile/${userId}`;
 
       const responseName = await fetch(url_to_load_userData, {
         method: "GET",
@@ -136,7 +136,7 @@ const Meetings = () => {
 
       const userData = await responseName.json(); //API returns { firstName, lastName }
 
-      const url_to_delete_card = `http://localhost:3007/meeting/unbook/${selectedCard.id}`;
+      const url_to_delete_card = `${(window as any).backendURL}meeting/unbook/${selectedCard.id}`;
 
       const response = await fetch(url_to_delete_card, {
         method: "PUT",

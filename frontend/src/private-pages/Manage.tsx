@@ -51,7 +51,7 @@ const Manage = () => {
       }
 
       try {
-        const url_fetch_user_profile = `http://localhost:3007/user/profile/${userId}`;
+        const url_fetch_user_profile = `${(window as any).backendURL}user/profile/${userId}`;
 
         const response = await fetch(url_fetch_user_profile, {
           method: "GET",
@@ -77,7 +77,7 @@ const Manage = () => {
           userData.hostedMeetings.map(async (meetingId: string) => {
             console.log("Fetching meeting:", meetingId);
 
-            const url = `http://localhost:3007/meeting/${meetingId}`;
+            const url = `${(window as any).backendURL}meeting/${meetingId}`;
 
             const meetingResponse = await fetch(url, {
               method: "GET",
@@ -99,7 +99,7 @@ const Manage = () => {
             console.log("Meeting status converted:", statusString);
 
             // Fetch host details
-            const url_fetch_host_info = `http://localhost:3007/user/profile/${meeting.hostId}`;
+            const url_fetch_host_info = `${(window as any).backendURL}user/profile/${meeting.hostId}`;
 
             const hostResponse = await fetch(url_fetch_host_info, {
               method: "GET",
@@ -175,7 +175,7 @@ const Manage = () => {
   };
 
   const handleCopy = (card: Card) => {
-    const bookingLink = `http://localhost:3000/book/${card.meetingId}`;
+    const bookingLink = `${(window as any).frontendURL}/book/${card.meetingId}`;
     navigator.clipboard
       .writeText(bookingLink)
       .then(() => {

@@ -15,7 +15,7 @@ const RequestsPage = () => {
   const [requests, setRequests] = useState<Request[]>([]);
 
   const fetchRequests = useCallback(async () => {
-    const url = `http://localhost:3007/user/requests/${id}`;
+    const url = `${(window as any).backendURL}user/requests/${id}`;
 
     await fetch(url, {
       method: "GET",

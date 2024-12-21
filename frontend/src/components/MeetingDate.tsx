@@ -125,7 +125,7 @@ const MeetingDate = ({
     }
 
     if (timeToDelete !== null) {
-      const url = `http://localhost:3007/meeting/cancel/${meetingInfo?.meetingId}`;
+      const url = `${(window as any).backendURL}meeting/cancel/${meetingInfo?.meetingId}`;
 
       const formObject = {
         date: selectedDate.toLocaleDateString("en-CA"),

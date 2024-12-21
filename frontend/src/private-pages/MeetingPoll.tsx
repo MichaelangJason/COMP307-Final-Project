@@ -1,8 +1,6 @@
 import MeetingOverview from "components/MeetingOverview";
 import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-
-import { Meeting } from "@shared/types/db/meeting";
 import { Poll as PollType } from "@shared/types/db/poll";
 import "../styles/MeetingPoll.scss";
 
@@ -11,15 +9,15 @@ import SubmitButton from "components/SubmitButton";
 
 const MeetingPoll = () => {
   const params = useParams();
-  const pollId = params.id;
+  const meetingId = params.id;
 
-  const [meetingId, setMeetingId] = useState<Meeting["_id"] | null>(null);
+  // const [meetingId, setMeetingId] = useState<Meeting["_id"] | null>(null);
   const [pollOptions, setPollOptions] = useState<PollType["options"]>([]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const url = `http://localhost:3007/poll/${pollId}`;
+    const url = `${(window as any).backendURL}poll/${meetingId}`;
 
     const formData = new FormData(e.currentTarget);
 
@@ -56,7 +54,7 @@ const MeetingPoll = () => {
   };
 
   const fetchPollInfo = useCallback(async () => {
-    const url = `http://localhost:3007/poll/${pollId}`;
+    const url = `${(window as any).backendURL}poll/${meetingId}`;
 
     await fetch(url, {
       method: "GET",
@@ -68,13 +66,14 @@ const MeetingPoll = () => {
         return res.json();
       })
       .then((data) => {
-        setMeetingId(data.meetingId);
+        // setMeetingId(data.meetingId);
+        // setPollId(data.pollId);
         setPollOptions(data.options);
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
       });
-  }, [pollId]);
+  }, [meetingId]);
 
   useEffect(() => {
     fetchPollInfo();

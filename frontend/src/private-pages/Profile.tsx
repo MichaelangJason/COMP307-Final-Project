@@ -22,7 +22,7 @@ const Profile: React.FC = () => {
     const fetchData = async () => {
       if (!id) return;
       try {
-        const response = await fetch(`http://localhost:3007/user/profile/${id}`, {
+        const response = await fetch(`${(window as any).backendURL}user/profile/${id}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -94,7 +94,7 @@ const Profile: React.FC = () => {
         };
       }
 
-      const response = await fetch(`http://localhost:3007/user/profile/${id}`, {
+      const response = await fetch(`${(window as any).backendURL}user/profile/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json', 
@@ -108,7 +108,7 @@ const Profile: React.FC = () => {
         setEditMode(false);
         setNewPassword("");
 
-        const data = await fetch(`http://localhost:3007/user/profile/${id}`).then(res => res.json());
+        const data = await fetch(`${(window as any).backendURL}user/profile/${id}`).then(res => res.json());
         setEmail(data.email);
         setPassword(data.password);
         setNotification(data.notifications.method);
