@@ -59,7 +59,7 @@ const Members = () => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          memberSince: "yyyy-mm-dd", //Not found in the backend
+          memberSince: user.createdAt, //Not found in the backend
         }));
 
         console.log("Formatted cards:", formattedCards); // Debug log
