@@ -1,3 +1,5 @@
+// Han Wen Fu
+
 import PollOption from "./PollOption";
 
 import { Poll as PollType } from "@shared/types/db/poll";
