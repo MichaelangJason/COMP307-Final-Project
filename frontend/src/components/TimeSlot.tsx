@@ -11,11 +11,13 @@ interface Props {
 const TimeSlot = ({ start, end, onDelete }: Props) => {
   return (
     <div className="timeSlot">
-      <span>{start} - {end}</span>
-      <FontAwesomeIcon 
-        icon={faTimesCircle} 
-        className="fa-times-circle" 
-        onClick={onDelete} 
+      <span>
+        {start} - {end}
+      </span>
+      <FontAwesomeIcon
+        icon={faTimesCircle}
+        className="fa-times-circle"
+        onClick={onDelete}
       />
     </div>
   );

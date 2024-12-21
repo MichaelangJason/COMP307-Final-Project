@@ -1,3 +1,5 @@
+// Han Wen Fu
+
 import deleteIcon from "../images/red_x.png";
 
 import "../styles/TimeStamp.scss";

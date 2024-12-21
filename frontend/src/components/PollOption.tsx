@@ -1,3 +1,5 @@
+// Han Wen Fu
+
 import { PollOption as PollOptionType } from "@shared/types/db/poll";
 import "../styles/PollOption.scss";
 

@@ -1,3 +1,5 @@
+// Han Wen Fu
+
 import { Participant } from "@shared/types/db/meeting";
 import bin from "../images/bin.png";
 
