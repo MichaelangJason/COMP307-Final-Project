@@ -1,7 +1,32 @@
 # Prerequisites
 
-We are using Chrome as our navigation tool. 
-Connect to https://fall2024-comp307-group07.cs.mcgill.ca/ 
+## To run it locally
+
+### Environment Setup:
+
+Install Node.js (v14+ recommended).
+
+Ensure your database (e.g., MongoDB or PostgreSQL) is running and properly configured.
+
+### Repository Setup:
+
+Clone the repository: git clone git@github.com:MichaelangJason/COMP307-Final-Project.git
+Install dependencies for both client and server applications (cd to both frontend and backend): npm install
+
+### Configuration:
+
+Set up the .env file with required environment variables if not already exist:
+
+
+MONGO_URI=mongodb://localhost:27017/Bookedin
+JWT_SECRET=blue-bacon-stole-jamies-key
+
+### Start the server: npm start
+
+Visit your browser with your localhost port
+
+API Documentation in ./backend/README.md
+
 
 ## Technologies Used:
 
@@ -57,31 +82,3 @@ View all website members and their details.
 Access and manage individual member pages by clicking on their profile.
 Edit member information as needed.
 
-
-## To run it locally
-
-### Environment Setup:
-
-Install Node.js (v14+ recommended).
-
-Ensure your database (e.g., MongoDB or PostgreSQL) is running and properly configured.
-
-### Repository Setup:
-
-Clone the repository: git clone git@github.com:MichaelangJason/COMP307-Final-Project.git
-Install dependencies for both client and server applications (cd to both frontend and backend): npm install
-
-### Configuration:
-
-Set up the .env file with required environment variables if not already exist:
-
-
-MONGO_URI=mongodb://localhost:27017/Bookedin
-JWT_SECRET=blue-bacon-stole-jamies-key
-
-### Start the server: npm start
-
-Visit your browser with your localhost port
-
-
-API Documentation in ./backend/README.md
