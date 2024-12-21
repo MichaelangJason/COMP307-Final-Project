@@ -309,6 +309,21 @@ const deleteMeeting = async (req: MeetingDeleteRequest, res: MeetingDeleteRespon
     return;
   }
 
+  // remove all upcomingMeetings that match this meetingId
+  try {
+    await updateOneDocument<User>(CollectionNames.USER, meeting.hostId, { 
+      $pull: { 
+        upcomingMeetings: { 
+          meetingId: new ObjectId(meetingId) 
+        } 
+      } 
+    } as any);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to remove meeting references from host" });
+    return;
+  }
+
   // cancel for every participant
   const { availabilities } = meeting;
 
