@@ -3,13 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { Meeting, Participant } from "@shared/types/db/meeting";
 import { MeetingRepeat, MeetingStatus } from "../statusEnum";
-import MeetingOverview from "components/MeetingOverview";
-import MeetingDate from "components/MeetingDate";
-import MeetingParticipants from "components/MeetingParticipants";
-import Poll from "components/Poll";
+import MeetingOverview from "../components/MeetingOverview";
+import MeetingDate from "../components/MeetingDate";
+import MeetingParticipants from "../components/MeetingParticipants";
+import Poll from "../components/Poll";
 
 import "../styles/Edit.scss";
-import SubmitButton from "components/SubmitButton";
+import SubmitButton from "../components/SubmitButton";
 
 const Edit = () => {
   const navigate = useNavigate();

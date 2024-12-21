@@ -1,11 +1,11 @@
-import MeetingOverview from "components/MeetingOverview";
+import MeetingOverview from "../components/MeetingOverview";
 import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { Poll as PollType } from "@shared/types/db/poll";
 import "../styles/MeetingPoll.scss";
 
-import Poll from "components/Poll";
-import SubmitButton from "components/SubmitButton";
+import Poll from "../components/Poll";
+import SubmitButton from "../components/SubmitButton";
 
 const MeetingPoll = () => {
   const params = useParams();

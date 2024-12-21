@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { Request } from "@shared/types/db/request";
 import { RequestStatus } from "../../src/statusEnum";
-import RequestAccordion from "components/RequestAccordion";
+import RequestAccordion from "../components/RequestAccordion";
 import "../styles/Request.scss";
 
 const RequestsPage = () => {

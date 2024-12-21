@@ -7,7 +7,7 @@ import "react-calendar/dist/Calendar.css";
 import { MeetingAvailability } from "../../../shared/types/db/meeting";
 import { VerifyResponse } from "../../../shared/types/api/auth";
 import "../styles/BookMeeting.scss";
-import SubmitButton from "components/SubmitButton";
+import SubmitButton from "../components/SubmitButton";
 
 const predefinedTimeSlots: Array<string> = [];
 for (let hour = 0; hour < 24; hour++) {

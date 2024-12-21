@@ -6,8 +6,8 @@ import "../styles/CreateSt.scss";
 import Modal from "react-modal";
 import { PollInfo } from "@shared/types/api/meeting";
 import { Meeting } from "@shared/types/db/meeting";
-import { MeetingRepeat } from "statusEnum";
-import SubmitButton from "components/SubmitButton";
+import { MeetingRepeat } from "../statusEnum";
+import SubmitButton from "../components/SubmitButton";
 
 const Create: React.FC = () => {
   const navigate = useNavigate();
