@@ -19,7 +19,7 @@ import MeetingPoll from "private-pages/MeetingPoll";
 import Modal from "react-modal";
 
 Modal.setAppElement("#root");
-(window as any).frontendURL = "http://localhost:3000/";
+(window as any).frontendURL = "http://localhost:3000";
 (window as any).backendURL = "http://localhost:3007/"
 
 const TitleHandler = () => {
