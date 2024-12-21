@@ -27,7 +27,7 @@ const PollOption = ({
     >
       {time}
       {toChoose && (
-        <input type="radio" id={`poll${id}`} value={`${time}`} name={date} />
+        <input type="radio" id={`poll${id}`} value={`${date} ${time}`} name={"slot"} />
       )}
     </label>
   );

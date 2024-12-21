@@ -1,3 +1,4 @@
+// YuTong Wei
 import { Request, Response } from "express";
 import { Poll, PollOption } from "@shared/types/db/poll";
 import { Meeting } from "@shared/types/db/meeting";
@@ -87,10 +88,6 @@ const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<
                 await pollsCollection.deleteOne({ _id: meetingId });
                 res.status(404).json({ message: "Meeting not found, poll deleted" });
                 return;
-            }
-            if (meeting.status === MeetingStatus.VOTING) {
-                // update meeting status to Upcoming
-                await updateMeeting(meeting._id.toString(), { $set: { status: MeetingStatus.UPCOMING } });
             }
         }
 

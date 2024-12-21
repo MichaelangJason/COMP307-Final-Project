@@ -1,3 +1,4 @@
+// YuTong Wei
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "@shared/types/db/user";

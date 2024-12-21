@@ -1,3 +1,4 @@
+// Jiaju Nie, YuTong Wei
 import { Meeting, Poll, UpcomingMeeting, User } from "@shared/types/db";
 import { MeetingStatus, UserRole } from "../../utils/statusEnum";
 import { CollectionNames } from "../constants";
