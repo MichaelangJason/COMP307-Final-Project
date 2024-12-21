@@ -2,8 +2,7 @@
 
 Browser Used: Google Chrome
 
-URL to the running website:
-Is this the url: https://fall2024-comp307-group07.cs.mcgill.ca
+URL to the running website: https://fall2024-comp307-group07.cs.mcgill.ca
 
 Admin user pre-setup: 
 Email: admin@mcgill.ca 
