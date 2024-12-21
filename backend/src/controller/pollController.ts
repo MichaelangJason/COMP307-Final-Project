@@ -88,10 +88,6 @@ const getPollVotes = async (req: PollGetRequest, res: PollGetResponse): Promise<
                 res.status(404).json({ message: "Meeting not found, poll deleted" });
                 return;
             }
-            if (meeting.status === MeetingStatus.VOTING) {
-                // update meeting status to Upcoming
-                await updateMeeting(meeting._id.toString(), { $set: { status: MeetingStatus.UPCOMING } });
-            }
         }
 
         res.json({
