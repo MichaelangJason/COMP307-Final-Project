@@ -464,6 +464,10 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
       res.status(400).json({ message: "Member email does not match" });
       return;
     }
+    if (userId === meeting.hostId.toString()) {
+      res.status(400).json({ message: "Host cannot book own meeting" });
+      return;
+    }
   }
 
   console.log(time);
