@@ -25,32 +25,40 @@ const MeetingPoll = () => {
     formData.forEach((value, key) => {
       formObject[key] = value as string;
     });
+    const slot = formData.get("slot");
 
-    for (const [date, time] of Object.entries(formObject)) {
-      try {
-        const res = await fetch(url, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ date, slot: time }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          const errorMessage = data.message || "Something went wrong";
-          throw new Error(errorMessage);
-        }
-      } catch (err) {
-        const error = err as Error;
-        console.error("Error occurred:", error.message);
-        alert("An error occurred. Please try again.");
-        return;
-      }
+    if (!slot) {
+      alert("Please select a slot");
+      return;
     }
 
-    alert("Submitted!");
+    const [date, time] = (slot as any).split(" ");
+
+    try {
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date, slot: time }),
+      });
+
+      const data = await res.json();
+
+      console.log(res);
+
+      if (!res.ok) {
+        const errorMessage = data.message || "Something went wrong";
+        throw new Error(errorMessage);
+      }
+
+      alert("Voted!")
+    } catch (err) {
+      const error = err as Error;
+      console.error("Error occurred:", error.message);
+      alert("An error occurred. Please try again.");
+      return;
+    }
   };
 
   const fetchPollInfo = useCallback(async () => {
