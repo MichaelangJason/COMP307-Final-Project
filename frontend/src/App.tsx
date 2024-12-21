@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import PublicNav from "./layouts/PublicNav";
 import Home from "./public-pages/Home";
@@ -22,9 +22,33 @@ Modal.setAppElement("#root");
 (window as any).frontendURL = "https://fall2024-comp307-group07.cs.mcgill.ca";
 (window as any).backendURL = (window as any).frontendURL + "/api"
 
+const TitleHandler = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    let title = "BookedIn";
+    const names = location.pathname.split("/");
+
+    if (names.length >= 2 && names.length <= 3 && names[1] !== "") {
+      title = names[1].toUpperCase() + " | " + title;
+    } 
+    else if (names.length === 4) {
+      title = names[1].toUpperCase() + " | " + names[3].toUpperCase() + " | " + title;
+    }
+
+    console.log(names)
+    document.title = title;
+    
+  }, [location])
+
+  return null;
+}
+
+
 const App = () => {
   return (
     <BrowserRouter>
+      <TitleHandler />
       <Routes>
         <Route path="/" element={<PublicNav />}>
           <Route index element={<Home />} />
