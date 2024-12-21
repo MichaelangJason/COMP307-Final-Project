@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
+import { useParams } from "react-router-dom";
 
 interface Card {
   id: string;
@@ -22,7 +23,13 @@ const Meetings = () => {
   const [showPopup, setShowPopup] = useState(false); // Control popup visibility
   const [selectedCard, setSelectedCard] = useState<Card | null>(null); // Card to be deleted
 
-  const userId = sessionStorage.getItem("userId");
+  // const userId = sessionStorage.getItem("userId");
+  const params = useParams();
+  let userId: string | undefined | null = params.id;
+  if (!userId) {
+    userId = sessionStorage.getItem("userId");
+  }
+  const isAdmin = sessionStorage.getItem("role") === "0";
 
   useEffect(() => {
     //only fetch if userId is available

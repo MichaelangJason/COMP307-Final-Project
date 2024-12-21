@@ -8,8 +8,11 @@ import { UserGetResponse, UserProfileUpdateBody } from "@shared/types/api/user";
 import "../styles/Profile.scss";
 
 const Profile: React.FC = () => {
-  const userId = sessionStorage.getItem("userId");
-
+  const params = useParams();
+  let userId: string | undefined | null = params.id;
+  if (!userId) {
+    userId = sessionStorage.getItem("userId");
+  }
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -93,6 +96,8 @@ const Profile: React.FC = () => {
 
       if (!response.ok) throw new Error("Failed to update profile");
 
+      alert("Profile updated successfully");
+      
       setEditMode(false);
       setPasswordEditMode(false);
       setUserData((prev) => ({ ...prev, newPassword: "" }));
@@ -205,6 +210,9 @@ const Profile: React.FC = () => {
               >
                 <option value={1}>1 minute before event</option>
                 <option value={5}>5 minutes before event</option>
+                <option value={10}>10 minutes before event</option>
+                <option value={15}>15 minutes before event</option>
+                <option value={30}>30 minutes before event</option>
               </select>
             </div>
 

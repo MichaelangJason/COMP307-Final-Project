@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MeetingInfoWithHost } from "@shared/types/api/meeting";
 
 interface Card {
@@ -40,7 +40,12 @@ const Manage = () => {
   //navigate
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = sessionStorage.getItem("userId");
+  const params = useParams();
+  let userId: string | undefined | null = params.id;
+  if (!userId) {
+    userId = sessionStorage.getItem("userId");
+  }
+  const isAdmin = sessionStorage.getItem("role") === "0";
 
   useEffect(() => {
     const fetchData = async () => {
