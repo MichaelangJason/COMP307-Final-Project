@@ -3,7 +3,6 @@
 We are using Chrome as our navigation tool. 
 Connect to https://fall2024-comp307-group07.cs.mcgill.ca/ 
 
-
 ## Technologies Used:
 
 MongoDB: Stores and manages flexible data structures for services and users.
@@ -70,17 +69,19 @@ Ensure your database (e.g., MongoDB or PostgreSQL) is running and properly confi
 ### Repository Setup:
 
 Clone the repository: git clone git@github.com:MichaelangJason/COMP307-Final-Project.git
-Install dependencies for both client and server applications: npm install
+Install dependencies for both client and server applications (cd to both frontend and backend): npm install
 
 ### Configuration:
 
-Set up the .env file with required environment variables:
+Set up the .env file with required environment variables if not already exist:
 
-DATABASE_URL=<database_url>
-PORT=<port_number>
-JWT_SECRET=<your_jwt_secret>
+
+MONGO_URI=mongodb://localhost:27017/Bookedin
+JWT_SECRET=blue-bacon-stole-jamies-key
 
 ### Start the server: npm start
 
 Visit your browser with your localhost port
 
+
+API Documentation in ./backend/README.md
