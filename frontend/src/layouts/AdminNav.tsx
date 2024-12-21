@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385
+
 import { useState, useEffect } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import NavBarContent from "./NavBarContent";

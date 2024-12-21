@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385
+
 import MemberCard from "components/MemberCard";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -112,7 +114,7 @@ const Members = () => {
       try {
         const response = await fetch(
           `${(window as any).backendURL}admin/members/${selectedCard.id}`,
-          { 
+          {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
