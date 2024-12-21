@@ -112,7 +112,13 @@ const Members = () => {
       try {
         const response = await fetch(
           `${(window as any).backendURL}admin/members/${selectedCard.id}`,
-          { method: "DELETE" }
+          { 
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         if (response.ok) {
           // success deletion
