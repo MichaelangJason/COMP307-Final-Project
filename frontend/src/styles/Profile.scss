@@ -1,0 +1,236 @@
+@use "../themes/colors";
+@use "../themes/fonts";
+
+.profile-page {
+  min-width: 300px;
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 20px;
+
+  h1 {
+    margin-left: 4rem;
+    margin-top: 2rem;
+    font-family: fonts.$title;
+    color: colors.$darkRed;
+  }
+}
+
+// Profile Header Card (Top Section)
+.profile-header {
+  min-width: 280px;
+  font-size: large;
+  border: 1px solid colors.$darkGray(0, 0%, 80%);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 0px;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 0%;
+  box-shadow: 5px 5px 5px 5px hsla(0, 0%, 0%, 0.1);
+  background: colors.$white;
+
+  @media (max-width: 1080px) {
+    margin-left: 4%;
+  }
+
+  @media (max-width: 800px) {
+    margin-left: 3%;
+    width: 100%;
+  }
+
+  .profile-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+
+    .profile-image {
+      max-width: 40%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 5%;
+      margin-right: 60px;
+      margin-left: -160px;
+    }
+
+    .profile-id {
+      font-size: large;
+      text-decoration: underline;
+      margin-top: 10px;
+      margin-left: -215px;
+
+      @media (max-width: 1080px) {
+        font-size: large;
+      }
+
+      @media (max-width: 800px) {
+        font-size: small;
+      }
+
+      @media (max-width: 400px) {
+        font-size: small;
+      }
+    }
+  }
+
+  .basic-info {
+    margin-left: -140px;
+    text-align: left;
+
+    .form-group {
+      margin-bottom: 30px;
+
+      label {
+        font-family: fonts.$body;
+        margin: 0 0 8px;
+        margin-top: 13px;
+        display: block;
+      }
+
+      input {
+        display: block;
+        width: 100%;
+        padding: 2px;
+        border: 1px solid black;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 0px;
+        font-size: large;
+
+        @media (max-width: 1080px) {
+          width: 70%;
+        }
+
+        @media (max-width: 800px) {
+          width: 80%;
+          padding: 3px;
+          font-size: medium;
+        }
+      }
+    }
+  }
+}
+
+// Profile Settings Section (Bottom Section)
+.profile-settings {
+  background: colors.$white;
+  width: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  font-size: large;
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: black;
+      font-family: fonts.$body;
+    }
+
+    input,
+    select {
+      width: 50%;
+      padding: 8px 12px;
+      border: 1px solid colors.$mediumGray;
+      border-radius: 4px;
+      background-color: colors.$silverGray;
+      font-size: large;
+
+      &.editable {
+        background-color: colors.$mediumGray;
+        border-color: colors.$brightRed;
+      }
+
+      &[readOnly] {
+        cursor: not-allowed;
+      }
+    }
+    @media (max-width: 800px) {
+      font-size: small;
+    }
+  }
+
+  .password-input {
+    position: relative;
+    width: 50%;
+
+    .edit-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: colors.$darkGray;
+
+      &:hover {
+        color: colors.$brightRed;
+      }
+
+      &.active {
+        color: colors.$brightRed;
+      }
+    }
+  }
+
+  select {
+    appearance: none;
+    background: colors.$silverGray;
+    background-position: right 8px center;
+    background-size: 10px;
+    padding-right: 30px;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Buttons Container
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-right: 50%;
+
+  button {
+    padding: 16px 32px;
+    min-width: 100px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: large;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .edit-button {
+    background-color: colors.$mediumGray;
+    color: colors.$white;
+  }
+
+  .submit-button {
+    background-color: colors.$brightRed;
+    color: colors.$white;
+  }
+}
+
+// Additional utility classes
+.read-only {
+  background-color: colors.$silverGray !important;
+  cursor: not-allowed;
+}
+
+body {
+  min-width: 600px;
+}
