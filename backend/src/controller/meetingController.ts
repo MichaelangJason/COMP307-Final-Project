@@ -412,6 +412,11 @@ const book = async (req: MeetingBookRequest, res: MeetingBookResponse) => {
     return;
   }
 
+  if (meeting.status === MeetingStatus.VOTING) {
+    res.status(400).json({ message: "Meeting is in voting phase, cannot book" });
+    return;
+  }
+
   const { availabilities } = meeting;
   const availability = availabilities.find((a) => a.date === date);
 
