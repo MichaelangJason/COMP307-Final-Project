@@ -8,9 +8,9 @@ import { UserGetRequest, UserGetRequestsRequest, UserGetRequestsResponse, UserGe
 import { AdminDeleteRequest, AdminDeleteResponse, AdminGetRequest, AdminGetResponse, AdminLoginAsUserRequest, AdminLoginAsUserResponse, AdminSearchRequest, AdminSearchResponse } from "./types/admin";
 import { validatePassword } from "./authController";
 import { isAllowed, updateUpcomingMeetings } from "./utils/user";
-import { RequestGetMultipleResponse } from "@shared/types/api/request";
 import { updateIfExpired } from "./utils/request";
 import { Request } from "@shared/types/db";
+import { formatDate } from "./utils/meeting";
 
 // Get User Profile
 const getProfile = async (req: UserGetRequest, res: UserGetResponse) => {
@@ -166,7 +166,7 @@ const getRequests = async (req: UserGetRequestsRequest, res: UserGetRequestsResp
 const getAllUsers = async (req: AdminGetRequest, res: AdminGetResponse): Promise<void> => {
     try {
         const usersCollection = await getCollection<User>(CollectionNames.USER);
-        const users = await usersCollection.find().toArray();
+        const users = await usersCollection.find({ role: { $ne: 0 } }).toArray();
         const userCount = await usersCollection.countDocuments();
         console.log("GetAllUsers", users, "totalUsers:", userCount)
 
@@ -176,6 +176,7 @@ const getAllUsers = async (req: AdminGetRequest, res: AdminGetResponse): Promise
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
+            createdAt: formatDate(user.createdAt)
         }));
 
         res.json({ totalUsers: userCount, users: usersBasicInfo });
@@ -203,7 +204,8 @@ const getUsers = async (req: AdminSearchRequest, res: AdminSearchResponse) => {
                 { firstName: { $regex: search as string, $options: "i" } },
                 { lastName: { $regex: search as string, $options: "i" } },
                 { email: { $regex: search as string, $options: "i" } },
-            ]
+            ],
+            role: { $ne: 0 }
         };
 
         if (ObjectId.isValid(search)) {
@@ -220,6 +222,7 @@ const getUsers = async (req: AdminSearchRequest, res: AdminSearchResponse) => {
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
+            createdAt: formatDate(user.createdAt)
         }));
 
         console.log("QueryUsersBySearch", users, "totalUsers:", userCount)

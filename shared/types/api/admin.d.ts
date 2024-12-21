@@ -13,6 +13,7 @@ export interface UserBasicInfo {
     firstName: string;
     lastName: string;
     role: UserRole;
+    createdAt: string;
 }
 
 /**
