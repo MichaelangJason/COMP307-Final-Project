@@ -1,3 +1,4 @@
+// Jiaju Nie, YuTong Wei
 import { MeetingAvailability, Participant, Poll } from "@shared/types/db";
 import { nextAvailability } from "./meeting";
 

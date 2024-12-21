@@ -1,9 +1,11 @@
+// Jiaju Nie, YuTong Wei
 import { ObjectId, UpdateFilter } from "mongodb";
 import { MongoClient, Db, Collection, Document } from "mongodb";
 import dotenv from "dotenv";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import schemas from "../tests/db/schemas";
 import mockData from "../tests/mockData";
+import { AlarmInterval, UserRole } from "./statusEnum";
 
 dotenv.config();
 
@@ -32,10 +34,29 @@ const initDevServer = async () => {
 
   // insert mock data
   const data = {
-    user: mockData.validUsers,
-    meeting: mockData.validMeetings,
-    request: mockData.validRequests,
-    poll: mockData.validPolls
+    user: [
+      {
+        _id: new ObjectId(),
+        email: "admin@mcgill.ca",
+        password: "$2b$10$Oaaf4h.OQG.ZunWt69.n1.2K52Uec4L9l/fW4w6wsMBPxNlo.T4NW",
+        firstName: "AdminFirstName",
+        lastName: "AdminLastName",
+        role: UserRole.ADMIN,
+        notifications: {
+          email: true,
+          sms: true,
+          alarm: AlarmInterval.MINUTE_1
+        },
+        upcomingMeetings: [],
+        hostedMeetings: [],
+        requests: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ],
+    // meeting: mockData.validMeetings,
+    // request: mockData.validRequests,
+    // poll: mockData.validPolls
   }
 
   Object.entries(data).forEach(([collectionName, data]) => {

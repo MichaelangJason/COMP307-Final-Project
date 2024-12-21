@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385
+
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import logo from "../images/mini_logo.png";

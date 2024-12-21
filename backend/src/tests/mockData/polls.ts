@@ -1,3 +1,4 @@
+// Jiaju Nie
 import { Poll } from "@shared/types/db";
 import { ObjectId } from "mongodb";
 

@@ -1,3 +1,5 @@
+// Han Wen Fu
+
 import { useEffect, useState } from "react";
 import ParticipantCard from "./ParticipantCard";
 import { Meeting, Participant } from "@shared/types/db/meeting";

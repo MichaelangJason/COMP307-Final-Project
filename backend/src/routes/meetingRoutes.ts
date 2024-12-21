@@ -1,3 +1,4 @@
+// Jiaju Nie
 import meetingController from "../controller/meetingController";
 import privateMiddleware from '../middleware/privateMiddleware';
 import { MeetingRequestParams, MeetingCreateParams } from '@shared/types/api/meeting';
