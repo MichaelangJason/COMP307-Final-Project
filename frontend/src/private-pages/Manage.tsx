@@ -176,10 +176,11 @@ const Manage = () => {
 
   const handleCopy = (card: Card) => {
     const bookingLink = `${(window as any).frontendURL}/book/${card.meetingId}`;
+    const pollLink = `${(window as any).frontendURL}/poll/${card.meetingId}`;
     navigator.clipboard
       .writeText(bookingLink)
       .then(() => {
-        alert("Booking link copied to clipboard!");
+        alert(`Booking link copied to clipboard!\n\nThis is the poll link: ${pollLink}`);
       })
       .catch((err) => {
         console.error("Failed to copy text: ", err);
