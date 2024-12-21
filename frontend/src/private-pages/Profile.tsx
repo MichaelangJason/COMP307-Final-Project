@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385 (90% functionning and 90% styling)
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -97,7 +99,7 @@ const Profile: React.FC = () => {
       if (!response.ok) throw new Error("Failed to update profile");
 
       alert("Profile updated successfully");
-      
+
       setEditMode(false);
       setPasswordEditMode(false);
       setUserData((prev) => ({ ...prev, newPassword: "" }));

@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385
+
 import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
@@ -127,7 +129,9 @@ const Meetings = () => {
     try {
       const [date, time] = selectedCard.dateTime.split(" ");
 
-      const url_to_load_userData = `${(window as any).backendURL}user/profile/${userId}`;
+      const url_to_load_userData = `${
+        (window as any).backendURL
+      }user/profile/${userId}`;
 
       const responseName = await fetch(url_to_load_userData, {
         method: "GET",
@@ -143,7 +147,9 @@ const Meetings = () => {
 
       const userData = await responseName.json(); //API returns { firstName, lastName }
 
-      const url_to_delete_card = `${(window as any).backendURL}meeting/unbook/${selectedCard.id}`;
+      const url_to_delete_card = `${(window as any).backendURL}meeting/unbook/${
+        selectedCard.id
+      }`;
 
       const response = await fetch(url_to_delete_card, {
         method: "PUT",

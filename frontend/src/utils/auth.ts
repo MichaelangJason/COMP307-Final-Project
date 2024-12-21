@@ -1,4 +1,5 @@
-// utils/auth.ts
+// By Jessica Lee ID:261033385
+
 export const AUTH_TOKEN_KEY = "token";
 export const USER_ID_KEY = "userId";
 export const USER_ROLE_KEY = "role";

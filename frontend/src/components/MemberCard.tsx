@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385
+
 import React from "react";
 import bin_icon from "../images/bin.png";
 import "../styles/MemberCard.scss";

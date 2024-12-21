@@ -1,3 +1,5 @@
+// By Jessica Lee ID:261033385
+
 import { useState, useEffect } from "react";
 import MeetingCard from "../components/MeetingCard";
 import "../styles/MeetingsGrid.scss";
@@ -56,7 +58,9 @@ const Manage = () => {
       }
 
       try {
-        const url_fetch_user_profile = `${(window as any).backendURL}user/profile/${userId}`;
+        const url_fetch_user_profile = `${
+          (window as any).backendURL
+        }user/profile/${userId}`;
 
         const response = await fetch(url_fetch_user_profile, {
           method: "GET",
@@ -104,7 +108,9 @@ const Manage = () => {
             console.log("Meeting status converted:", statusString);
 
             // Fetch host details
-            const url_fetch_host_info = `${(window as any).backendURL}user/profile/${meeting.hostId}`;
+            const url_fetch_host_info = `${
+              (window as any).backendURL
+            }user/profile/${meeting.hostId}`;
 
             const hostResponse = await fetch(url_fetch_host_info, {
               method: "GET",
@@ -185,7 +191,9 @@ const Manage = () => {
     navigator.clipboard
       .writeText(bookingLink)
       .then(() => {
-        alert(`Booking link copied to clipboard!\n\nThis is the poll link: ${pollLink}`);
+        alert(
+          `Booking link copied to clipboard!\n\nThis is the poll link: ${pollLink}`
+        );
       })
       .catch((err) => {
         console.error("Failed to copy text: ", err);
