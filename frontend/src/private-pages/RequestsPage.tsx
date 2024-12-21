@@ -8,7 +8,10 @@ import "../styles/Request.scss";
 
 const RequestsPage = () => {
   const params = useParams();
-  const id = params.id;
+  let id: string | undefined | null = params.id;
+  if (!id) {
+    id = sessionStorage.getItem("userId");
+  }
   const token = sessionStorage.getItem("token");
 
   const [filter, setFilter] = useState<4 | RequestStatus | 4>(4);

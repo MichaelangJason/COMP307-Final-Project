@@ -8,7 +8,12 @@ import { AlarmInterval } from "../statusEnum";
 import { UserGetResponse, UserProfileUpdateBody } from "@shared/types/api/user";
 
 const Profile: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); 
+  const params = useParams();
+  let id: string | undefined | null = params.id;
+  if (!id) {
+    id = sessionStorage.getItem("userId");
+  }
+  const isAdmin = sessionStorage.getItem("role") === "0";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [editMode, setEditMode] = useState(false);

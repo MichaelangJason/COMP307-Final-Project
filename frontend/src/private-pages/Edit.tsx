@@ -16,6 +16,7 @@ const Edit = () => {
   const params = useParams();
   const meetingId = params.meetingid;
   const hostId = params.id;
+  const isAdmin = sessionStorage.getItem("role") === "0";
 
   const [availabilities, setAvailabilities] = useState<
     Meeting["availabilities"] | null
@@ -103,7 +104,11 @@ const Edit = () => {
       })
       .then(() => {
         window.alert("Meeting updated successfully");
-        navigate(`/user/${hostId}/manage`);
+        if (isAdmin) {
+          navigate(`/admin/members/${hostId}/manage`);
+        } else {
+          navigate(`/user/${hostId}/manage`);
+        }
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
@@ -129,7 +134,11 @@ const Edit = () => {
       })
       .then(() => {
         alert("Meeting deleted successfully");
-        navigate(`/user/${hostId}/manage`);
+        if (isAdmin) {
+          navigate(`/admin/members/${hostId}/manage`);
+        } else {
+          navigate(`/user/${hostId}/manage`);
+        }
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);

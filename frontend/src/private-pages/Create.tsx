@@ -12,7 +12,11 @@ import SubmitButton from "../components/SubmitButton";
 const Create: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const hostId = params.id;
+  let hostId: string | undefined | null = params.id;
+  if (!hostId) {
+    hostId = sessionStorage.getItem("userId");
+  }
+  const isAdmin = sessionStorage.getItem("role") === "0";
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isPollRequired, setIsPollRequired] = useState<boolean>(false);
@@ -63,7 +67,11 @@ const Create: React.FC = () => {
       })
       .then(() => {
         setIsModalOpen(false);
-        navigate(`/user/${hostId}/manage`);
+        if (isAdmin) {
+          navigate(`/admin/members/${hostId}/manage`);
+        } else {
+          navigate(`/user/${hostId}/manage`);
+        }
       })
       .catch((err) => {
         console.error("Error occurred:", err.message);
