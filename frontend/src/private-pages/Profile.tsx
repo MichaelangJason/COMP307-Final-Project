@@ -9,9 +9,9 @@ import "../styles/Profile.scss";
 
 const Profile: React.FC = () => {
   const params = useParams();
-  let id: string | undefined | null = params.id;
-  if (!id) {
-    id = sessionStorage.getItem("userId");
+  let userId: string | undefined | null = params.id;
+  if (!userId) {
+    userId = sessionStorage.getItem("userId");
   }
   const [userData, setUserData] = useState({
     firstName: "",
@@ -29,12 +29,11 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!id) return;
+      if (!userId) return;
       try {
         const response = await fetch(
-          `${(window as any).backendURL}user/profile/${id}`,
+          `${(window as any).backendURL}user/profile/${userId}`,
           {
-            method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -42,14 +41,16 @@ const Profile: React.FC = () => {
           }
         );
 
-        if (!response.ok) throw new Error("Failed to fetch user data");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
 
         const data: UserGetResponse = await response.json();
         setUserData({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          userId: id,
+          userId: userId,
           password: "",
           newPassword: "",
           notificationMethod: data.notifications.email
@@ -65,7 +66,7 @@ const Profile: React.FC = () => {
     };
 
     fetchUserData();
-  }, [id]);
+  }, [userId]);
 
   const handleSubmit = async () => {
     try {
@@ -81,18 +82,22 @@ const Profile: React.FC = () => {
         updateBody.password = userData.newPassword;
       }
 
-      const response = await fetch(`${(window as any).backendURL}user/profile/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(updateBody),
-      });
+      const response = await fetch(
+        `${(window as any).backendURL}user/profile/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(updateBody),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to update profile");
 
       alert("Profile updated successfully");
+      
       setEditMode(false);
       setPasswordEditMode(false);
       setUserData((prev) => ({ ...prev, newPassword: "" }));
