@@ -19,8 +19,8 @@ import MeetingPoll from "private-pages/MeetingPoll";
 import Modal from "react-modal";
 
 Modal.setAppElement("#root");
-(window as any).frontendURL = "https://fall2024-comp307-group07.cs.mcgill.ca";
-(window as any).backendURL = (window as any).frontendURL + "/api"
+(window as any).frontendURL = "http://localhost:3000";
+(window as any).backendURL = "http://localhost:3007/"
 
 const TitleHandler = () => {
   const location = useLocation();
