@@ -8,7 +8,8 @@ import { UserGetResponse, UserProfileUpdateBody } from "@shared/types/api/user";
 import "../styles/Profile.scss";
 
 const Profile: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const userId = sessionStorage.getItem("userId");
+
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -25,24 +26,11 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!id) return;
+      if (!userId) return;
       try {
-<<<<<<< Updated upstream
-        const response = await fetch(`${(window as any).backendURL}user/profile/${id}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-=======
         const response = await fetch(
-          `http://localhost:3007/user/profile/${id}`,
+          `${(window as any).backendURL}user/profile/${userId}`,
           {
-            method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -50,15 +38,16 @@ const Profile: React.FC = () => {
           }
         );
 
-        if (!response.ok) throw new Error("Failed to fetch user data");
->>>>>>> Stashed changes
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
 
         const data: UserGetResponse = await response.json();
         setUserData({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          userId: id,
+          userId: userId,
           password: "",
           newPassword: "",
           notificationMethod: data.notifications.email
@@ -74,7 +63,7 @@ const Profile: React.FC = () => {
     };
 
     fetchUserData();
-  }, [id]);
+  }, [userId]);
 
   const handleSubmit = async () => {
     try {
@@ -90,39 +79,23 @@ const Profile: React.FC = () => {
         updateBody.password = userData.newPassword;
       }
 
-<<<<<<< Updated upstream
-      const response = await fetch(`${(window as any).backendURL}user/profile/${id}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${sessionStorage.getItem("token")}` 
-=======
-      const response = await fetch(`http://localhost:3007/user/profile/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
->>>>>>> Stashed changes
-        },
-        body: JSON.stringify(updateBody),
-      });
+      const response = await fetch(
+        `${(window as any).backendURL}user/profile/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(updateBody),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to update profile");
 
-<<<<<<< Updated upstream
-        const data = await fetch(`${(window as any).backendURL}user/profile/${id}`).then(res => res.json());
-        setEmail(data.email);
-        setPassword(data.password);
-        setNotification(data.notifications.method);
-        setAlarm(data.notifications.alarm);
-      } else {
-        throw new Error('Failed to save info');
-      }
-=======
       setEditMode(false);
       setPasswordEditMode(false);
       setUserData((prev) => ({ ...prev, newPassword: "" }));
->>>>>>> Stashed changes
     } catch (error) {
       console.error("Error:", error);
     }
