@@ -1,3 +1,4 @@
+// Jiaju Nie
 import { ObjectId } from 'mongodb'
 import { Request, Response } from 'express'
 import { PollGetResponse, PollParams, PollVoteBody } from '@shared/types/api/poll'
