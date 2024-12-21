@@ -1,5 +1,7 @@
 # Prerequisites
 
+Browser Used: Google Chrome
+
 ## To run it locally
 
 ### Environment Setup:
@@ -53,18 +55,18 @@ Admins can view, edit, and manage member profiles and details.
 ### Create Meeting Page: Design your own meeting by filling out a simple form with all the required details.
 
 Meetings can be scheduled as recurring or one-time events.
-Each date can accommodate multiple time slots.
+Each date can accommodate multiple time slots. Add slots with black + button.
 Optionally, create a poll to allow participants to vote on preferred time slots while setting up the meeting.
 
 ### Upcoming Meetings Page: Displays a list of all your scheduled meetings.
 
 Includes an option to delete meetings you no longer need.
 Features a sorting tool to organize meetings by different statuses.
-Manage Meetings Page:
-View all your meetings with tools to:
+
+### Manage Meetings Page: View all your meetings and manage meetings
 
 Edit meeting details.
-Copy a sharable link for others to register.
+Copy a sharable link for others to register to the meeting. Also display the poll link.
 Sort meetings by status for easier navigation.
 
 ### Request Page: Review all alternative schedules proposed by participants along with their availabilities.
@@ -81,4 +83,9 @@ Update your password and set your preferred notification method.
 View all website members and their details.
 Access and manage individual member pages by clicking on their profile.
 Edit member information as needed.
+
+### Poll page: Accessed via url displayed in copy button in Manage meetings
+
+Vote for the most prepered slot. 
+The poll will show the results (the number of results you choose) in your upcoming meetings after timeout.
 
